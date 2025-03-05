@@ -1,0 +1,753 @@
+openapi: 3.0.3
+info:
+  title: Invoice API
+  description: |
+    API description for Toohak.
+    All error strings are required to be clear descriptive messages. The descriptive message won't change the marks you receive when being automarked as long as you make an attempt for each one to be custom, but they will improve the usability of the frontend.
+  version: 1.0.0
+
+tags:
+  - name: "Invoice Endpoints (Iteration 1: Sprint 2)"
+    description: The Invoice routes designed and created in Sprint 2
+  - name: "Company Endpoints (Iteration 1: Sprint 2)"
+    description: The Company routes designed and created in Sprint 2
+  - name: "User Authentication (Iteration 1: Sprint 2)"
+    description: The user auth routes designed and created in Sprint 2
+  - name: "API System Status"
+    description: The routes that monitor the system status of the API
+
+components:
+  schemas:
+
+    # Primitive Types 
+    Empty:
+      type: object
+    InvoiceId:
+      type: string
+      example: "123456"
+    Password:
+      type: string
+      example: "Password@123"
+    Token:
+      type: string
+      example: "23748sad"
+    InvoiceStatus:
+      type: string
+      enum: [ARCHIVE, TRASH, ACTIVE, ALL]
+    FormatType:
+      type: string
+      enum: [JSON, UBL]
+    BusinessABN:
+      type: integer
+      example: 12345678901
+    Permission:
+      type: string
+      enum: [ADMIN, MEMBER]
+    OfficeLocation:
+      type: string
+      example: "UNSW"
+    Email:
+      type: string
+      example: "johan@unsw.edu.au"
+    Repeating:
+      type: boolean
+      example: true
+    IssueDate:
+      type: string
+      example: "3123123123"
+    DueDate:
+      type: string
+      example: "1345623434"
+    Notes:
+      type: string
+      example: "Notes for this invoice..."
+    ShippingDate:
+      type: string
+      example: "42342342331"
+    NameFirst:
+      type: string
+      example: "vincent"
+    NameLast:
+      type: string
+      example: "last"
+    Memo:
+      type: string
+      example: "The memo of the invoice is..."
+    Sender:
+      type: string
+      example: "Amazon"
+    Receiver:
+      type: string
+      example: "Google"
+          
+    # Body/Return Objects 
+    Invoice:
+      type: object
+      properties:
+        notes:
+          $ref: '#/components/schemas/Notes'
+        shippingDate:
+          $ref: '#/components/schemas/ShippingDate'
+        issueDate:
+          $ref: '#/components/schemas/IssueDate'
+        dueDate:
+          $ref: '#/components/schemas/DueDate'
+        memo:
+          $ref: '#/components/schemas/Memo'
+        repeating:
+          $ref: '#/components/schemas/Repeating'
+        sender: 
+          $ref: '#/components/schemas/Sender'
+        receiver:
+          $ref: '#/components/schemas/Receiver'
+          
+    Company:
+      type: object
+      required:
+        - businessABN
+        - officeLocation
+        - companyName
+      properties:
+        CEO:
+          $ref: '#/components/schemas/Email'
+        businessABN: 
+          $ref: '#/components/schemas/BusinessABN'
+        companyName:
+          type: string
+        officeLocation:
+          $ref: '#/components/schemas/OfficeLocation'  
+        users:
+          type: object
+          properties:
+            employees:
+              type: array
+              items:
+                $ref: '#/components/schemas/Email'
+      
+
+    User:
+      type: object
+      required:
+        - email
+        - password
+        - nameFirst
+        - nameLast
+      properties:
+        email:
+          $ref: '#/components/schemas/Email'
+        password:
+          $ref: '#/components/schemas/Password'
+        nameFirst:
+          $ref: '#/components/schemas/NameFirst'
+        nameLast:
+          $ref: '#/components/schemas/NameLast'
+        content:
+          type: string
+          
+    Login:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          $ref: '#/components/schemas/Email'
+        password:
+          $ref: '#/components/schemas/Password'
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        
+  parameters:
+    Token:
+      in: header
+      description: The Session Token
+      name: token
+      required: true
+      schema:
+        type: string
+    InvoiceId:
+      in: path
+      description: The Id of the invoice
+      name: invoiceId
+      required: true
+      schema: 
+        type: integer
+        
+
+  responses:
+    TokenResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+            - token
+            properties:
+              token:
+                $ref: '#/components/schemas/Token'
+    ErrorResponse:
+      description: Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    EmptyResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Empty'
+    RegisterErrorResponse:
+      description: |
+        If any of the following are true:
+        - Email address is used by another user
+        - Email does not satisfy this: https://www.npmjs.com/package/validator (validator.isEmail)
+        - NameFirst contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes
+        - NameFirst is less than 2 characters or more than 20 characters
+        - NameLast contains characters other than lowercase letters, uppercase letters, spaces, hyphens, or apostrophes
+        - NameLast is less than 2 characters or more than 20 characters
+        - Password is less than 8 characters
+        - Password does not contain at least one number and at least one letter
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    # Auth Login Responses
+    LoginErrorResponse:
+      description: |
+        If any of the following are true:
+        - Email address does not exist
+        - Password is not correct for the given email
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    
+    
+    # Auth Logout Responses
+    AuthLogoutError401:
+      description: |
+        Token is empty or invalid (does not refer to valid logged in user session)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    # Invoice Creation Responses
+    InvoiceCreationSuccess:
+      description: |
+        Invoice successfully created
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+             - invoiceId
+            properties:
+              invoiceId:
+                $ref: '#/components/schemas/InvoiceId'
+    InvoiceCreationError400:
+      description: |
+        If any of the following are true:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'    
+    
+    
+    # Invoice Retrieval Responses
+    InvoiceRetrievalSuccess:
+      description: |
+        Retrieval of Invoice was successful
+      content: 
+        application/json:
+          schema:
+            type: object
+            required:
+              - invoiceId
+              - invoiceStatus
+            allOf:
+              - $ref: '#/components/schemas/Invoice'         
+              - properties:
+                  invoiceId:
+                    $ref: '#/components/schemas/InvoiceId'   
+                  invoiceStatus:
+                    $ref: '#/components/schemas/InvoiceStatus'
+              
+        application/UBL:
+            example: "dasdsaddsa"
+              # probs use shcemas/invoice but it might need more ijnforamtion
+              # TODO: Add more properties of invoice here 
+              
+    InvoiceRetrievalError400:
+      description: |
+        If parameters are not valid/missing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'   
+    
+    InvoiceRetrievalError401:
+      description: |
+        If the Session Token is empty or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'   
+            
+    InvoiceRetrievalError403:
+      description: |
+        If the user is unauthorised for this action:
+        - Company does not own the Invoice
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'   
+            
+            
+            
+    # Invoice Edit
+    
+    InvoiceEditSuccess:
+      description: |
+        Invoice was succesfully edited
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+             - invoiceId
+            properties:
+              invoiceId:
+                $ref: '#/components/schemas/InvoiceId'
+        
+    
+    InvoiceEditError400:
+      description: |
+        If parameters are not valid/missing
+        - Updated Details are invalid
+        - InvoiceId does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    InvoiceEditError401:
+      description: |
+        If the session token is empty or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        
+    
+    InvoiceEditError403:
+      description: |
+        If the user is unauthorised for this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+            
+    # Invoice Delete
+    
+    InvoiceDeleteSuccess:
+      description: |
+        Invoice was successfully deleted 
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Empty' 
+            
+            
+    InvoiceDeleteError400:
+      description: |
+        If parameters are not valid/missing
+        - InvoiceId does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+            
+    InvoiceDeleteError401:
+      description: |
+        If the session token is empty or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+        
+            
+    InvoiceDeleteError403:
+      description: |
+        If the user is unauthorised for this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    # Invoice List
+    
+    InvoiceListSuccess:
+      description: |
+        Invoice List successfully retrieved
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Invoice'
+              
+    InvoiceListError401:
+      description: |
+        If the session token is empty or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+            
+    #Invoice Empty Trash
+    InvoiceEmptyTrashSuccess:
+      description: |
+        All invoices in trash have been deleted
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Empty'
+            
+    InvoiceEmptyTrashError401:
+      description: |
+        If the session token is empty or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+    #Company Register
+    CompanyRegisterSuccess:
+      description: |
+        Successfully registered the company
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Empty'
+            
+    CompanyRegisterError400:
+      description: |
+        If parameters are not valid/missing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    CompanyRegisterError401:
+      description: |
+        If the session token is empty or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'     
+            
+    # Company User Add
+    CompanyUserAddSuccess:
+      description: |
+        User has successfully been added to the company
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Empty'
+            
+    CompanyUserAddError400:
+      description: |
+        If parameters are not valid/missing
+        - Email given does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          
+    CompanyUserAddError401:
+      description: |
+        If the session token is empty or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'     
+                  
+      
+    CompanyUserAddError403:
+      description: |
+        If the user is unauthorised for this action
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+            
+          
+    
+paths:
+# ===================================================================
+# User Authentication Endpoints
+# ===================================================================
+  /v1/user/register:
+    post:
+      summary: Register a new user account
+      description: Takes in information about a new user and registers them in the system
+      tags:
+        - "User Authentication (Iteration 1: Sprint 2)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        200:
+          $ref: '#/components/responses/TokenResponse'
+        400:
+          $ref: '#/components/responses/RegisterErrorResponse'
+
+  /v1/auth/login:
+    post:
+      summary: Login a user
+      description: Takes in information about a user to determine if they can log in
+      tags:
+        - "User Authentication (Iteration 1: Sprint 2)"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        200:
+          $ref: '#/components/responses/TokenResponse'
+        400:
+          $ref: '#/components/responses/LoginErrorResponse'
+
+  /v1/auth/logout:
+    post:
+      summary: Logs out a user who has an active session
+      description: Should be called with a token that is returned after either a login or register has been made
+      tags:
+        - "User Authentication (Iteration 1: Sprint 2)"
+      parameters:
+        - $ref: '#/components/parameters/Token'
+      responses:
+        200:
+          $ref: '#/components/responses/EmptyResponse'
+        401:
+          $ref: '#/components/responses/AuthLogoutError401'
+          
+          
+
+
+# ===================================================================
+# Invoice Endpoints
+# ===================================================================
+          
+
+  # Invoice Creation    
+  /v1/invoice:
+    post:
+      summary: Creates a new invoice
+      description: Creating an Invoice Document including the given ID and storing it
+      tags:
+       - "Invoice Endpoints (Iteration 1: Sprint 2)"
+      parameters:
+       - $ref: '#/components/parameters/Token' 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Invoice'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceCreationSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceCreationError400'
+          
+  # Invoice Retrieval      
+  /v1/invoice/{invoiceId}/info:
+    get:
+      summary: Retrieves an invoice
+      description: Retrieves an invoice using the given invoiceId in the given format
+      tags:
+        - "Invoice Endpoints (Iteration 1: Sprint 2)"
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/InvoiceId'
+      responses:
+        200: 
+          $ref: '#/components/responses/InvoiceRetrievalSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceRetrievalError400'
+        401:
+          $ref: '#/components/responses/InvoiceRetrievalError401'
+        403:
+          $ref: '#/components/responses/InvoiceRetrievalError403'
+          
+          
+  # Invoice Edit 
+  /v1/invoice/{invoiceId}/edit:
+    put:
+      summary: Edit the details of the given InvoiceId
+      description: Updates the Invoice Document with the given ID and the new content
+      tags:
+        - "Invoice Endpoints (Iteration 1: Sprint 2)"
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/InvoiceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+             $ref: '#/components/schemas/Invoice'
+      responses:
+        200: 
+          $ref: '#/components/responses/InvoiceEditSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceEditError400'
+        401:
+          $ref: '#/components/responses/InvoiceEditError401'
+        403:
+          $ref: '#/components/responses/InvoiceEditError403'
+  
+  # Invoice Delete
+  /v1/invoice/{invoiceId}:
+    delete:
+      summary: Permanently deletes the Invoice with the given ID
+      description: Removes the invoice permanently
+      tags:
+       - "Invoice Endpoints (Iteration 1: Sprint 2)"
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/InvoiceId'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceDeleteSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceDeleteError400'
+        401:
+          $ref: '#/components/responses/InvoiceDeleteError401'
+        403:
+          $ref: '#/components/responses/InvoiceDeleteError403'
+      
+
+  # Invoice List
+  /v1/invoice/list:
+    get:
+      summary: Returns a list of known invoices
+      description: Fetches a list of invoice that user has access to
+      tags:
+        - "Invoice Endpoints (Iteration 1: Sprint 2)"
+      parameters:
+        - $ref: '#/components/parameters/Token'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceListSuccess'
+        401:
+          $ref: '#/components/responses/InvoiceListError401'
+        
+  
+  
+  # Invoice Empty Trash
+  /v1/invoice/trash:
+    delete:
+      summary: Deletes all invoices that are in the trash
+      description: Removes all invoices in trash permanently
+      tags:
+       - "Invoice Endpoints (Iteration 1: Sprint 2)"
+      parameters:
+        - $ref: '#/components/parameters/Token'
+      responses:
+        200: 
+          $ref: '#/components/responses/InvoiceEmptyTrashSuccess'
+        401:
+          $ref: '#/components/responses/InvoiceEmptyTrashError401'
+          
+# ===================================================================
+# Company Endpoints 
+# ===================================================================   
+
+  /v1/company/register:
+    post:
+      summary: Register a company into the system under the session token's user
+      description: Register a new business to be able to access the functionality of the API
+      tags:
+        - "Company Endpoints (Iteration 1: Sprint 2)"
+      requestBody:
+        content:
+          application/json:
+            schema:
+             $ref: '#/components/schemas/Company'
+      responses:
+        200:
+          $ref: '#/components/responses/CompanyRegisterSuccess'
+        400:
+          $ref: '#/components/responses/CompanyRegisterError400'
+        401:
+          $ref: '#/components/responses/CompanyRegisterError401'
+        
+        
+  /v1/company/user/add:
+    put:
+      summary: Adds the given user to the company 
+      description: Adds the given user to the company providing the user access to selected company invoices
+      tags:
+        - "Company Endpoints (Iteration 1: Sprint 2)"
+      parameters:
+        - $ref: '#/components/parameters/Token'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Email of user to add to the company
+              required:
+               - email
+              properties:
+                email:
+                  $ref: '#/components/schemas/Email'
+      responses:
+        200:
+          $ref: '#/components/responses/CompanyUserAddSuccess'
+        400:
+          $ref: '#/components/responses/CompanyUserAddError400'
+        401:
+          $ref: '#/components/responses/CompanyUserAddError401'
+        403:
+          $ref: '#/components/responses/CompanyUserAddError403'
+
+# ===================================================================
+# API Status Endpoint 
+# ===================================================================   
+
+  /v1/status/:
+    get:
+      summary: Returns the current Status of the API and the load its under.
+      tags:
+        - "API System Status"
+      responses:
+        200:
+          $ref: '#/components/responses/EmptyResponse'
+        500:
+          $ref: '#/components/responses/EmptyResponse'
+    
+
+          
+    
+            
+    
+        
+      
+      
