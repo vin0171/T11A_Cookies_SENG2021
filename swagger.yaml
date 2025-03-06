@@ -577,7 +577,7 @@ paths:
           $ref: '#/components/responses/InvoiceCreationError400'
           
   # Invoice Retrieval      
-  /v1/invoice/{invoiceId}/info:
+  /v1/invoice/{invoiceId}:
     get:
       summary: Retrieves an invoice
       description: Retrieves an invoice using the given invoiceId in the given format
@@ -595,10 +595,30 @@ paths:
           $ref: '#/components/responses/InvoiceRetrievalError401'
         403:
           $ref: '#/components/responses/InvoiceRetrievalError403'
-          
-          
+                    
+  
+  # Invoice Delete
+    delete:
+      summary: Permanently deletes the Invoice with the given ID
+      description: Removes the invoice permanently
+      tags:
+       - "Invoice Endpoints (Iteration 1: Sprint 2)"
+      parameters:
+        - $ref: '#/components/parameters/Token'
+        - $ref: '#/components/parameters/InvoiceId'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceDeleteSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceDeleteError400'
+        401:
+          $ref: '#/components/responses/InvoiceDeleteError401'
+        403:
+          $ref: '#/components/responses/InvoiceDeleteError403'
+      
+
   # Invoice Edit 
-  /v1/invoice/{invoiceId}/edit:
+/v1/invoice/{invoiceId}/edit/details:
     put:
       summary: Edit the details of the given InvoiceId
       description: Updates the Invoice Document with the given ID and the new content
@@ -621,27 +641,30 @@ paths:
           $ref: '#/components/responses/InvoiceEditError401'
         403:
           $ref: '#/components/responses/InvoiceEditError403'
-  
-  # Invoice Delete
-  /v1/invoice/{invoiceId}:
-    delete:
-      summary: Permanently deletes the Invoice with the given ID
-      description: Removes the invoice permanently
+
+/v1/invoice/{invoiceId}/edit/status:
+    put:
+      summary: Edit the details of the given InvoiceId
+      description: Updates the Invoice Document to the new status (Active, Archive, Trash)
       tags:
-       - "Invoice Endpoints (Iteration 1: Sprint 2)"
+        - "Invoice Endpoints (Iteration 1: Sprint 2)"
       parameters:
         - $ref: '#/components/parameters/Token'
         - $ref: '#/components/parameters/InvoiceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+             $ref: '#/components/schemas/Invoice'
       responses:
-        200:
-          $ref: '#/components/responses/InvoiceDeleteSuccess'
+        200: 
+          $ref: '#/components/responses/InvoiceEditSuccess'
         400:
-          $ref: '#/components/responses/InvoiceDeleteError400'
+          $ref: '#/components/responses/InvoiceEditError400'
         401:
-          $ref: '#/components/responses/InvoiceDeleteError401'
+          $ref: '#/components/responses/InvoiceEditError401'
         403:
-          $ref: '#/components/responses/InvoiceDeleteError403'
-      
+          $ref: '#/components/responses/InvoiceEditError403'
 
   # Invoice List
   /v1/invoice/list:
