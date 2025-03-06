@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "ts-node backend/src/server.ts",
+    "start": "ts-node backend/src/app.ts",
     "test": "jest",
     "lint": "eslint backend/src --ext .ts",
     "coverage": "jest --coverage"
