@@ -8,7 +8,7 @@ let data = {
             state: "NSW",
             postcode: "2000",
             phone: "123-456-7890",
-            email: "pleaseHireMe@gmail.com",
+            email: "company1@business.com",
             // A userId corresponding to the owner of this company
             owner: 1,
             // A list of userIds that are admins of this company
@@ -27,7 +27,8 @@ let data = {
 
     users : [
         {
-            authUserId: 1,
+            userId: 1,
+            companyId: 1,
             email: "janecitizen@gmail.com",
             // Stores the hash of the password
             password: "passwordHash",
@@ -88,13 +89,23 @@ let data = {
             notes: "thumbs up me in discord if you ACTUALLY read this"
         },
     ],
-    
+
     sessions: [
         {
             sessionId: 1,
             userId: 1,
+            timeCreated: 1683125870,
+            expiresAt: 1683125870,
+            ip: "?",
+            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537",
+
+            // other metadata
         }
     ],
-    noOfCompanies: 1,
-    noOfUsers: 3,
+    otherData: [
+        {
+            companiesCount: 1,
+            userCount: 3,
+        },
+    ]
 }

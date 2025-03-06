@@ -28,10 +28,15 @@ export interface Session {
 
 }
 
+export interface OtherData {
+
+}
+
 export interface DataStore {
 
     companies: Company[]
     users: User[],
     invoices: Invoice[],
     sessions: Session[],
+    otherData: OtherData
 }
