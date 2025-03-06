@@ -86,6 +86,7 @@ let data = {
                 }
             ],
             currency: "AUD",
+            total: "247.86",
             notes: "thumbs up me in discord if you ACTUALLY read this"
         },
     ],
