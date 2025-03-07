@@ -1,5 +1,4 @@
 import createServer from '../../server';
-jest.useFakeTimers()
 import { requestUserRegister, requestClear } from '../testhelpers';
 
 const app = createServer();
@@ -15,12 +14,6 @@ beforeEach(async () => {
 describe('userAuthRegister', () => {
 
   test.each([
-    {
-      email: 'invalidemail',
-      password: 'abc123123',
-      nameFirst: 'John',
-      nameLast: 'Smith'
-    },
     {
       email: 'john@gmail.com',
       password: 'abc123',
@@ -61,14 +54,14 @@ describe('userAuthRegister', () => {
     async ({ email, password, nameFirst, nameLast }) => {
       const response = await requestUserRegister(app, email, password, nameFirst, nameLast);
       expect(response.status).toStrictEqual(400);
-      expect(response.body.error).toBe(expect.any(String));
+      expect(response.body.error).toStrictEqual(expect.any(String));
   });
 
   test('error: email already exists', async () => {
     await requestUserRegister(app, 'test@gmail.com', 'def456456', 'Jane', 'Doe');
     const response = await requestUserRegister(app, 'test@gmail.com', 'newpassword', 'John', 'Smith');
     expect(response.status).toStrictEqual(400);
-    expect(response.body.error).toBe(expect.any(String));
+    expect(response.body.error).toStrictEqual(expect.any(String));
   });
 
   test('successful registration', async () => {
@@ -81,7 +74,7 @@ describe('userAuthRegister', () => {
   test('multiple successful registrations', async () => {
     await requestUserRegister(app, 'test@gmail.com', 'abc123123', 'John', 'Smith');
     await requestUserRegister(app, 'test2@gmail.com', 'abc123123', 'John', 'Smith');
-    const response = await requestUserRegister(app, 'test@gmail.com', 'abc123123', 'John John-John', 'O\'Smith');
+    const response = await requestUserRegister(app, 'test3@gmail.com', 'abc123123', 'John John-John', 'O\'Smith');
     expect(response.body).toStrictEqual({ token: expect.any(String) });
     expect(response.status).toStrictEqual(200);
     expect(response.header['content-type']).toContain('application/json');

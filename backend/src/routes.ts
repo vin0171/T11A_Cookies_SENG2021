@@ -8,7 +8,9 @@ import config from './config.json';
 import * as invoices from './invoices';
 import * as companies from './companies';
 import * as users from './users';
-import { loadDataStore, saveDataStore } from "./dataStore";
+import { loadDataStore, saveDataStore, setData } from "./dataStore";
+import { request } from "http";
+import { set } from "yaml/dist/schema/yaml-1.1/set";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
@@ -23,6 +25,16 @@ function routes(app: Express) {
 // ========================================================================= //
 // Iteration 1 
 // ========================================================================= //
+
+    app.delete('/v1/clear', async (req: Request, res: Response, next: NextFunction) => {
+      setData({
+        companies: [],
+        users: [],
+        invoices: [],
+        sessions: [],
+        otherData: {companiesCount: 0, userCount: 0, invoiceCount: 0, sessionCount: 0}});
+      res.status(200).json({})
+    })
     
     app.post('/v1/user/register', async (req: Request, res: Response, next: NextFunction) => {
       try {
@@ -116,10 +128,7 @@ function routes(app: Express) {
     });
 
     app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-      res.status(err.status || 500).json({
-        message: err.message,
-        // error: err.stack, 
-      });
+      res.status(err.status || 500).json({ error: err.message });
     });
 
 }
