@@ -18,6 +18,10 @@ export function getData(): DataStore {
 
 export function setData(newData: DataStore): void {
     data = newData;
+    data.otherData.companiesCount = data.companies.length;
+    data.otherData.userCount = data.users.length;
+    data.otherData.invoiceCount = data.invoices.length;
+    data.otherData.sessionCount = data.sessions.length;
 }
 
 export function loadDataStore(): void {

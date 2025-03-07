@@ -8,10 +8,12 @@ import config from './config.json';
 import * as invoices from './invoices';
 import * as companies from './companies';
 import * as users from './users';
+import { loadDataStore, saveDataStore } from "./dataStore";
 // import errorHandler from 'middleware-http-errors';
 
-function routes(app: Express) {
+async function routes(app: Express) {
     // Echo route
+
     app.post('/echo', (req: Request, res: Response) => {
         res.send('POST request to the homepage')
     })
@@ -21,12 +23,14 @@ function routes(app: Express) {
 // ========================================================================= //
 // Iteration 1 
 // ========================================================================= //
-
-    app.post('/v1/user/register', (req: Request, res: Response) => {
-      const { email, password, nameFirst, nameLast } = req.body;
-      const response = users.registerUser(email, password, nameFirst, nameLast);
     
-      res.json("Not Implemented");
+    app.post('/v1/user/register', (req: Request, res: Response) => {
+      loadDataStore();
+      const { email, password, nameFirst, nameLast, age } = req.body;
+      const response = users.registerUser(email, password, nameFirst, nameLast, age);
+
+      res.json(response);
+      saveDataStore();
     });
 
     app.post('/v1/auth/login', (req: Request, res: Response) => {
