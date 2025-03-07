@@ -1,4 +1,4 @@
-import { Express, Request, Response } from "express";
+import { Express, NextFunction, Request, Response } from "express";
 import YAML from 'yaml';
 import sui from 'swagger-ui-express';
 import fs from 'fs';
@@ -11,7 +11,7 @@ import * as users from './users';
 import { loadDataStore, saveDataStore } from "./dataStore";
 // import errorHandler from 'middleware-http-errors';
 
-async function routes(app: Express) {
+function routes(app: Express) {
     // Echo route
 
     app.post('/echo', (req: Request, res: Response) => {
@@ -24,16 +24,18 @@ async function routes(app: Express) {
 // Iteration 1 
 // ========================================================================= //
     
-    app.post('/v1/user/register', (req: Request, res: Response) => {
-      loadDataStore();
-      const { email, password, nameFirst, nameLast, age } = req.body;
-      const response = users.registerUser(email, password, nameFirst, nameLast, age);
-
-      res.json(response);
-      saveDataStore();
+    app.post('/v1/user/register', async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { email, password, nameFirst, nameLast, age } = req.body;
+        const response = users.registerUser(email, password, nameFirst, nameLast, age); 
+        res.status(200).json(response);
+        saveDataStore();
+      } catch(err) {
+        next(err)
+      }
     });
 
-    app.post('/v1/auth/login', (req: Request, res: Response) => {
+    app.post('/v1/auth/login', (req: Request, res: Response, next: NextFunction) => {
         const { email, password } = req.body;
         const response = users.authLogin(email, password);
       
@@ -111,6 +113,13 @@ async function routes(app: Express) {
         const response = invoices.listCompanyInvoices(sender, receiver);
       
         res.json("Not Implemented");
+    });
+
+    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+      res.status(err.status || 500).json({
+        message: err.message,
+        // error: err.stack, 
+      });
     });
 
 }
