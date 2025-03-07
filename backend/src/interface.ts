@@ -133,3 +133,8 @@ export interface DataStore {
     otherData: OtherData
 }
 
+export interface TokenObject {
+  token: string
+}
+
+
