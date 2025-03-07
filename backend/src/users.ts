@@ -1,3 +1,7 @@
+import { getData, setData } from './dataStore';
+import * as helpers from './helper';
+import {TokenObject, Gender, User } from './interface';
+
 /**
  * Stub for the userRegister function.
  *
@@ -11,9 +15,55 @@
  * @param {string} nameLast - Last name of the user
  * @returns {{authUserId: number}}
  */
-export function registerUser(email: string, password: string, nameFirst: string, nameLast: string): number {
 
-    return null;
+// Change age to DOB
+export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): TokenObject {
+    const dataStore = getData();
+
+	if (!helpers.isValidName(nameFirst, nameLast)) {
+		throw helpers.errorReturn(400, 'Error: Invalid Name');
+	}
+	
+	if (!helpers.isValidPass(password)) {
+		throw helpers.errorReturn(400, 'Error: Invalid Password');
+	}
+	
+	if (dataStore.users.find((object) => object.email === email) !== undefined) {
+		throw helpers.errorReturn(400, 'Error: Email already used by another User');
+	}
+
+
+    const newUser : User = {
+		userId: dataStore.otherData.userCount + 1,
+		companyId: -1,
+		email: email,
+		password: helpers.getPasswordHash(password),
+		nameFirst: nameFirst,
+		nameLast: nameLast,
+		numSuccessfulLogins: 0,
+		numFailedPasswordsSinceLastLogin: 0,
+		age: 0,
+		gender: Gender.OTHER,
+		timeCreated: new Date(),
+		previousPasswords: []
+	};
+
+	dataStore.users.push(newUser);
+
+	const nextId = helpers.nextAvailableId(dataStore.sessions, 'session');
+	const secureHash = helpers.getTokenHash(newUser.email + newUser.password + nextId);
+
+	const newSession = {
+		sessionId: nextId,
+		userId: newUser.userId,
+		timeCreated: new Date(),
+		expiry: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
+	};
+	dataStore.sessions.push(newSession);
+
+	return {
+		token: JSON.stringify(newSession),
+	};
 }
 
 

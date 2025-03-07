@@ -1,4 +1,4 @@
-import { Express, Request, Response } from "express";
+import { Express, NextFunction, Request, Response } from "express";
 import YAML from 'yaml';
 import sui from 'swagger-ui-express';
 import fs from 'fs';
@@ -8,10 +8,14 @@ import config from './config.json';
 import * as invoices from './invoices';
 import * as companies from './companies';
 import * as users from './users';
+import { loadDataStore, saveDataStore, setData } from "./dataStore";
+import { request } from "http";
+import { set } from "yaml/dist/schema/yaml-1.1/set";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
     // Echo route
+
     app.post('/echo', (req: Request, res: Response) => {
         res.send('POST request to the homepage')
     })
@@ -22,14 +26,28 @@ function routes(app: Express) {
 // Iteration 1 
 // ========================================================================= //
 
-    app.post('/v1/user/register', (req: Request, res: Response) => {
-      const { email, password, nameFirst, nameLast } = req.body;
-      const response = users.registerUser(email, password, nameFirst, nameLast);
+    app.delete('/v1/clear', async (req: Request, res: Response, next: NextFunction) => {
+      setData({
+        companies: [],
+        users: [],
+        invoices: [],
+        sessions: [],
+        otherData: {companiesCount: 0, userCount: 0, invoiceCount: 0, sessionCount: 0}});
+      res.status(200).json({})
+    })
     
-      res.json("Not Implemented");
+    app.post('/v1/user/register', async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { email, password, nameFirst, nameLast, age } = req.body;
+        const response = users.registerUser(email, password, nameFirst, nameLast, age); 
+        res.status(200).json(response);
+        saveDataStore();
+      } catch(err) {
+        next(err)
+      }
     });
 
-    app.post('/v1/auth/login', (req: Request, res: Response) => {
+    app.post('/v1/auth/login', (req: Request, res: Response, next: NextFunction) => {
         const { email, password } = req.body;
         const response = users.authLogin(email, password);
       
@@ -107,6 +125,10 @@ function routes(app: Express) {
         const response = invoices.listCompanyInvoices(sender, receiver);
       
         res.json("Not Implemented");
+    });
+
+    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+      res.status(err.status || 500).json({ error: err.message });
     });
 
 }

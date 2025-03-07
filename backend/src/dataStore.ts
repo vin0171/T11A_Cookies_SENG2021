@@ -10,7 +10,6 @@ let data: DataStore = {
 };
 
 
-
 // Will change this to use NoSQL with Amazon DynamoDB later.
 
 export function getData(): DataStore {
@@ -19,6 +18,10 @@ export function getData(): DataStore {
 
 export function setData(newData: DataStore): void {
     data = newData;
+    data.otherData.companiesCount = data.companies.length;
+    data.otherData.userCount = data.users.length;
+    data.otherData.invoiceCount = data.invoices.length;
+    data.otherData.sessionCount = data.sessions.length;
 }
 
 export function loadDataStore(): void {
@@ -27,5 +30,5 @@ export function loadDataStore(): void {
 
 export function saveDataStore(): void {
     data = getData();
-    fs.writeFileSync('./data/dataStore.json', JSON.stringify(data), { flag: 'w' });
+    fs.writeFileSync('./data/dataStore.json', JSON.stringify(data, null, 2), { flag: 'w' });
 }
