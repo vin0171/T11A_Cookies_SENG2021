@@ -108,7 +108,17 @@ export interface Company {
   admins: number[],
   members: number[],
   invoices: InvoiceGroups
-      
+}
+
+export interface companyRequestBody {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  postcode: string;
+  phone: string;
+  email: string;
+  password: string;
 }
 
 export interface Session {

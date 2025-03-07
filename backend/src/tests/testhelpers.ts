@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { Express } from 'express';
-import { TokenObject } from '../interface';
+import { companyRequestBody, TokenObject } from '../interface';
 
 export enum HTTPMethod {
     POST = 'POST',
@@ -73,7 +73,14 @@ export const requestAuthLogin = async (app: Express, email: string, password: st
 export const requestAuthLogout = async (app: Express, token: string) => {
   return await requestHelper(app, HTTPMethod.POST, '/v1/auth/logout', { }, { token });
 };
+ 
+export const requestCompanyRegister = async (app: Express, companyData: companyRequestBody ) => {
+  return await requestHelper(app, HTTPMethod.POST, '/v1/company/register', companyData);
+}
   
+export const requestCompanyAddUser = async (app: Express, token: string, companyId: number, userEmailToAdd: string) => {
+  return await requestHelper(app, HTTPMethod.PUT, '/v1/company/userAdd', { companyId, userEmailToAdd }, { token });
+};
 
 
   
