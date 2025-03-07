@@ -30,5 +30,5 @@ export function loadDataStore(): void {
 
 export function saveDataStore(): void {
     data = getData();
-    fs.writeFileSync('./data/dataStore.json', JSON.stringify(data), { flag: 'w' });
+    fs.writeFileSync('./data/dataStore.json', JSON.stringify(data, null, 2), { flag: 'w' });
 }
