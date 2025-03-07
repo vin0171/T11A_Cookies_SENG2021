@@ -62,18 +62,18 @@ function routes(app: Express) {
     });
     
     app.post('/v1/company/register', (req: Request, res: Response) => {
-        const { companyName, companyAbn, adminEmail, adminPassword, contactNumber } = req.body;
-        const response = companies.registerCompany(companyName, companyAbn, adminEmail, adminPassword, contactNumber);
-      
-        res.json("Not Implemented");
-      });
+      const { companyName, companyAbn, adminEmail, adminPassword, contactNumber } = req.body;
+      const response = companies.registerCompany(companyName, companyAbn, adminEmail, adminPassword, contactNumber);
+    
+      res.json("Not Implemented");
+    });
 
-      app.put('/v1/company/user/add', (req: Request, res: Response) => {
-        const { email } = req.body;
-        const response = companies.addCompanyUser(email);
-      
-        res.json("Not Implemented");
-      });
+    app.put('/v1/company/:companyId/userAdd', (req: Request, res: Response) => {
+      const { email } = req.body;
+      const response = companies.addCompanyUser(email);
+    
+      res.json("Not Implemented");
+    });
 
     app.post('/v1/invoice', (req: Request, res: Response) => {
       // change whatever
