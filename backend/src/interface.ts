@@ -1,0 +1,150 @@
+
+export interface ErrorObject {
+  status: number,
+  error: string
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface EmptyObject {
+}
+
+export enum InvoiceStatus {
+    DRAFT = 'DRAFT',
+    SENT = 'SENT',
+    PAID = 'PAID',
+    CANCELLED = 'CANCELLED'
+}
+
+export enum InvoiceState {
+    MAIN = 'MAIN',
+    RECURRING = 'RECURRING',
+    ARCHIVED = 'ARCHIVED',
+    TRASHED = 'TRASHED',
+}
+
+export enum Gender {
+    MALE = 'MALE',
+    FEMALE = 'FEMALE',
+    OTHER = 'OTHER',
+}
+
+export interface Participant {
+  companyName: string,
+  address: string,
+  phone: string,
+  email: string,
+  vatNumber: string,
+  taxIdentificationNumber: string,
+  bankName: string,
+  bankAccount: string,
+  iban: string,
+  swift: string,
+  website: string,
+  logo: string,
+  notes: string
+}
+
+export interface InvoiceItem {
+  itemSku: string,
+  itemName: string,
+  description: string,
+  quantity: number,
+  unitPrice: number,
+  discountAmount: number,
+  taxAmount: number,
+  taxRate: number,
+  totalAmount: number
+}
+
+export interface Invoice {
+  invoiceId: number,
+  sender: Participant,
+  receiver: Participant,
+  issueDate: Date,
+  dueDate: Date,
+  repeating: boolean,
+  status: InvoiceStatus,
+  state: InvoiceState,
+  items: InvoiceItem[],
+  currency: string,
+  total: number,
+  notes: string,
+  terms: string,
+}
+
+
+export interface User {
+  userId: number,
+  companyId: number,
+  email: string,
+  password: string,
+  nameFirst: string,
+  nameLast: string,
+  numSuccessfulLogins: number,
+  numFailedPasswordsSinceLastLogin: number,
+  age: number,
+  gender: Gender,
+  timeCreated: Date,
+  previousPasswords: string[]
+
+}
+
+export interface InvoiceGroups {
+  main: number[],
+  trash: number[],
+  archive: number[]
+}
+
+export interface Company {
+  companyId: number,
+  name: string,
+  address: string,
+  city: string,
+  state: string,
+  postcode: string,
+  phone: string,
+  email: string,
+  owner: number,
+  admins: number[],
+  members: number[],
+  invoices: InvoiceGroups
+}
+
+export interface companyRequestBody {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  postcode: string;
+  phone: string;
+  email: string;
+  password: string;
+}
+
+export interface Session {
+  sessionId: number,
+  userId: number,
+  timeCreated: Date,
+  expiry: Date
+}
+
+export interface OtherData {
+  companiesCount: number,
+  userCount: number,
+  invoiceCount: number,
+  sessionCount: number,
+}
+
+export interface DataStore {
+    companies: Company[]
+    users: User[],
+    invoices: Invoice[],
+    sessions: Session[],
+    otherData: OtherData
+}
+
+export interface TokenObject {
+  token: string
+}
+
+
