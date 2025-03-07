@@ -10,7 +10,6 @@ let data: DataStore = {
 };
 
 
-
 // Will change this to use NoSQL with Amazon DynamoDB later.
 
 export function getData(): DataStore {
