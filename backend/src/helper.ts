@@ -7,25 +7,50 @@ import { Session, Company, Invoice, User } from './interface';
 
 const SECRET = 'CookiesWillRuleTheWorld';
 
-export function userNameValidator(name: string) : boolean {
-    if (name.length < 2 || name.length > 20) return false;
+export function isValidName(nameFirst: string, nameLast: string) : boolean {
+	const MIN_NAME_LEN = 2;
+	const MAX_NAME_LEN = 20;
+	const ALLOWED_CHARS = /[^a-zA-Z '-]/;
   
-    const reInvalidName = /[^a-zA-Z'\s-]/;
+	if (nameFirst.length < MIN_NAME_LEN || nameFirst.length > MAX_NAME_LEN) {
+	  return false;
+	}
   
-    if (reInvalidName.test(name) === true) return false;
-    return true;
+	if (ALLOWED_CHARS.test(nameFirst)) {
+	  return false;
+	}
+  
+	if (nameLast.length < MIN_NAME_LEN || nameLast.length > MAX_NAME_LEN) {
+	  return false;
+	}
+  
+	if (ALLOWED_CHARS.test(nameLast)) {
+	  return false;
+	}
+  
+	return true;
+  
 }
   
-export function passwordValidator(password: string) : boolean {
-    const reHasLetter = /[a-zA-Z]/;
-    const reHasNumber = /[0-9]/;
+export function isValidPass(password: string): boolean {
+	const MIN_PASSWORD_LEN = 8;
+	const LOWERCASE_LETTERS = /[a-z]/;
+	const UPPERCASE_LETTERS = /[A-Z]/;
+	const NUMBERS = /[0-9]/;
   
-    if (reHasLetter.test(password) === true && reHasNumber.test(password) === true) {
-      return true;
-    }
-    return false;
-
-}
+	if (password.length < MIN_PASSWORD_LEN) {
+	  return false;
+	}
+  
+	if (((LOWERCASE_LETTERS.test(password) || UPPERCASE_LETTERS.test(password)) &&
+		NUMBERS.test(password)) === false) {
+	  return false;
+	}
+  
+	return true;
+};
+  
+  
 
 // FIX
 export const errorReturn = (status: number, error: string) => {

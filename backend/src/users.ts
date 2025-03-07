@@ -20,7 +20,18 @@ import {TokenObject, Gender, User } from './interface';
 export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): TokenObject {
     const dataStore = getData();
 
-    if (dataStore.users.find((object) => object.email === email) !== undefined) throw helpers.errorReturn(400, 'Email already in use');
+	if (!helpers.isValidName(nameFirst, nameLast)) {
+		throw helpers.errorReturn(400, 'Error: Invalid Name');
+	}
+	
+	if (!helpers.isValidPass(password)) {
+		throw helpers.errorReturn(400, 'Error: Invalid Password');
+	}
+	
+	if (dataStore.users.find((object) => object.email === email) !== undefined) {
+		throw helpers.errorReturn(400, 'Error: Email already used by another User');
+	}
+
 
     const newUser : User = {
 		userId: dataStore.otherData.userCount + 1,
