@@ -68,10 +68,8 @@ function routes(app: Express) {
       res.json("Not Implemented");
     });
 
-    app.put('/v1/company/:companyId/userAdd', (req: Request, res: Response) => {
-      const { email } = req.body;
-      const response = companies.addCompanyUser(email);
-    
+    app.get('/v1/company/userAdd', (req: Request, res: Response) => {
+      const { companyId, token, userEmail } = req.body;
       res.json("Not Implemented");
     });
 
