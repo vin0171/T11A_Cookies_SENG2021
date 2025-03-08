@@ -6,13 +6,10 @@
  * Create an invoice with a sender, receiver, issue date, and due date,
  * then returns a boolean.
  * 
- * @param {string} sender - sender of the invoice
- * @param  {string} receiver - receiver of the invoice
- * @param  {string} issueDate - issue date of the invoice
- * @param  {string} dueDate - due date of the invoice
+ * @param {object} invoiceDetails - contains all invoice details
  * @returns {boolean}
  */
-export function createInvoice(sender: string, receiver: string, issueDate: string, dueDate: string): boolean {
+export function createInvoice(invoiceDetails: object): boolean {
 
     return null;
 }
