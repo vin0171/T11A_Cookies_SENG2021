@@ -97,4 +97,3 @@ export const requestListCompanyInvoice = async (app: Express, token: string, com
   return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/list', { companyId }, { token })
 }
   
-  

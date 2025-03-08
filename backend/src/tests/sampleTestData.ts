@@ -168,3 +168,13 @@ export const companyData = {
 };
 
 
+export const companyData2 = {
+    name: 'Company Two',
+    address: '123 Tech Street',
+    city: 'San Francisco',
+    state: 'CA',
+    postcode: '94105',
+    phone: '123-456-7890',
+    email: 'company2@example.com',
+    password: 'password123',
+};
