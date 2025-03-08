@@ -1,4 +1,3 @@
-import { string } from 'yaml/dist/schema/common/string';
 import createServer from '../../server';
 import { requestClear, requestUserRegister, requestAuthLogin, requestAuthLogout } from '../testhelpers';
 

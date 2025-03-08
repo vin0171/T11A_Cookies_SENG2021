@@ -32,7 +32,7 @@ describe('companyRegister', () => {
 
     test('Sucesfully registers multple company', async () => {
         let companyIds: Set<number>;
-        let companyData = {
+        const companyData = {
           name: 'Tech Corp',
           address: '123 Tech Street',
           city: 'San Francisco',
@@ -51,7 +51,6 @@ describe('companyRegister', () => {
         const response2 = await requestCompanyRegister(app, companyData);
         expect(response2.status).toStrictEqual(200);
         expect(response2.body).toStrictEqual({ companyId: expect.any(Number)});
-        const companyId = response2.body.companyId;
         companyData.name = 'This is so broing 2'
         companyData.email = 'info@techcorop2.com2222'
         const response3 = await requestCompanyRegister(app, companyData);

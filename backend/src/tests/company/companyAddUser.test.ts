@@ -1,4 +1,3 @@
-import { visitNode } from "typescript";
 import createServer from "../../server";
 import { requestAuthLogin, requestCompanyAddUser, requestCompanyRegister, requestUserRegister } from "../testhelpers";
 const app = createServer();
@@ -83,7 +82,7 @@ describe('companyAddUser', () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         const companyId = companyResponse.body.companyId;
         // Admin has to log in after making the account 
-        const adminToken = (await requestAuthLogin(app,companyData.email, companyData.password)).body.token;
+        await requestAuthLogin(app,companyData.email, companyData.password);
         // Creation of a user
         const userToken = (await requestUserRegister(app, 'omg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree")).body.token;
         // Literally trying to add urself to the company must fail
