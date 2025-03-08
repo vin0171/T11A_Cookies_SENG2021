@@ -1,17 +1,10 @@
 import { Express, NextFunction, Request, Response } from "express";
-import YAML from 'yaml';
-import sui from 'swagger-ui-express';
-import fs from 'fs';
-import path from 'path';
-import process from 'process';
-import config from './config.json';
+
 import * as invoices from './invoices';
 import * as companies from './companies';
 import * as users from './users';
 import { loadDataStore, saveDataStore, setData } from "./dataStore";
-import { request } from "http";
-import { set } from "yaml/dist/schema/yaml-1.1/set";
-import { token } from "morgan";
+
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
@@ -79,6 +72,7 @@ function routes(app: Express) {
       // I literally do not want to pass in 50 billion parameters so its easier this way 
       // and also like make sure they dont put random sht thanks
       const invoiceDetails = req.body;
+      // invoice details also has a time called 'companyId' to add the invoice to 
       const response = invoices.createInvoice(invoiceDetails);
     
       res.json("Not Implemented");

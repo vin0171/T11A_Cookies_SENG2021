@@ -16,6 +16,7 @@ export enum Format {
 
 // Literally same as COMP1531 but instead you are passing through the app/server
 // basically specifiying which server you want to run the command on
+// Format: the format that the user will receive 
 const requestHelper = async (
   app: Express,
   method: HTTPMethod,
@@ -42,9 +43,11 @@ const requestHelper = async (
     default:
       throw new Error(`Unsupported HTTP method: ${method}`);
   }
-
+  
+  // What format we can expecting back from the client UBL2.0XML or JSON
   req.set("Accept", `application/${format}`);
 
+  // whoever wrote this is special af
   if (token?.token) {
     req.set("Authorization", `Bearer ${token.token}`);
   }

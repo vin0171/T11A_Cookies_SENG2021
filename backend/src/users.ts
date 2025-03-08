@@ -1,4 +1,4 @@
-import { getData, setData } from './dataStore';
+import { getData } from './dataStore';
 import * as helpers from './helper';
 import {TokenObject, Gender, User } from './interface';
 
@@ -32,7 +32,6 @@ export function registerUser(email: string, password: string, nameFirst: string,
 		throw helpers.errorReturn(400, 'Error: Email already used by another User');
 	}
 
-
     const newUser : User = {
 		userId: dataStore.otherData.userCount + 1,
 		companyId: -1,
@@ -42,7 +41,7 @@ export function registerUser(email: string, password: string, nameFirst: string,
 		nameLast: nameLast,
 		numSuccessfulLogins: 0,
 		numFailedPasswordsSinceLastLogin: 0,
-		age: 0,
+		age: age,
 		gender: Gender.OTHER,
 		timeCreated: new Date(),
 		previousPasswords: []
@@ -51,7 +50,7 @@ export function registerUser(email: string, password: string, nameFirst: string,
 	dataStore.users.push(newUser);
 
 	const nextId = helpers.nextAvailableId(dataStore.sessions, 'session');
-	const secureHash = helpers.getTokenHash(newUser.email + newUser.password + nextId);
+	// const secureHash = helpers.getTokenHash(newUser.email + newUser.password + nextId);
 
 	const newSession = {
 		sessionId: nextId,
