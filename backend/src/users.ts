@@ -1,4 +1,5 @@
-import { getData } from './dataStore';
+import { create } from 'domain';
+import { getData, setData } from './dataStore';
 import * as helpers from './helper';
 import {TokenObject, Gender, User, Session } from './interface';
 import { createSession, createToken, createUser } from './interfaceCreates';

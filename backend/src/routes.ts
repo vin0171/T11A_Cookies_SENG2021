@@ -1,5 +1,4 @@
 import { Express, NextFunction, Request, Response } from "express";
-
 import * as invoices from './invoices';
 import * as companies from './companies';
 import * as users from './users';
