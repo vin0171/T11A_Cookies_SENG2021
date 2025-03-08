@@ -1,6 +1,6 @@
 import { visitNode } from "typescript";
 import createServer from "../../server";
-import { requestAuthLogin, requestCompanyAddUser, requestCompanyRegister, requestUserRegister } from "../testhelpers";
+import { requestUserLogin, requestCompanyAddUser, requestCompanyRegister, requestUserRegister } from "../testhelpers";
 const app = createServer();
 
 const companyData = {
@@ -20,7 +20,7 @@ describe('companyAddUser', () => {
         expect(companyResponse.status).toStrictEqual(200);
         const companyId = companyResponse.body.companyId;
         // Admin has to log in after making the account 
-        const adminToken = (await requestAuthLogin(app,companyData.email, companyData.password)).body.token;
+        const adminToken = (await requestUserLogin(app,companyData.email, companyData.password)).body.token;
         // Creation of a user
         await requestUserRegister(app, 'omg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree");
         const addUserResponse = await requestCompanyAddUser(app, adminToken, companyId,'omg@techcorp.com');
@@ -31,7 +31,7 @@ describe('companyAddUser', () => {
     test('Company has been made and you adding multiple users ', async () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         const companyId = companyResponse.body.companyId;
-        const adminToken = (await requestAuthLogin(app,companyData.email, companyData.password)).body.token;
+        const adminToken = (await requestUserLogin(app,companyData.email, companyData.password)).body.token;
         await requestUserRegister(app, 'omg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree");
         await requestUserRegister(app, 'omsg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree");
         await requestUserRegister(app, 'omscg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree");
@@ -58,7 +58,7 @@ describe('companyAddUser', () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         const companyId = companyResponse.body.companyId;
         // Admin has to log in after making the account 
-        const adminToken = (await requestAuthLogin(app,companyData.email, companyData.password)).body.token;
+        const adminToken = (await requestUserLogin(app,companyData.email, companyData.password)).body.token;
         const addUserResponse = await requestCompanyAddUser(app, adminToken, companyId,'omg@techcorp.com');
         expect(addUserResponse.status).toStrictEqual(400);
         expect(addUserResponse.body).toStrictEqual({ error: expect.any(String) });
@@ -68,7 +68,7 @@ describe('companyAddUser', () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         const companyId = companyResponse.body.companyId;
         // Admin has to log in after making the account 
-        const adminToken = (await requestAuthLogin(app,companyData.email, companyData.password)).body.token;
+        const adminToken = (await requestUserLogin(app,companyData.email, companyData.password)).body.token;
         // Creation of a user
         await requestUserRegister(app, 'omg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree");
         await requestCompanyAddUser(app, adminToken, companyId,'omg@techcorp.com');
@@ -83,7 +83,7 @@ describe('companyAddUser', () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         const companyId = companyResponse.body.companyId;
         // Admin has to log in after making the account 
-        const adminToken = (await requestAuthLogin(app,companyData.email, companyData.password)).body.token;
+        const adminToken = (await requestUserLogin(app,companyData.email, companyData.password)).body.token;
         // Creation of a user
         const userToken = (await requestUserRegister(app, 'omg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree")).body.token;
         // Literally trying to add urself to the company must fail

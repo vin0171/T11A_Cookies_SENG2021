@@ -66,12 +66,12 @@ export const requestUserRegister = async (app: Express, email: string, password:
   return await requestHelper(app, HTTPMethod.POST, '/v1/user/register', { email, password, nameFirst, nameLast });
 };
 
-export const requestAuthLogin = async (app: Express, email: string, password: string) => {
-  return await requestHelper(app, HTTPMethod.POST, '/v1/auth/login', { email, password });
+export const requestUserLogin = async (app: Express, email: string, password: string) => {
+  return await requestHelper(app, HTTPMethod.POST, '/v1/user/login', { email, password });
 };
   
-export const requestAuthLogout = async (app: Express, token: string) => {
-  return await requestHelper(app, HTTPMethod.POST, '/v1/auth/logout', { }, { token });
+export const requestUserLogout = async (app: Express, token: string) => {
+  return await requestHelper(app, HTTPMethod.POST, '/v1/user/logout', { }, { token });
 };
  
 export const requestCompanyRegister = async (app: Express, companyData: companyRequestBody ) => {

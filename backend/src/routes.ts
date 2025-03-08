@@ -47,14 +47,14 @@ function routes(app: Express) {
       }
     });
 
-    app.post('/v1/auth/login', (req: Request, res: Response, next: NextFunction) => {
+    app.post('/v1/user/login', (req: Request, res: Response, next: NextFunction) => {
         const { email, password } = req.body;
         const response = users.authLogin(email, password);
       
         res.json("Not Implemented");
     });
 
-    app.post('/v1/auth/logout', (req: Request, res: Response) => {
+    app.post('/v1/user/logout', (req: Request, res: Response) => {
       const { token } = req.body;
       const response = users.authLogout(token);
     
