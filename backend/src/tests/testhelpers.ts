@@ -9,7 +9,7 @@ export enum HTTPMethod {
     GET = 'GET'
 }
 
-export enum FORMAT {
+export enum Format {
     UBL = 'ubl',
     JSON = 'json'
 }
@@ -22,7 +22,7 @@ const requestHelper = async (
   path: string,
   requestBody: object = {},
   token?: TokenObject,
-  format: FORMAT = FORMAT.JSON
+  format: Format = Format.JSON
 ) => {
   let req;
 
@@ -82,16 +82,16 @@ export const requestCompanyAddUser = async (app: Express, token: string, company
   return await requestHelper(app, HTTPMethod.PUT, '/v1/company/userAdd', { companyId, userEmailToAdd }, { token });
 };
 
-export const requestCreateInvoice = async (app: Express, token: string, invoiceDetails: string) => {
-  return await requestHelper(app, HTTPMethod.POST, '/v1/invoice', { invoiceDetails }, { token });
+export const requestCreateInvoice = async (app: Express, token: string, invoiceDetails: object) => {
+  return await requestHelper(app, HTTPMethod.POST, '/v1/invoice', invoiceDetails , { token });
 }
 
-export const requestGetInvoice = async (app: Express, token: string, invoiceId: number) => {
-  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/:invoiceId')
+export const requestGetInvoice = async (app: Express, token: string, invoiceId: number, format: Format) => {
+  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/:invoiceId', { invoiceId }, { token }, format)
 }
 
 export const requestListCompanyInvoice = async (app: Express, token: string, companyId: number) => {
-  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/list', {companyId}, {token})
+  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/list', { companyId }, { token })
 }
   
   

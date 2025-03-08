@@ -11,6 +11,7 @@ import * as users from './users';
 import { loadDataStore, saveDataStore, setData } from "./dataStore";
 import { request } from "http";
 import { set } from "yaml/dist/schema/yaml-1.1/set";
+import { token } from "morgan";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
@@ -75,8 +76,10 @@ function routes(app: Express) {
 
     app.post('/v1/invoice', (req: Request, res: Response) => {
       // change whatever
-      const { sender, receiver, issueDate, dueDate } = req.body;
-      const response = invoices.createInvoice(sender, receiver, issueDate, dueDate);
+      // I literally do not want to pass in 50 billion parameters so its easier this way 
+      // and also like make sure they dont put random sht thanks
+      const invoiceDetails = req.body;
+      const response = invoices.createInvoice(invoiceDetails);
     
       res.json("Not Implemented");
     });
@@ -84,8 +87,9 @@ function routes(app: Express) {
 
     app.get('/v1/invoice/:invoiceId', (req: Request, res: Response) => {
       // change whatever
-      const { sender, receiver, issueDate, dueDate } = req.body;
-      const response = invoices.getInvoice(sender, receiver, issueDate, dueDate);
+      // token from autehtaciton header 
+      // const token = 1;
+      // const response = invoices.getInvoice(token, invoiceId);
     
       res.json("Not Implemented");
     });
