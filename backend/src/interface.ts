@@ -4,9 +4,7 @@ export interface ErrorObject {
   error: string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface EmptyObject {
-}
+export type EmptyObject = Record<string, never>;
 
 export enum InvoiceStatus {
     DRAFT = 'DRAFT',
