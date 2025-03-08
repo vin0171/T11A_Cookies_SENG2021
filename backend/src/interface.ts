@@ -31,17 +31,17 @@ export enum Gender {
 export interface Participant {
   companyName: string,
   address: string,
+  country: string,
   phone: string,
   email: string,
-  vatNumber: string,
   taxIdentificationNumber: string,
   bankName: string,
   bankAccount: string,
   iban: string,
   swift: string,
-  website: string,
-  logo: string,
-  notes: string
+  website?: string,
+  logo?: string,
+  notes?: string
 }
 
 export interface InvoiceItem {
@@ -60,8 +60,8 @@ export interface Invoice {
   invoiceId: number,
   sender: Participant,
   receiver: Participant,
-  issueDate: Date,
-  dueDate: Date,
+  issueDate: number,
+  dueDate: number,
   repeating: boolean,
   status: InvoiceStatus,
   state: InvoiceState,
