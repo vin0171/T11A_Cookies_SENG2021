@@ -65,17 +65,17 @@ describe('createInvoice tests', () => {
         invoiceRes = (await requestCreateInvoice(app, adminToken, invoiceDetails1));
         expect(invoiceRes.status).toStrictEqual(200);
 
-        let companyClone = companyData;
+        const companyClone = { ...companyData };
         companyClone.email = 'adminOfCompanyEmail2@gmail.com'
         companyClone.name = 'Turple Industried. Inc'
         const companyId1 = (await requestCompanyRegister(app, companyClone)).body.companyId;
         const adminToken1 = (await requestUserLogin(app, companyClone.email, companyClone.password)).body.token;
         const invoiceDetails2 = {companyId1, ...sampleInvoiceDetails}
         const invoiceDetails3 = {companyId1, ...sampleInvoiceDetails1}
-        let invoiceRes1 = (await requestCreateInvoice(app, adminToken1, invoiceDetails2));
+        const invoiceRes1 = (await requestCreateInvoice(app, adminToken1, invoiceDetails2));
         expect(invoiceRes1.status).toStrictEqual(200);  
 
-        let invoiceRes2 = (await requestCreateInvoice(app, adminToken1, invoiceDetails3));
+        const invoiceRes2 = (await requestCreateInvoice(app, adminToken1, invoiceDetails3));
         expect(invoiceRes2.status).toStrictEqual(200);  
     });
 
@@ -99,7 +99,7 @@ describe('createInvoice tests', () => {
         const companyId = 31231231;
         const invoiceDetails = {companyId, ...sampleInvoiceDetails};
         const userToken = (await requestUserRegister(app, 'valid@gmail.com', 'val2131id@gmail.com', 'valid', 'invalid')).body.token;
-        let invoiceRes = (await requestCreateInvoice(app, userToken, invoiceDetails));
+        const invoiceRes = (await requestCreateInvoice(app, userToken, invoiceDetails));
         expect(invoiceRes.status).toStrictEqual(401);
         expect(invoiceRes.body).toStrictEqual({ error: expect.any(String)});
     });
