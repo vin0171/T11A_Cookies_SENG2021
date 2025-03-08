@@ -1,1 +1,54 @@
-{"companies":[],"users":[{"userId":1,"companyId":-1,"email":"johan@unsw.edu.au","password":"b5d88018a6374e7910d221094ff0051e5b9afbfd04f8d69fbb262607a30df359","nameFirst":"vincent","nameLast":"last","numSuccessfulLogins":0,"numFailedPasswordsSinceLastLogin":0,"age":0,"gender":"OTHER","timeCreated":"2025-03-07T07:42:33.789Z","previousPasswords":[]},{"userId":2,"companyId":-1,"email":"joh2an@unsw.edu.au","password":"b5d88018a6374e7910d221094ff0051e5b9afbfd04f8d69fbb262607a30df359","nameFirst":"vincent","nameLast":"last","numSuccessfulLogins":0,"numFailedPasswordsSinceLastLogin":0,"age":0,"gender":"OTHER","timeCreated":"2025-03-07T07:43:09.795Z","previousPasswords":[]},{"userId":3,"companyId":-1,"email":"jo123n@unsw.edu.au","password":"b5d88018a6374e7910d221094ff0051e5b9afbfd04f8d69fbb262607a30df359","nameFirst":"vincent","nameLast":"last","numSuccessfulLogins":0,"numFailedPasswordsSinceLastLogin":0,"age":0,"gender":"OTHER","timeCreated":"2025-03-07T07:43:57.234Z","previousPasswords":[]}],"invoices":[],"sessions":[{"sessionId":1,"userId":1,"timeCreated":"2025-03-07T07:42:33.789Z","expiry":"2025-03-14T07:42:33.789Z"},{"sessionId":2,"userId":2,"timeCreated":"2025-03-07T07:43:09.795Z","expiry":"2025-03-14T07:43:09.795Z"},{"sessionId":3,"userId":3,"timeCreated":"2025-03-07T07:43:57.234Z","expiry":"2025-03-14T07:43:57.234Z"}],"otherData":{"companiesCount":0,"userCount":2,"invoiceCount":0,"sessionCount":2}}
+{
+  "companies": [],
+  "users": [
+    {
+      "userId": 1,
+      "companyId": -1,
+      "email": "test@gmail.com",
+      "password": "9854b63110f6cc6cd5431af52e9a84661e8f5fa38139fc0dfc37a0be48cd271a",
+      "nameFirst": "Jane",
+      "nameLast": "Doe",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "age": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-08T00:43:04.842Z",
+      "previousPasswords": []
+    },
+    {
+      "userId": 1,
+      "companyId": -1,
+      "email": "test2@gmail.com",
+      "password": "1b8db1ff2cd446d7ed9a9281980bc1a981620e3a7c0514da0c83cfe9a8abf0ef",
+      "nameFirst": "John",
+      "nameLast": "Smith",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "age": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-08T00:43:04.843Z",
+      "previousPasswords": []
+    }
+  ],
+  "invoices": [],
+  "sessions": [
+    {
+      "sessionId": 1,
+      "userId": 1,
+      "timeCreated": "2025-03-08T00:43:04.842Z",
+      "expiry": "2025-03-15T00:43:04.842Z"
+    },
+    {
+      "sessionId": 2,
+      "userId": 1,
+      "timeCreated": "2025-03-08T00:43:04.843Z",
+      "expiry": "2025-03-15T00:43:04.843Z"
+    }
+  ],
+  "otherData": {
+    "companiesCount": 0,
+    "userCount": 0,
+    "invoiceCount": 0,
+    "sessionCount": 0
+  }
+}

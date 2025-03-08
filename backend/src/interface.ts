@@ -114,6 +114,7 @@ export interface Company {
 export interface Session {
   sessionId: number,
   userId: number,
+  secureHash: string,
   timeCreated: Date,
   expiry: Date
 }

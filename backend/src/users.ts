@@ -1,6 +1,8 @@
+import { create } from 'domain';
 import { getData, setData } from './dataStore';
 import * as helpers from './helper';
-import {TokenObject, Gender, User } from './interface';
+import {TokenObject, Gender, User, Session } from './interface';
+import { createSession, createToken, createUser } from './interfaceCreates';
 
 /**
  * Stub for the userRegister function.
@@ -33,37 +35,17 @@ export function registerUser(email: string, password: string, nameFirst: string,
 	}
 
 
-    const newUser : User = {
-		userId: dataStore.otherData.userCount + 1,
-		companyId: -1,
-		email: email,
-		password: helpers.getPasswordHash(password),
-		nameFirst: nameFirst,
-		nameLast: nameLast,
-		numSuccessfulLogins: 0,
-		numFailedPasswordsSinceLastLogin: 0,
-		age: 0,
-		gender: Gender.OTHER,
-		timeCreated: new Date(),
-		previousPasswords: []
-	};
+    const newUser: User = createUser(email, password, nameFirst, nameLast, age);
 
 	dataStore.users.push(newUser);
 
-	const nextId = helpers.nextAvailableId(dataStore.sessions, 'session');
-	const secureHash = helpers.getTokenHash(newUser.email + newUser.password + nextId);
+	const newSession: Session = createSession(newUser);
 
-	const newSession = {
-		sessionId: nextId,
-		userId: newUser.userId,
-		timeCreated: new Date(),
-		expiry: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
-	};
 	dataStore.sessions.push(newSession);
 
-	return {
-		token: JSON.stringify(newSession),
-	};
+	const token: TokenObject = createToken(newSession);
+
+	return token;
 }
 
 
@@ -78,9 +60,26 @@ export function registerUser(email: string, password: string, nameFirst: string,
  * @param {string} password - password the user wants to use
  * @returns {{authUserId: number}}
  */
-export function authLogin(email: string, password: string): number {
+export function authLogin(email: string, password: string): TokenObject {
+	const dataStore = getData();
 
-    return null;
+	const user = dataStore.users.find((object) => object.email === email);
+	if (user === undefined) {
+		throw helpers.errorReturn(400, 'Error: Email does not exist');
+	}
+	if (user.password !== helpers.getPasswordHash(password)) {
+		user.numFailedPasswordsSinceLastLogin++;
+		throw helpers.errorReturn(400, 'Error: Incorrect Password');
+	}
+
+	user.numSuccessfulLogins++;
+	user.numFailedPasswordsSinceLastLogin = 0;
+
+	const newSession: Session = createSession(user);
+	dataStore.sessions.push(newSession);
+
+	const token: TokenObject = createToken(newSession);
+	return token;
 }
 
 
@@ -94,6 +93,8 @@ export function authLogin(email: string, password: string): number {
  * @returns {boolean}
  */
 export function authLogout(token: string): boolean {
+	// TODO 
 
+	
     return null;
 }

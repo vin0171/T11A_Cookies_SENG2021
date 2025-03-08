@@ -63,8 +63,9 @@ export const getPasswordHash = (plaintext: string) => {
     return crypto.createHash('sha256').update(plaintext + SECRET).digest('hex');
 };
 
-export const getTokenHash = (plaintext: string) => {
-	return crypto.createHash('sha256').update(plaintext + SECRET+"meow").digest('hex');
+export const getTokenHash = (userId: number, sessionId: number) => {
+	const plaintext = "" + userId + sessionId;
+	return crypto.createHash('sha256').update(plaintext + SECRET + "meow").digest('hex');
 };
   
 
