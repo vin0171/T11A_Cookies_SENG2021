@@ -1,0 +1,35 @@
+import { DataStore } from './interface';
+import fs from 'fs';
+
+
+let data: DataStore = {
+    companies: [],
+    users: [],
+    invoices: [],
+    sessions: [],
+    otherData: {companiesCount: 0, userCount: 0, invoiceCount: 0, sessionCount: 0},
+};
+
+
+// Will change this to use NoSQL with Amazon DynamoDB later.
+
+export function getData(): DataStore {
+    return data;
+}
+
+export function setData(newData: DataStore): void {
+    data = newData;
+    data.otherData.companiesCount = data.companies.length;
+    data.otherData.userCount = data.users.length;
+    data.otherData.invoiceCount = data.invoices.length;
+    data.otherData.sessionCount = data.sessions.length;
+}
+
+export function loadDataStore(): void {
+    setData(JSON.parse(String(fs.readFileSync('./data/dataStore.json', { flag: 'r' }))))
+}
+
+export function saveDataStore(): void {
+    data = getData();
+    fs.writeFileSync('./data/dataStore.json', JSON.stringify(data, null, 2), { flag: 'w' });
+}
