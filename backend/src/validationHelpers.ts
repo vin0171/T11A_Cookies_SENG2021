@@ -135,17 +135,34 @@ export function isValidPhone(phone: string): boolean {
     return true;
 }
 
-export function validateUsersAccessToInvoice(user: User, invoiceId: string): Invoice {
+export function validateUsersReadInvoice(user: User, invoiceId: string): Invoice {
     const dataStore = getData();
     const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
     if (invoice === undefined) {
         throw helpers.errorReturn(400, 'Error: Invoice does not exist');
     }
-    if (invoice.companyOwnerId !== user.companyId) {
-        throw helpers.errorReturn(400, 'Error: User does not have access to this invoice');
+
+    // Check if the invoice is not a company invoice and it wasn't made by the current user
+    // or check if the invoice is a company invoice and if the current user belongs to that company.
+    if ((!invoice.companyId && invoice.userId != user.userId) || (invoice.companyId && invoice.companyId != user.companyId)) {
+        throw helpers.errorReturn(403, 'Error: User does not have access to this invoice');
     }
 
-    // Check Access Rights when implemented
+    return invoice;
+}
+
+export function validateInvoicePerms(user: User, invoiceId: string): Invoice {
+    const dataStore = getData();
+    const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
+    if (invoice === undefined) {
+        throw helpers.errorReturn(400, 'Error: Invoice does not exist');
+    }
+
+    // Check if the invoice is not a company invoice and it wasn't made by the current user
+    // or check if the invoice is a company invoice and if the current user belongs to that company.
+    if ((!invoice.companyId && invoice.userId != user.userId) || (invoice.companyId && invoice.companyId != user.companyId)) {
+        throw helpers.errorReturn(403, 'Error: User does not have access to this invoice');
+    }
 
     return invoice;
 }

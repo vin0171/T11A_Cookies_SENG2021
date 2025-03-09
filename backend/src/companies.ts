@@ -9,7 +9,8 @@ import * as validators from './validationHelpers';
  * Stub for the registerCompany function.
  *
  * Register a company with a name, ABN, email, password, and contact number,
- * then returns a Token.
+ * then returns a Token. 
+ * This company is registered under an admin account.
  *
  *
  * @param {string} companyName - name of the company

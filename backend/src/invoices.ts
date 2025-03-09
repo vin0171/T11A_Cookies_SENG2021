@@ -1,38 +1,51 @@
 import * as validators from "./validationHelpers"
-import { EmptyObject, Invoice, User } from "./interface";
+import { EmptyObject, Invoice, InvoiceDetails, InvoiceState, User } from "./interface";
 import { getInvoice } from "./interfaceHelpers";
+import { getData } from "./dataStore";
+import {v4 as uuidv4} from 'uuid';
 
 
 /**
  * Stub for the createInvoice function.
  * 
  * Create an invoice with a sender, receiver, issue date, and due date,
- * then returns a boolean.
+ * then returns the invoice
  * 
- * @param {object} invoiceDetails - contains all invoice details
- * @returns {object}
+ * @param {string} token - the token of the current user
+ * @param {InvoiceDetails} invoiceDetails - contains all invoice details
+ * @returns {string}
  */
-export function createInvoice(token: string, invoiceDetails: object): object {
-
-
-
-    return {invoiceId: 1};
+export function createInvoice(token: string, invoiceDetails: InvoiceDetails): Invoice {
+    const user = validators.validateToken(token)
+    const data = getData();
+    const invoiceId = uuidv4();
+    const invoice = {
+        invoiceId: invoiceId, 
+        userId: user.userId,
+        // I believe this should be either null or a string
+        companyId: user.companyId,
+        details: invoiceDetails
+    }
+    data.invoices.push(invoice)
+    return invoice
 }
-
 
 /**
  * Stub for the getInvoice function.
  * 
- * Get an invoice with a sender, receiver, issue date, and due date,
- * then returns a boolean.
- * @returns {Invoice} - A JSON-Object representing the Invoice
- * @returns {String} - A string representing the UBL 
+ * return an invoice with the given invoice id and content type.
+ * @param {string} token - the token of the current user
+ * @param {string} invoiceId -  the id of the invoice we want to retrieve
+ * @param {string} contentType - the type we want the invoice to be returned as (json or xml)
+ * 
+ * @returns {String | Invoice}
  */
 export function retrieveInvoice(token: string, invoiceId: string, contentType: string): Invoice | String | void {
     const userInfo: User  = validators.validateToken(token);
 	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
     if (contentType.includes('application/xml'))  {
         // TODO: convert the response to an UBL2.0 document 
+        // what do u mena convert it to a  ubl 2.0 how the fuck do i do that
     } 
     return invoiceInfo;
 }
@@ -41,54 +54,31 @@ export function retrieveInvoice(token: string, invoiceId: string, contentType: s
 /**
  * Stub for the editInvoiceDetails function.
  * 
- * Edit the details of an invoice with a sender, receiver, issue date, and due date,
- * then returns a boolean.
+ * Edit the details of an invoice with the given parameters and return the invoice.
  * 
- * @param {string} sender - sender of the invoice
- * @param  {string} receiver - receiver of the invoice
- * @param  {string} issueDate - issue date of the invoice
- * @param  {string} dueDate - due date of the invoice
- * @returns {boolean}
+ * @param {string} token - the token of the current user
+ * @param {Invoice} invoiceId - the id of the invoice to be edited
+ * @param {InvoiceDetails} edits - the updated details of the invoice
+ * @returns {Invoice}
  */
-export function editInvoiceDetails(sender: string, receiver: string, issueDate: string, dueDate: string): boolean {
-
-    return null;
-}
-
-
-/**
- * Stub for the editInvoiceStatus function.
- * 
- * Edit the status of an invoice with a token and status,
- * then returns a boolean.
- * 
- * @param {string} token - token of the user
- * @param  {string} status - status of the invoice
- * @returns {boolean}
- */  
-export function editInvoiceStatus(token: string, invoiceId: string, status: string): EmptyObject {
+export function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>): Invoice {
     const userInfo: User  = validators.validateToken(token);
-    const invoice: Invoice = getInvoice(invoiceId);
-
-	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
-
-    // const companyOfUser: Company = getCompany(userInfo.worksAt);
-    // const companyOwnsInvoice = Object.values(companyOfUser.invoices).some(invoiceIds => { return invoiceIds.includes(invoiceId)});
-
-    return {}
+	const invoice: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
+    const updatedInvoice = {...invoice, details: {...invoice.details, ...edits}}
+    return updatedInvoice;
 }
-
 
 /** Stub for the deleteInvoice function
  * 
- * Delete an invoice with a token and invoiceId,
- * then returns a boolean.
+ * Delete an invoice with the given invoice id
  * 
  * @param {string} token - token of the user    
  * @param {number} invoiceId - id of the invoice
- * @returns {boolean}
+ * @returns {null}
  */
-export function deleteInvoice(token: string, invoiceId: number): boolean {
+export function deleteInvoice(token: string, invoiceId: string): boolean {
+    const userInfo: User  = validators.validateToken(token);
+	const invoice: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
     
     return null;
 }

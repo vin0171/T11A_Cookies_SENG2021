@@ -1,4 +1,5 @@
 import { Session } from "inspector/promises";
+import { StringMappingType } from "typescript";
 
 export interface ErrorObject {
   status: number,
@@ -55,9 +56,7 @@ export interface InvoiceItem {
   totalAmount: number
 }
 
-export interface Invoice {
-  invoiceId: string,
-  companyOwnerId: string,
+export interface InvoiceDetails {
   sender: Participant,
   receiver: Participant,
   issueDate: number,
@@ -72,6 +71,12 @@ export interface Invoice {
   terms: string,
 }
 
+export interface Invoice {
+  invoiceId: string,
+  userId: string,
+  companyId: string,
+  details: InvoiceDetails
+}
 
 export interface User {
   userId: string,
