@@ -103,7 +103,7 @@ export function createCompany(companyName: string, companyAbn: string, headquart
         email: companyEmail,
         owner: user.userId,
         admins: [user.userId],
-        members: [],
+        members: [user.userId],
         invoices: {
             main: [],
             trash: [],

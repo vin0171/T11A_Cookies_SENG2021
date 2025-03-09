@@ -1,5 +1,5 @@
 import createServer from "../../server";
-import { requestUserLogin, requestCompanyAddUser, requestCompanyRegister, requestUserRegister } from "../testhelpers";
+import { requestUserLogin, requestCompanyAddUser, requestCompanyRegister, requestUserRegister, requestClear } from "../testhelpers";
 const app = createServer();
 
 const companyData = {
@@ -13,7 +13,22 @@ const companyData = {
     password: 'securePassword123',
 };
 
+beforeEach(async () => {
+    await requestClear(app);
+});
+
+afterEach(async () => {
+    await requestClear(app);
+});
+
+
 describe('companyAddUser', () => {
+    beforeEach(async () => {
+        await requestUserRegister(app, 'test@gmail.com', 'def456456', 'Jane', 'Doe');
+        await requestUserRegister(app, 'test2@gmail.com', 'abc123123', 'John', 'Smith');
+    });
+
+
     test('Successfully add singular user', async () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         expect(companyResponse.status).toStrictEqual(200);

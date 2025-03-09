@@ -1,3 +1,4 @@
+import { isErrored } from "stream";
 import * as helpers from "./helper";
 import { Company, Location, User } from "./interface";
 import { createCompany, getCompany, getUser } from "./interfaceHelpers";
@@ -30,7 +31,6 @@ export function registerCompany(token: string, companyName: string, companyAbn: 
     const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user);
     
     user.companyId = newCompany.companyId;
-
     return newCompany.companyId;
 }
 
@@ -47,10 +47,16 @@ export function registerCompany(token: string, companyName: string, companyAbn: 
  * @returns {object}
  */
 
-// should check if the users token is valid to edit that company
 export function addCompanyUser(token: string, companyId: string, email: string): boolean {
     const user: User = validators.validateToken(token);
     const company: Company = getCompany(companyId);
+    if (!company.members.includes(user.userId)) {
+        throw helpers.errorReturn(403, 'Error: User is not apart of this company')
+    }
+
+    if (!company.admins.includes(user.userId)) {
+        throw helpers.errorReturn(403, 'Error: User is not authorised to add users')
+    }
 
     // Check if email is valid
     const newUser: User = getUser({email: email});
@@ -61,8 +67,6 @@ export function addCompanyUser(token: string, companyId: string, email: string):
     
     company.members.push(newUser.userId);
     newUser.companyId = companyId;
-
-
     return null;
 }
 
