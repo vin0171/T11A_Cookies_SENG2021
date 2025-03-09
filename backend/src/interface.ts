@@ -15,7 +15,6 @@ export enum InvoiceStatus {
 
 export enum InvoiceState {
     MAIN = 'MAIN',
-    RECURRING = 'RECURRING',
     ARCHIVED = 'ARCHIVED',
     TRASHED = 'TRASHED',
 }
@@ -89,9 +88,9 @@ export interface User {
 }
 
 export interface InvoiceGroups {
-  main: number[],
-  trash: number[],
-  archive: number[]
+  [InvoiceState.MAIN]: number[],
+  [InvoiceState.ARCHIVED]: number[],
+  [InvoiceState.TRASHED]: number[],
 }
 
 export interface Location {

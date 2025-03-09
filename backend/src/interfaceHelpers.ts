@@ -2,7 +2,7 @@ import { stat } from "fs";
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
-import {Gender, User, Session, TokenObject, Company, Location, Invoice } from './interface';
+import {Gender, User, Session, TokenObject, Company, Location, Invoice, InvoiceState } from './interface';
 
 
 export function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : User {
@@ -121,9 +121,9 @@ export function createCompany(companyName: string, companyAbn: string, headquart
             admins: [user.userId],
             members: [],
             invoices: {
-                main: [],
-                trash: [],
-                archive: []
+                [InvoiceState.MAIN]: [],
+                [InvoiceState.TRASHED]: [],
+                [InvoiceState.ARCHIVED]: []
             }
         }
     }
