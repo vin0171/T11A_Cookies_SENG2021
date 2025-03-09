@@ -16,9 +16,6 @@ import { getCompany, getInvoice, getUser } from "./interfaceHelpers";
  * @returns {object}
  */
 export function createInvoice(token: string, invoiceDetails: object): object {
-
-
-
     return {invoiceId: 1};
 }
 
@@ -78,7 +75,6 @@ export function editInvoiceState(token: string, invoiceId: number, status: strin
 
     // Move invoice inside a Company InvoiceGroup to another Company InvoiceGroup
     const currentState: InvoiceState = invoiceInfo.state;
-    const dataStore = getData();
     const companyInvoices: InvoiceGroups = getCompany(invoiceInfo.companyOwnerId).invoices;
 
     // Remove the company invoice from the current state 
@@ -102,11 +98,24 @@ export function editInvoiceState(token: string, invoiceId: number, status: strin
  * 
  * @param {string} token - token of the user    
  * @param {number} invoiceId - id of the invoice
- * @returns {boolean}
  */
-export function deleteInvoice(token: string, invoiceId: number): boolean {
-    
-    return null;
+export function deleteInvoice(token: string, invoiceId: number): EmptyObject {
+    const userInfo: User  = validators.validateSessionToken(token);
+	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId); 
+    // Must be in the trash state in order to delete  
+    if (invoiceInfo.state !== InvoiceState.TRASHED) throw helpers.errorReturn(400, 'golden chiicken wind');
+
+    // Delete reference from invoices
+    const dataStore = getData();
+    dataStore.invoices = dataStore.invoices.filter(inv => inv.invoiceId === invoiceId);
+
+    // Delete reference from companys.invoices
+    const companyInvoices: InvoiceGroups = getCompany(invoiceInfo.companyOwnerId).invoices;
+    // Direct declaration of Trash in path to make it like secure ig 
+    const newInvoiceGroupState = companyInvoices[InvoiceState.TRASHED].filter(invNo => invNo !== invoiceId);
+    companyInvoices[invoiceInfo.state] = newInvoiceGroupState;
+
+    return {};
 }
 
 
