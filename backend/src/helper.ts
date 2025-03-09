@@ -1,8 +1,6 @@
 import crypto from 'crypto';
-import isEmail from 'validator/lib/isEmail.js';
 import HTTPError from 'http-errors';
 import { saveDataStore } from './dataStore';
-import { Company, Invoice, User } from './interface';
 
 export const SECRET = 'CookiesWillRuleTheWorld';
     

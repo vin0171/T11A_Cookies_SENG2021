@@ -2,10 +2,7 @@ import isEmail from "validator/lib/isEmail";
 import * as helpers from "./helper";
 import { Invoice, Location, User } from "./interface";
 import { getData } from "./dataStore";
-import { Address } from "cluster";
-import { getUser } from "./interfaceHelpers";
-import { Session } from "inspector/promises";
-let jwt = require('jsonwebtoken')
+import jwt, {JwtPayload} from 'jsonwebtoken'
 
 // isValid{name} to validate generic types::: Return True or False
 // validate{name} to validate specific types from interface.ts::: Return the object or throws an error
@@ -13,7 +10,7 @@ let jwt = require('jsonwebtoken')
 export const validateToken = (token: string) : User => {
     try {
         const dataStore = getData();
-        const currentToken= jwt.verify(token, helpers.SECRET);
+        const currentToken= jwt.verify(token, helpers.SECRET) as JwtPayload;
         const user = dataStore.users.find((user) => user.userId === currentToken.userId);
         return user
     } catch(err) {

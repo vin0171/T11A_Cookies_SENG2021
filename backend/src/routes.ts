@@ -2,20 +2,20 @@ import { Express, NextFunction, Request, Response } from "express";
 import * as invoices from './invoices';
 import * as companies from './companies';
 import * as users from './users';
-import { loadDataStore, saveDataStore, setData } from "./dataStore";
+import { saveDataStore, setData } from "./dataStore";
 import { validateLocation } from "./validationHelpers";
 import { Location } from "./interface";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
-    app.post('/echo', (req: Request, res: Response) => {
+    app.post('/echo', (res: Response) => {
         res.send('POST request to the homepage')
     })
 // ========================================================================= //
 // Iteration 1 
 // ========================================================================= //
 
-    app.delete('/v1/clear', async (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/v1/clear', async (res: Response) => {
       setData({
         companies: [],
         users: [],
@@ -150,7 +150,7 @@ function routes(app: Express) {
         res.json("Not Implemented");
     });
 
-    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    app.use((err: any, req: Request, res: Response) => {
       res.status(err.status || 500).json({ error: err.message });
     });
 

@@ -1,4 +1,3 @@
-import { Session } from "inspector/promises";
 import * as helpers from "./helper";
 import { Company, Location, User } from "./interface";
 import { createCompany, getCompany, getUser } from "./interfaceHelpers";

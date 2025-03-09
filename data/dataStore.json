@@ -2,11 +2,5 @@
   "companies": [],
   "users": [],
   "invoices": [],
-  "sessions": [],
-  "otherData": {
-    "companiesCount": 0,
-    "userCount": 0,
-    "invoiceCount": 0,
-    "sessionCount": 0
-  }
+  "sessions": []
 }

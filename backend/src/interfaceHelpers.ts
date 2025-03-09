@@ -1,12 +1,10 @@
-import { stat } from "fs";
 import {v4 as uuidv4} from 'uuid';
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
 import {Gender, User,Company, Location, Invoice, UserOptions} from './interface';
 import { SECRET } from "./helper";
-import { Session } from "inspector/promises";
-let jwt = require('jsonwebtoken')
+import jwt from 'jsonwebtoken';
 
 export function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : User {
     const dataStore = getData();
@@ -67,11 +65,11 @@ export function getUser({userId, email}: UserOptions) : User {
     return user;
 }
 
-export function validateUser() : any {
-    return 0
+export function validateUser() : boolean {
+    return true
 }
 
-export function createToken(user: User) : String {
+export function createToken(user: User) : string {
     // the time created is called (iat), and its automatically included in the creation
     const data = {
         userId: user.userId,
@@ -81,8 +79,6 @@ export function createToken(user: User) : String {
 
 export function createCompany(companyName: string, companyAbn: string, headquarters: Location, companyEmail: string, contactNumber: string,
     user: User): Company {
-    const dataStore = getData();
-    
       // check if the company name is valid
     if (!validators.isValidName(companyName)) {
         throw helpers.errorReturn(400, 'Error: Invalid Company Name');
