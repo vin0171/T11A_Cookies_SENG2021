@@ -2,7 +2,7 @@
 //  THIS IS FOR ONLY STARTING THE SERVER LOCALLY
 // ====================================================================
 import config from './config.json';
-// import errorHandler from 'middleware-http-errors';
+
 import createServer from './server';
 import YAML from 'yaml';
 import sui from 'swagger-ui-express';
