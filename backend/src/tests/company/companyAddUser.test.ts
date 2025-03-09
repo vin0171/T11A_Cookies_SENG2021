@@ -46,7 +46,7 @@ describe('companyAddUser', () => {
     test('No such company found in system', async () => {
         const token = (await requestUserRegister(app, 'omg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree")).body.token;
         await requestUserRegister(app, 'omgs@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree");
-        const invalidCompanyId = 2131231231331;
+        const invalidCompanyId = '2131231231331';
         const response = await requestCompanyAddUser(app, token, invalidCompanyId, 'omgs@techcorp.com');
         expect(response.status).toStrictEqual(400);
         expect(response.body).toStrictEqual({ error: expect.any(String) });

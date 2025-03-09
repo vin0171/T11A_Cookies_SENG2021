@@ -8,6 +8,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "middleware-http-errors": "^0.1.2",
     "morgan": "^1.10.0",
     "swagger-ui-express": "^5.0.1",

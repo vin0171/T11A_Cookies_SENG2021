@@ -39,8 +39,8 @@ function routes(app: Express) {
     app.post('/v1/user/login', async (req: Request, res: Response, next: NextFunction) => {
       try {       
         const { email, password } = req.body;
-        const response = users.userLogin(email, password);
-        res.status(200).json(response.token);
+        const token = users.userLogin(email, password);
+        res.status(200).json(token);
         saveDataStore();
       } catch(err) {    
         next(err);

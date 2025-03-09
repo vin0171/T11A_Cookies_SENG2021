@@ -1,7 +1,7 @@
 import { getData } from "./dataStore";
 import * as helpers from "./helper";
 import * as validators from "./validationHelpers"
-import { Company, EmptyObject, Invoice, InvoiceGroups, Session, User } from "./interface";
+import { Company, EmptyObject, Invoice, InvoiceGroups, User } from "./interface";
 import { get } from "http";
 import { getCompany, getInvoice, getUser } from "./interfaceHelpers";
 
@@ -32,7 +32,7 @@ export function createInvoice(token: string, invoiceDetails: object): object {
  * @returns {String} - A string representing the UBL 
  */
 export function retrieveInvoice(token: string, invoiceId: string, contentType: string): Invoice | String | void {
-    const userInfo: User  = validators.validateSessionToken(token);
+    const userInfo: User  = validators.validateToken(token);
 	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
     if (contentType.includes('application/xml'))  {
         // TODO: convert the response to an UBL2.0 document 
@@ -70,7 +70,7 @@ export function editInvoiceDetails(sender: string, receiver: string, issueDate: 
  * @returns {boolean}
  */  
 export function editInvoiceStatus(token: string, invoiceId: string, status: string): EmptyObject {
-    const userInfo: User  = validators.validateSessionToken(token);
+    const userInfo: User  = validators.validateToken(token);
     const invoice: Invoice = getInvoice(invoiceId);
 
 	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);

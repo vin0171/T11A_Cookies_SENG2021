@@ -1,31 +1,31 @@
 import isEmail from "validator/lib/isEmail";
 import * as helpers from "./helper";
-import { Invoice, Location, Session, User } from "./interface";
+import { Invoice, Location, User } from "./interface";
 import { getData } from "./dataStore";
 import { Address } from "cluster";
-import { getSession, getUser } from "./interfaceHelpers";
+import { getUser } from "./interfaceHelpers";
+import { Session } from "inspector/promises";
+let jwt = require('jsonwebtoken')
 
 // isValid{name} to validate generic types::: Return True or False
 // validate{name} to validate specific types from interface.ts::: Return the object or throws an error
 
-
-
-export const validateSessionToken = (token: string): User => {
-	
-    const currentSession: Session = JSON.parse(token);
-
-    const user: User = getUser({userId : currentSession.userId});
-    if (currentSession.expiry < new Date()) {
-        throw helpers.errorReturn(401, 'Error: Session has expired - Please log in again');
+export const validateToken = (token: string) : User => {
+    try {
+        const dataStore = getData();
+        const currentToken= jwt.verify(token, helpers.SECRET);
+        const user = dataStore.users.find((user) => user.userId === currentToken.userId);
+        return user
+    } catch(err) {
+        if (err.name === 'TokenExpiredError') {
+            throw helpers.errorReturn(401, 'Error: Token has expired - Please log in again');
+        } else if (err.name === 'NotBeforeError') {
+            throw helpers.errorReturn(401, 'Error: Token is not active');
+        } else {
+            throw helpers.errorReturn(401, 'Error: Invalid Token');
+        }
     }
-    const validatedSession: Session = getSession(currentSession.sessionId);
-    if (currentSession.secureHash !== helpers.getTokenHash(currentSession.userId, currentSession.sessionId)) {
-        throw helpers.errorReturn(401, 'Error: Session has been tampered with');
-    }
-
-    return user;
 }
-
 
 export function isValidName(name: string) : boolean {
     const MIN_NAME_LEN = 2;
@@ -42,7 +42,6 @@ export function isValidName(name: string) : boolean {
 
     return true;
 }
-
 
 export function isValidEmail(email: string): boolean {
     if (!isEmail(email)) {

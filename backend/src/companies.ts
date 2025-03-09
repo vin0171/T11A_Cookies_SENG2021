@@ -1,5 +1,6 @@
+import { Session } from "inspector/promises";
 import * as helpers from "./helper";
-import { Company, Location, TokenObject, User } from "./interface";
+import { Company, Location, User } from "./interface";
 import { createCompany, getCompany, getUser } from "./interfaceHelpers";
 import * as validators from './validationHelpers';
 
@@ -21,7 +22,7 @@ import * as validators from './validationHelpers';
 export function registerCompany(token: string, companyName: string, companyAbn: string, headquarters: Location, 
     companyEmail: string, contactNumber: string): string {
 
-    const user: User = validators.validateSessionToken(token);
+    const user: User = validators.validateToken(token);
     
     if (user.companyId !== null) {
         throw helpers.errorReturn(400, 'Error: User already works at a company');
@@ -49,7 +50,7 @@ export function registerCompany(token: string, companyName: string, companyAbn: 
 
 // should check if the users token is valid to edit that company
 export function addCompanyUser(token: string, companyId: string, email: string): boolean {
-    const user: User = validators.validateSessionToken(token);
+    const user: User = validators.validateToken(token);
     const company: Company = getCompany(companyId);
 
     // Check if email is valid

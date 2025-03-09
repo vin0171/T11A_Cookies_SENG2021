@@ -3,8 +3,10 @@ import {v4 as uuidv4} from 'uuid';
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
-import {Gender, User, Session, TokenObject, Company, Location, Invoice, UserOptions } from './interface';
-
+import {Gender, User,Company, Location, Invoice, UserOptions} from './interface';
+import { SECRET } from "./helper";
+import { Session } from "inspector/promises";
+let jwt = require('jsonwebtoken')
 
 export function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : User {
     const dataStore = getData();
@@ -44,7 +46,7 @@ export function createUser(email: string, password: string, nameFirst: string, n
 export function getUser({userId, email}: UserOptions) : User {
     const dataStore = getData();
     if (!userId && !email) {
-      throw helpers.errorReturn(400, 'Error: Provide either a user ID or an email')
+        throw helpers.errorReturn(400, 'Error: Provide either a user ID or an email')
     }
 
     if (email !== undefined) {
@@ -69,93 +71,70 @@ export function validateUser() : any {
     return 0
 }
 
-
-
-export function createSession(user: User) : Session {
-    const dataStore = getData();
-    const nextId = uuidv4();
-    const secureHash = helpers.getTokenHash(user.userId, nextId);
-    
-    return {
-    sessionId: nextId,
-		userId: user.userId,
-		secureHash: secureHash,
-		timeCreated: new Date(),
-		expiry: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
-	};
-}
-
-export function getSession(sessionId: string) : Session {
-    const dataStore = getData();
-    const session = dataStore.sessions.find((object) => object.sessionId === sessionId);
-    if (session === undefined) {
-        throw helpers.errorReturn(400, 'Error: Session does not exist');
+export function createToken(user: User) : String {
+    // the time created is called (iat), and its automatically included in the creation
+    const data = {
+        userId: user.userId,
     }
-    return session;
-}
-
-export function createToken(session: Session) : TokenObject {
-    return {
-        token: JSON.stringify(session),
-    }
+    return jwt.sign(data, SECRET, {expiresIn: '7d'})
 }
 
 export function createCompany(companyName: string, companyAbn: string, headquarters: Location, companyEmail: string, contactNumber: string,
     user: User): Company {
-      const dataStore = getData();
-      
+    const dataStore = getData();
+    
       // check if the company name is valid
-      if (!validators.isValidName(companyName)) {
-          throw helpers.errorReturn(400, 'Error: Invalid Company Name');
-      }
-      if (!validators.isValidABN(companyAbn)) {
-          throw helpers.errorReturn(400, 'Error: Invalid Company ABN');
-      }
-      if (!validators.isValidEmail(companyEmail)) {
-          throw helpers.errorReturn(400, 'Error: Invalid Email');
-      }
-      if (!validators.isValidPhone(contactNumber)) {
-          throw helpers.errorReturn(400, 'Error: Invalid Phone Number');
-      }
-      
-      return {
-          companyId: uuidv4(),
-          name: companyName,
-          abn: companyAbn,
-          headquarters: headquarters,
-          phone: contactNumber,
-          email: companyEmail,
-          owner: user.userId,
-          admins: [user.userId],
-          members: [],
-          invoices: {
-              main: [],
-              trash: [],
-              archive: []
-          }
-      }
+    if (!validators.isValidName(companyName)) {
+        throw helpers.errorReturn(400, 'Error: Invalid Company Name');
+    }
+    if (!validators.isValidABN(companyAbn)) {
+        throw helpers.errorReturn(400, 'Error: Invalid Company ABN');
+    }
+    if (!validators.isValidEmail(companyEmail)) {
+        throw helpers.errorReturn(400, 'Error: Invalid Email');
+    }
+    if (!validators.isValidPhone(contactNumber)) {
+        throw helpers.errorReturn(400, 'Error: Invalid Phone Number');
+    }
+    
+    return {
+        companyId: uuidv4(),
+        name: companyName,
+        abn: companyAbn,
+        headquarters: headquarters,
+        phone: contactNumber,
+        email: companyEmail,
+        owner: user.userId,
+        admins: [user.userId],
+        members: [],
+        invoices: {
+            main: [],
+            trash: [],
+            archive: []
+        }
+    }
     }
     
 export function getCompany(companyId: string): Company {
-  const dataStore = getData();
-  const company = dataStore.companies.find((object) => object.companyId === companyId);
-  if (company === undefined) {
-      throw helpers.errorReturn(400, 'Error: Company does not exist');
-  }
-  return company;
+    const dataStore = getData();
+    const company = dataStore.companies.find((object) => object.companyId === companyId);
+    if (company === undefined) {
+        throw helpers.errorReturn(400, 'Error: Company does not exist');
+    }
+    return company;
 }
     
 
 export function createInvoice() {
-  
+
 }
 
 
 export function getInvoice(invoiceId: string): Invoice {
-  const dataStore = getData();
-  const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
-  if (invoice === undefined) {
-      throw helpers.errorReturn(400, 'Error: Invoice does not exist');
-  }
-  return invoice;
+    const dataStore = getData();
+    const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
+    if (invoice === undefined) {
+        throw helpers.errorReturn(400, 'Error: Invoice does not exist');
+    }
+    return invoice;
 }

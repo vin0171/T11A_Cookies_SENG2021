@@ -1,3 +1,4 @@
+import { Session } from "inspector/promises";
 
 export interface ErrorObject {
   status: number,
@@ -125,15 +126,6 @@ export interface companyRequestBody {
   password: string;
 }
 
-// use jwts
-export interface Session {
-  sessionId: string,
-  userId: string,
-  secureHash: string,
-  timeCreated: Date,
-  expiry: Date
-}
-
 export interface OtherData {
   companiesCount: number,
   userCount: number,
@@ -148,10 +140,6 @@ export interface DataStore {
     sessions: Session[],
 }
 
-export interface TokenObject {
-  token: string
-}
-
 export interface UserSessionInfo {
   user: User,
   company: Company,
@@ -161,4 +149,6 @@ export interface UserSessionInfo {
 export type UserOptions = 
   | { userId: string; email?: never }  
   | { email: string; userId?: never };
+
+export { Session };
 
