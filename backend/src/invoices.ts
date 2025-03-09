@@ -71,27 +71,25 @@ export function editInvoiceState(token: string, invoiceId: number, status: strin
 	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
     
     // Convert the status string to an InvoiceState enum
-    const enumStatus: InvoiceState | undefined = Object.values(InvoiceState).find(key => key === status);
-    if (enumStatus === undefined) throw helpers.errorReturn(400, 'open your eyes pelase');
+    const newStatus: InvoiceState | undefined = Object.values(InvoiceState).find(key => key === status);
+    if (newStatus === undefined) throw helpers.errorReturn(400, 'open your eyes pelase');
     // Change the state to the same state doesnt really do anything
-    if (enumStatus === invoiceInfo.state) return {}; 
+    if (newStatus === invoiceInfo.state) return {}; 
 
     // Move invoice inside a Company InvoiceGroup to another Company InvoiceGroup
     const currentState: InvoiceState = invoiceInfo.state;
     const dataStore = getData();
     const companyInvoices: InvoiceGroups = getCompany(invoiceInfo.companyOwnerId).invoices;
 
-    companyInvoices[currentState].filter(invoiceNo => invoiceNo === invoiceId);
+    // Remove the company invoice from the current state 
+    const newInvoiceState = companyInvoices[currentState].filter(invoiceNo => invoiceNo !== invoiceId);
+    companyInvoices[currentState] = newInvoiceState;
 
-
-
-
-
+    // Add the company invoice to the new state
+    companyInvoices[newStatus].push(invoiceId);
 
     // Set the state of the invoice to the new status
-    invoiceInfo.state = enumStatus;
-   
-
+    invoiceInfo.state = newStatus;
 
     return {}
 }
