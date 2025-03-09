@@ -60,9 +60,7 @@ const requestHelper = async (
   return await req;
 };
 
-
 export const requestClear = async (app: Express) => {
-  console.log('hello')
   return await requestHelper(app, HTTPMethod.DELETE, '/v1/clear', {});
 };
 

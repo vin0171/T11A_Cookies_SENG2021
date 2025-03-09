@@ -15,13 +15,12 @@ function routes(app: Express) {
 // Iteration 1 
 // ========================================================================= //
 
-    app.delete('/v1/clear', async (res: Response) => {
+    app.delete('/v1/clear', async (req: Request, res: Response, next: NextFunction) => {
       setData({
         companies: [],
         users: [],
         invoices: [],
-        sessions: []
-      });
+        sessions: []});
       res.status(200).json({})
     })
     
@@ -115,7 +114,7 @@ function routes(app: Express) {
       }
     });
 
-    app.put('/v1/invoice/:invoiceId/edit/details', (req: Request, res: Response) => {
+    app.put('/v1/invoice/:invoiceId/edit/details', (req: Request, res: Response, next: NextFunction) => {
         // change whatever
         const { sender, receiver, issueDate, dueDate } = req.body;
         const response = invoices.editInvoiceDetails(sender, receiver, issueDate, dueDate);
@@ -123,7 +122,7 @@ function routes(app: Express) {
         res.json("Not Implemented");
       });
       
-    app.put('/v1/invoice/:invoiceId/edit/status', (req: Request, res: Response) => {
+    app.put('/v1/invoice/:invoiceId/edit/status', (req: Request, res: Response, next: NextFunction) => {
         // change whatever
         const { token, status } = req.body;
         // const response = invoices.editInvoiceStatus(token, status);
@@ -132,7 +131,7 @@ function routes(app: Express) {
     });
       
       // CHECK HAS TO be in Trash
-    app.delete('/v1/invoice/:invoiceId', (req: Request, res: Response) => {
+    app.delete('/v1/invoice/:invoiceId', (req: Request, res: Response, next: NextFunction) => {
         // change whatever
         const invoiceId = parseInt(req.params.invoiceId);
         const { token } = req.body;
@@ -142,7 +141,7 @@ function routes(app: Express) {
     });
       
       
-    app.get('/v1/invoice/list', (req: Request, res: Response) => {
+    app.get('/v1/invoice/list', (req: Request, res: Response, next: NextFunction) => {
         // change whatever
         const { sender, receiver, issueDate, dueDate } = req.body;
         const response = invoices.listCompanyInvoices(sender, receiver);
@@ -150,7 +149,7 @@ function routes(app: Express) {
         res.json("Not Implemented");
     });
 
-    app.use((err: any, req: Request, res: Response) => {
+    app.use((err: any, req: Request, res: Response, next: NextFunction) => {
       res.status(err.status || 500).json({ error: err.message });
     });
 

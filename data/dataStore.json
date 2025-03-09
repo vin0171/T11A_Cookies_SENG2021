@@ -1,6 +1,63 @@
 {
   "companies": [],
-  "users": [],
+  "users": [
+    {
+      "userId": "c2832f36-6879-486d-9152-71212458b862",
+      "companyId": null,
+      "email": "omg@techcorp.com",
+      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
+      "nameFirst": "nodetravesal",
+      "nameLast": "notsofree",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-09T13:25:28.547Z",
+      "previousPasswords": [],
+      "token": null
+    },
+    {
+      "userId": "6c75c556-feaa-4e8b-b956-c16b820c3679",
+      "companyId": null,
+      "email": "omsg@techcorp.com",
+      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
+      "nameFirst": "nodetravesal",
+      "nameLast": "notsofree",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-09T13:25:28.552Z",
+      "previousPasswords": [],
+      "token": null
+    },
+    {
+      "userId": "b521f4b1-e612-45fd-9f31-e698196d1704",
+      "companyId": null,
+      "email": "omscg@techcorp.com",
+      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
+      "nameFirst": "nodetravesal",
+      "nameLast": "notsofree",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-09T13:25:28.556Z",
+      "previousPasswords": [],
+      "token": null
+    },
+    {
+      "userId": "66f85bae-8485-4563-8a17-c29eeefa2317",
+      "companyId": null,
+      "email": "omgs@techcorp.com",
+      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
+      "nameFirst": "nodetravesal",
+      "nameLast": "notsofree",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-09T13:25:28.566Z",
+      "previousPasswords": [],
+      "token": null
+    }
+  ],
   "invoices": [],
   "sessions": []
 }

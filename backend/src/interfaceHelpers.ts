@@ -13,7 +13,7 @@ export function createUser(email: string, password: string, nameFirst: string, n
 		throw helpers.errorReturn(400, 'Error: Invalid Name');
 	}
 
-	if (validators.isValidEmail(email)) {
+	if (!validators.isValidEmail(email)) {
 		throw helpers.errorReturn(400, 'Error: Invalid Email');
 	}
 	
@@ -38,6 +38,7 @@ export function createUser(email: string, password: string, nameFirst: string, n
         gender: Gender.OTHER,
         timeCreated: new Date(),
         previousPasswords: [],
+        token: null,
     }
 }
 

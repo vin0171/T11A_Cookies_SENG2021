@@ -27,7 +27,7 @@ describe('companyAddUser', () => {
         expect(addUserResponse.body).toStrictEqual({});
     });
 
-    test('Company has been made and you adding multiple users ', async () => {
+    test('Add multiple users ', async () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         const companyId = companyResponse.body.companyId;
         const adminToken = (await requestUserLogin(app,companyData.email, companyData.password)).body.token;

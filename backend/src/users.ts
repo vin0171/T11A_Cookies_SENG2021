@@ -32,7 +32,6 @@ export function registerUser(email: string, password: string, nameFirst: string,
 	return token;
 }
 
-
 /**
  * Stub for the authLogin function.
  *
@@ -52,11 +51,9 @@ export function userLogin(email: string, password: string): String {
 
 	user.numSuccessfulLogins++;
 	user.numFailedPasswordsSinceLastLogin = 0;
-
-	const token: String = createToken(user);
-	return token;
+	user.token = createToken(user);
+	return user.token;
 }
-
 
 /**
  * Stub for the authLogout function.

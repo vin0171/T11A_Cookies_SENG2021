@@ -86,6 +86,7 @@ export interface User {
   gender: Gender,
   timeCreated: Date,
   previousPasswords: string[]
+  token: string,
 }
 
 export interface InvoiceGroups {
