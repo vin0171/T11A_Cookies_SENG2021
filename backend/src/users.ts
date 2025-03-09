@@ -1,8 +1,9 @@
 import { create } from 'domain';
 import { getData, setData } from './dataStore';
 import * as helpers from './helper';
-import {TokenObject, Gender, User, Session } from './interface';
-import { createSession, createToken, createUser } from './interfaceCreates';
+import {TokenObject, Gender, User, Session, EmptyObject } from './interface';
+import { createSession, createToken, createUser, validateUser } from './interfaceHelpers';
+import { authenticateUser } from './validationHelpers';
 
 /**
  * Stub for the userRegister function.
@@ -21,19 +22,6 @@ import { createSession, createToken, createUser } from './interfaceCreates';
 // Change age to DOB
 export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): TokenObject {
     const dataStore = getData();
-
-	if (!helpers.isValidName(nameFirst, nameLast)) {
-		throw helpers.errorReturn(400, 'Error: Invalid Name');
-	}
-	
-	if (!helpers.isValidPass(password)) {
-		throw helpers.errorReturn(400, 'Error: Invalid Password');
-	}
-	
-	if (dataStore.users.find((object) => object.email === email) !== undefined) {
-		throw helpers.errorReturn(400, 'Error: Email already used by another User');
-	}
-
 
     const newUser: User = createUser(email, password, nameFirst, nameLast, age);
 
@@ -60,17 +48,11 @@ export function registerUser(email: string, password: string, nameFirst: string,
  * @param {string} password - password the user wants to use
  * @returns {{authUserId: number}}
  */
-export function authLogin(email: string, password: string): TokenObject {
+export function userLogin(email: string, password: string): TokenObject {
 	const dataStore = getData();
 
-	const user = dataStore.users.find((object) => object.email === email);
-	if (user === undefined) {
-		throw helpers.errorReturn(400, 'Error: Email does not exist');
-	}
-	if (user.password !== helpers.getPasswordHash(password)) {
-		user.numFailedPasswordsSinceLastLogin++;
-		throw helpers.errorReturn(400, 'Error: Incorrect Password');
-	}
+	// Check if email is valid
+	const user: User = authenticateUser(email, password);
 
 	user.numSuccessfulLogins++;
 	user.numFailedPasswordsSinceLastLogin = 0;
@@ -90,11 +72,10 @@ export function authLogin(email: string, password: string): TokenObject {
  *
  *
  * @param {string} token - token of the user
- * @returns {boolean}
+ * @returns {}
  */
-export function authLogout(token: string): boolean {
-	// TODO 
+export function userLogout(token: string): EmptyObject {
+	// TODO
 
-	
-    return null;
+	return null;
 }

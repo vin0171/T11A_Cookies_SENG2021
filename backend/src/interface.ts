@@ -56,6 +56,7 @@ export interface InvoiceItem {
 
 export interface Invoice {
   invoiceId: number,
+  companyOwnerId: number,
   sender: Participant,
   receiver: Participant,
   issueDate: number,
@@ -84,7 +85,7 @@ export interface User {
   gender: Gender,
   timeCreated: Date,
   previousPasswords: string[]
-
+  worksAt: number | null
 }
 
 export interface InvoiceGroups {
@@ -93,13 +94,19 @@ export interface InvoiceGroups {
   archive: number[]
 }
 
-export interface Company {
-  companyId: number,
-  name: string,
+export interface Location {
   address: string,
   city: string,
   state: string,
   postcode: string,
+  country: string,
+}
+
+export interface Company {
+  companyId: number,
+  name: string,
+  abn: string,
+  headquarters: Location,
   phone: string,
   email: string,
   owner: number,
@@ -119,6 +126,7 @@ export interface companyRequestBody {
   password: string;
 }
 
+// use jwts
 export interface Session {
   sessionId: number,
   userId: number,
@@ -146,4 +154,7 @@ export interface TokenObject {
   token: string
 }
 
-
+export interface UserSessionInfo {
+  user: User,
+  company: Company,
+}
