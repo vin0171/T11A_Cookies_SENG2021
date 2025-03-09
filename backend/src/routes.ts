@@ -2,7 +2,8 @@ import { Express, NextFunction, Request, Response } from "express";
 import * as invoices from './invoices';
 import * as companies from './companies';
 import * as users from './users';
-import { loadDataStore, saveDataStore, setData } from "./dataStore";
+import * as Converter from './Converter';
+import { saveDataStore, setData } from "./dataStore";
 import { validateLocation } from "./validationHelpers";
 import { Location } from "./interface";
 // import errorHandler from 'middleware-http-errors';
@@ -102,13 +103,12 @@ function routes(app: Express) {
         const contentType = req.headers['content-type'].split(' ')[0];
         const invoiceId = parseInt(req.params.invoiceId);
         const token = req.headers['authorization'].split(' ')[1];
+        const response = invoices.retrieveInvoice(token, invoiceId);
         if (contentType.includes('application/json')) {
-          const response = invoices.retrieveInvoice(token, invoiceId, contentType);
           res.status(200).json(response);
         } else {
-          // Send the UBL as a Text-File
-          const response = invoices.retrieveInvoice(token, invoiceId, contentType);
-          res.status(200).send(response);
+          const UBLresponse = Converter.parseToUBL(response);
+          res.status(200).send(UBLresponse);
         } 
       } catch(err) {
         next(err);

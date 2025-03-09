@@ -31,12 +31,9 @@ export function createInvoice(token: string, invoiceDetails: object): object {
  * @returns {Invoice} - A JSON-Object representing the Invoice
  * @returns {String} - A string representing the UBL 
  */
-export function retrieveInvoice(token: string, invoiceId: number, contentType: string): Invoice | String | void {
+export function retrieveInvoice(token: string, invoiceId: number, ): Invoice {
     const userInfo: User  = validators.validateSessionToken(token);
 	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
-    if (contentType.includes('application/xml'))  {
-        // TODO: convert the response to an UBL2.0 document 
-    } 
     return invoiceInfo;
 }
 
