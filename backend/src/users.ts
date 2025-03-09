@@ -16,7 +16,7 @@ import { authenticateUser } from './validationHelpers';
  * @param {string} password - password the user wants to use
  * @param {string} nameFirst - First name of the user
  * @param {string} nameLast - Last name of the user
- * @returns {{authUserId: number}}
+ * @returns {{authUserId: string}}
  */
 
 // Change age to DOB
@@ -46,7 +46,7 @@ export function registerUser(email: string, password: string, nameFirst: string,
  *
  * @param {string} email - email of the user
  * @param {string} password - password the user wants to use
- * @returns {{authUserId: number}}
+ * @returns {{authUserId: string}}
  */
 export function userLogin(email: string, password: string): TokenObject {
 	const dataStore = getData();

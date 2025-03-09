@@ -20,8 +20,8 @@ function routes(app: Express) {
         companies: [],
         users: [],
         invoices: [],
-        sessions: [],
-        otherData: {companiesCount: 0, userCount: 0, invoiceCount: 0, sessionCount: 0}});
+        sessions: []
+      });
       res.status(200).json({})
     })
     
@@ -100,7 +100,7 @@ function routes(app: Express) {
     app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
       try {
         const contentType = req.headers['content-type'].split(' ')[0];
-        const invoiceId = parseInt(req.params.invoiceId);
+        const invoiceId = req.params.invoiceId;
         const token = req.headers['authorization'].split(' ')[1];
         if (contentType.includes('application/json')) {
           const response = invoices.retrieveInvoice(token, invoiceId, contentType);
@@ -126,7 +126,7 @@ function routes(app: Express) {
     app.put('/v1/invoice/:invoiceId/edit/status', (req: Request, res: Response) => {
         // change whatever
         const { token, status } = req.body;
-        const response = invoices.editInvoiceStatus(token, status);
+        // const response = invoices.editInvoiceStatus(token, status);
       
         res.json("Not Implemented");
     });

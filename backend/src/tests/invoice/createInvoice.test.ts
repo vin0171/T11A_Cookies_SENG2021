@@ -21,7 +21,7 @@ describe('createInvoice tests', () => {
         const invoiceDetails = {companyId, ...sampleInvoiceDetails}
         const invoiceRes = (await requestCreateInvoice(app, adminToken, invoiceDetails));
 
-        const expectedResponse = { invoiceId: expect.any(Number) };
+        const expectedResponse = { invoiceId: expect.any(String) };
         expect(invoiceRes.body).toStrictEqual(expectedResponse);
         expect(invoiceRes.status).toStrictEqual(200);
     });

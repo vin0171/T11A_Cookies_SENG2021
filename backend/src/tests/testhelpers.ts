@@ -81,7 +81,7 @@ export const requestCompanyRegister = async (app: Express, companyData: companyR
   return await requestHelper(app, HTTPMethod.POST, '/v1/company/register', companyData);
 }
   
-export const requestCompanyAddUser = async (app: Express, token: string, companyId: number, userEmailToAdd: string) => {
+export const requestCompanyAddUser = async (app: Express, token: string, companyId: string, userEmailToAdd: string) => {
   return await requestHelper(app, HTTPMethod.PUT, '/v1/company/userAdd', { companyId, userEmailToAdd }, { token });
 };
 
@@ -89,11 +89,11 @@ export const requestCreateInvoice = async (app: Express, token: string, invoiceD
   return await requestHelper(app, HTTPMethod.POST, '/v1/invoice', invoiceDetails , { token });
 }
 
-export const requestGetInvoice = async (app: Express, token: string, invoiceId: number, format: Format) => {
+export const requestGetInvoice = async (app: Express, token: string, invoiceId: string, format: Format) => {
   return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/:invoiceId', { invoiceId }, { token }, format)
 }
 
-export const requestListCompanyInvoice = async (app: Express, token: string, companyId: number) => {
+export const requestListCompanyInvoice = async (app: Express, token: string, companyId: string) => {
   return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/list', { companyId }, { token })
 }
   

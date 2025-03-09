@@ -1,8 +1,9 @@
 import { stat } from "fs";
+import {v4 as uuidv4} from 'uuid';
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
-import {Gender, User, Session, TokenObject, Company, Location, Invoice } from './interface';
+import {Gender, User, Session, TokenObject, Company, Location, Invoice, UserOptions } from './interface';
 
 
 export function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : User {
@@ -25,8 +26,8 @@ export function createUser(email: string, password: string, nameFirst: string, n
 	}
     
     return {
-        userId: dataStore.otherData.userCount + 1,
-        companyId: -1,
+        userId: uuidv4(),
+        companyId: null,
         email: email,
         password: helpers.getPasswordHash(password),
         nameFirst: nameFirst,
@@ -37,12 +38,15 @@ export function createUser(email: string, password: string, nameFirst: string, n
         gender: Gender.OTHER,
         timeCreated: new Date(),
         previousPasswords: [],
-        worksAt: null,
     }
 }
 
-export function getUser(userId: number, email?: string ) : User {
+export function getUser({userId, email}: UserOptions) : User {
     const dataStore = getData();
+    if (!userId && !email) {
+      throw helpers.errorReturn(400, 'Error: Provide either a user ID or an email')
+    }
+
     if (email !== undefined) {
         if (!validators.isValidEmail(email)) {
             throw helpers.errorReturn(400, 'Error: Invalid Email');
@@ -61,15 +65,19 @@ export function getUser(userId: number, email?: string ) : User {
     return user;
 }
 
+export function validateUser() : any {
+    return 0
+}
+
 
 
 export function createSession(user: User) : Session {
     const dataStore = getData();
-    const nextId = helpers.nextAvailableId(dataStore.sessions, 'session');
+    const nextId = uuidv4();
     const secureHash = helpers.getTokenHash(user.userId, nextId);
     
     return {
-        sessionId: nextId,
+    sessionId: nextId,
 		userId: user.userId,
 		secureHash: secureHash,
 		timeCreated: new Date(),
@@ -77,7 +85,7 @@ export function createSession(user: User) : Session {
 	};
 }
 
-export function getSession(sessionId: number) : Session {
+export function getSession(sessionId: string) : Session {
     const dataStore = getData();
     const session = dataStore.sessions.find((object) => object.sessionId === sessionId);
     if (session === undefined) {
@@ -94,60 +102,60 @@ export function createToken(session: Session) : TokenObject {
 
 export function createCompany(companyName: string, companyAbn: string, headquarters: Location, companyEmail: string, contactNumber: string,
     user: User): Company {
-        const dataStore = getData();
-        
-        // check if the company name is valid
-        if (!validators.isValidName(companyName)) {
-            throw helpers.errorReturn(400, 'Error: Invalid Company Name');
-        }
-        if (!validators.isValidABN(companyAbn)) {
-            throw helpers.errorReturn(400, 'Error: Invalid Company ABN');
-        }
-        if (!validators.isValidEmail(companyEmail)) {
-            throw helpers.errorReturn(400, 'Error: Invalid Email');
-        }
-        if (!validators.isValidPhone(contactNumber)) {
-            throw helpers.errorReturn(400, 'Error: Invalid Phone Number');
-        }
-        
-        return {
-            companyId: dataStore.otherData.companiesCount + 1,
-            name: companyName,
-            abn: companyAbn,
-            headquarters: headquarters,
-            phone: contactNumber,
-            email: companyEmail,
-            owner: user.userId,
-            admins: [user.userId],
-            members: [],
-            invoices: {
-                main: [],
-                trash: [],
-                archive: []
-            }
-        }
+      const dataStore = getData();
+      
+      // check if the company name is valid
+      if (!validators.isValidName(companyName)) {
+          throw helpers.errorReturn(400, 'Error: Invalid Company Name');
+      }
+      if (!validators.isValidABN(companyAbn)) {
+          throw helpers.errorReturn(400, 'Error: Invalid Company ABN');
+      }
+      if (!validators.isValidEmail(companyEmail)) {
+          throw helpers.errorReturn(400, 'Error: Invalid Email');
+      }
+      if (!validators.isValidPhone(contactNumber)) {
+          throw helpers.errorReturn(400, 'Error: Invalid Phone Number');
+      }
+      
+      return {
+          companyId: uuidv4(),
+          name: companyName,
+          abn: companyAbn,
+          headquarters: headquarters,
+          phone: contactNumber,
+          email: companyEmail,
+          owner: user.userId,
+          admins: [user.userId],
+          members: [],
+          invoices: {
+              main: [],
+              trash: [],
+              archive: []
+          }
+      }
     }
     
-export function getCompany(companyId: number): Company {
-    const dataStore = getData();
-    const company = dataStore.companies.find((object) => object.companyId === companyId);
-    if (company === undefined) {
-        throw helpers.errorReturn(400, 'Error: Company does not exist');
-    }
-    return company;
+export function getCompany(companyId: string): Company {
+  const dataStore = getData();
+  const company = dataStore.companies.find((object) => object.companyId === companyId);
+  if (company === undefined) {
+      throw helpers.errorReturn(400, 'Error: Company does not exist');
+  }
+  return company;
 }
     
 
 export function createInvoice() {
-    
+  
 }
 
 
-export function getInvoice(invoiceId: number): Invoice {
-    const dataStore = getData();
-    const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
-    if (invoice === undefined) {
-        throw helpers.errorReturn(400, 'Error: Invoice does not exist');
-    }
-    return invoice;
+export function getInvoice(invoiceId: string): Invoice {
+  const dataStore = getData();
+  const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
+  if (invoice === undefined) {
+      throw helpers.errorReturn(400, 'Error: Invoice does not exist');
+  }
+  return invoice;
 }

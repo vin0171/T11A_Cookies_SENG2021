@@ -19,17 +19,17 @@ import * as validators from './validationHelpers';
  * @returns {{authUserId: number}}
  */
 export function registerCompany(token: string, companyName: string, companyAbn: string, headquarters: Location, 
-    companyEmail: string, contactNumber: string): number {
+    companyEmail: string, contactNumber: string): string {
 
     const user: User = validators.validateSessionToken(token);
     
-    if (user.worksAt !== null) {
+    if (user.companyId !== null) {
         throw helpers.errorReturn(400, 'Error: User already works at a company');
     }
     
     const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user);
     
-    user.worksAt = newCompany.companyId;
+    user.companyId = newCompany.companyId;
 
     return newCompany.companyId;
 }
@@ -47,20 +47,20 @@ export function registerCompany(token: string, companyName: string, companyAbn: 
  * @returns {object}
  */
 
-// shuold check if the users token is valid to edit that company
-export function addCompanyUser(token: string, companyId: number, email: string): boolean {
+// should check if the users token is valid to edit that company
+export function addCompanyUser(token: string, companyId: string, email: string): boolean {
     const user: User = validators.validateSessionToken(token);
     const company: Company = getCompany(companyId);
 
     // Check if email is valid
-    const newUser: User = getUser(null, email);
+    const newUser: User = getUser({email: email});
 
-    if (newUser.worksAt !== null) {
+    if (newUser.companyId !== null) {
         throw helpers.errorReturn(400, 'Error: User already works at a company');
     }
     
     company.members.push(newUser.userId);
-    newUser.worksAt = companyId;
+    newUser.companyId = companyId;
 
 
     return null;

@@ -31,7 +31,7 @@ export function createInvoice(token: string, invoiceDetails: object): object {
  * @returns {Invoice} - A JSON-Object representing the Invoice
  * @returns {String} - A string representing the UBL 
  */
-export function retrieveInvoice(token: string, invoiceId: number, contentType: string): Invoice | String | void {
+export function retrieveInvoice(token: string, invoiceId: string, contentType: string): Invoice | String | void {
     const userInfo: User  = validators.validateSessionToken(token);
 	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
     if (contentType.includes('application/xml'))  {
@@ -69,7 +69,7 @@ export function editInvoiceDetails(sender: string, receiver: string, issueDate: 
  * @param  {string} status - status of the invoice
  * @returns {boolean}
  */  
-export function editInvoiceStatus(token: string, invoiceId: number, status: string): EmptyObject {
+export function editInvoiceStatus(token: string, invoiceId: string, status: string): EmptyObject {
     const userInfo: User  = validators.validateSessionToken(token);
     const invoice: Invoice = getInvoice(invoiceId);
 

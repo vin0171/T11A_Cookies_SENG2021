@@ -14,7 +14,7 @@ export const validateSessionToken = (token: string): User => {
 	
     const currentSession: Session = JSON.parse(token);
 
-    const user: User = getUser(currentSession.userId);
+    const user: User = getUser({userId : currentSession.userId});
     if (currentSession.expiry < new Date()) {
         throw helpers.errorReturn(401, 'Error: Session has expired - Please log in again');
     }
@@ -31,13 +31,13 @@ export function isValidName(name: string) : boolean {
     const MIN_NAME_LEN = 2;
     const MAX_NAME_LEN = 20;
     const ALLOWED_CHARS = /[^a-zA-Z '-]/;
-  
+
     if (name.length < MIN_NAME_LEN || name.length > MAX_NAME_LEN) {
-      return false;
+        return false;
     }
-  
+
     if (ALLOWED_CHARS.test(name)) {
-      return false;
+        return false;
     }
 
     return true;
@@ -46,26 +46,26 @@ export function isValidName(name: string) : boolean {
 
 export function isValidEmail(email: string): boolean {
     if (!isEmail(email)) {
-      return false;
+        return false;
     }
     return true;
 }
-  
+
 export function isValidPass(password: string): boolean {
     const MIN_PASSWORD_LEN = 8;
     const LOWERCASE_LETTERS = /[a-z]/;
     const UPPERCASE_LETTERS = /[A-Z]/;
     const NUMBERS = /[0-9]/;
-  
+
     if (password.length < MIN_PASSWORD_LEN) {
-      return false;
+        return false;
     }
-  
+
     if (((LOWERCASE_LETTERS.test(password) || UPPERCASE_LETTERS.test(password)) &&
         NUMBERS.test(password)) === false) {
-      return false;
+        return false;
     }
-  
+
     return true;
 };
 
@@ -135,7 +135,7 @@ export function isValidPhone(phone: string): boolean {
     return true;
 }
 
-export function validateUsersAccessToInvoice(user: User, invoiceId: number): Invoice {
+export function validateUsersAccessToInvoice(user: User, invoiceId: string): Invoice {
     const dataStore = getData();
     const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
     if (invoice === undefined) {

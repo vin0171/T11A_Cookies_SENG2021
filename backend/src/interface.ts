@@ -55,8 +55,8 @@ export interface InvoiceItem {
 }
 
 export interface Invoice {
-  invoiceId: number,
-  companyOwnerId: number,
+  invoiceId: string,
+  companyOwnerId: string,
   sender: Participant,
   receiver: Participant,
   issueDate: number,
@@ -73,8 +73,8 @@ export interface Invoice {
 
 
 export interface User {
-  userId: number,
-  companyId: number,
+  userId: string,
+  companyId: string,
   email: string,
   password: string,
   nameFirst: string,
@@ -85,7 +85,6 @@ export interface User {
   gender: Gender,
   timeCreated: Date,
   previousPasswords: string[]
-  worksAt: number | null
 }
 
 export interface InvoiceGroups {
@@ -103,15 +102,15 @@ export interface Location {
 }
 
 export interface Company {
-  companyId: number,
+  companyId: string,
   name: string,
   abn: string,
   headquarters: Location,
   phone: string,
   email: string,
-  owner: number,
-  admins: number[],
-  members: number[],
+  owner: string,
+  admins: string[],
+  members: string[],
   invoices: InvoiceGroups
 }
 
@@ -128,8 +127,8 @@ export interface companyRequestBody {
 
 // use jwts
 export interface Session {
-  sessionId: number,
-  userId: number,
+  sessionId: string,
+  userId: string,
   secureHash: string,
   timeCreated: Date,
   expiry: Date
@@ -147,7 +146,6 @@ export interface DataStore {
     users: User[],
     invoices: Invoice[],
     sessions: Session[],
-    otherData: OtherData
 }
 
 export interface TokenObject {
@@ -158,3 +156,9 @@ export interface UserSessionInfo {
   user: User,
   company: Company,
 }
+
+// Basically means that there is must be at least a userId or an email present, but not both.
+export type UserOptions = 
+  | { userId: string; email?: never }  
+  | { email: string; userId?: never };
+

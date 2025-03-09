@@ -27,11 +27,11 @@ describe('companyRegister', () => {
         };
         const response = await requestCompanyRegister(app, companyData);
         expect(response.status).toStrictEqual(200);
-        expect(response.body).toStrictEqual({ companyId: expect.any(Number)});
+        expect(response.body).toStrictEqual({ companyId: expect.any(String)});
     });
 
     test('Sucesfully registers multple company', async () => {
-        let companyIds: Set<number>;
+        let companyIds: Set<string>;
         const companyData = {
           name: 'Tech Corp',
           address: '123 Tech Street',
@@ -44,18 +44,18 @@ describe('companyRegister', () => {
         };
         const response = await requestCompanyRegister(app, companyData);
         expect(response.status).toStrictEqual(200);
-        expect(response.body).toStrictEqual({ companyId: expect.any(Number)});
+        expect(response.body).toStrictEqual({ companyId: expect.any(String)});
 
         companyData.name = 'This is so broing'
         companyData.email = 'info@techcorop2.com'
         const response2 = await requestCompanyRegister(app, companyData);
         expect(response2.status).toStrictEqual(200);
-        expect(response2.body).toStrictEqual({ companyId: expect.any(Number)});
+        expect(response2.body).toStrictEqual({ companyId: expect.any(String)});
         companyData.name = 'This is so broing 2'
         companyData.email = 'info@techcorop2.com2222'
         const response3 = await requestCompanyRegister(app, companyData);
         expect(response3.status).toStrictEqual(200);
-        expect(response3.body).toStrictEqual({ companyId: expect.any(Number)});
+        expect(response3.body).toStrictEqual({ companyId: expect.any(String)});
 
         const companyId1 = response.body.companyId;
         const companyId2 = response2.body.companyId;
