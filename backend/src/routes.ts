@@ -123,12 +123,16 @@ function routes(app: Express) {
         res.json("Not Implemented");
       });
       
-    app.put('/v1/invoice/:invoiceId/edit/status', (req: Request, res: Response) => {
-        // change whatever
-        const { token, status } = req.body;
-        const response = invoices.editInvoiceStatus(token, status);
-      
-        res.json("Not Implemented");
+    app.put('/v1/invoice/:invoiceId/edit/state', async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const { status } = req.body;
+        const invoiceId = parseInt(req.params.invoiceId);
+        const token = req.headers['authorization'].split(' ')[1];
+        const response = invoices.editInvoiceState(token, invoiceId, status);
+        res.status(200).json(response);
+      } catch(err) {
+        next(err);
+      }
     });
       
       // CHECK HAS TO be in Trash

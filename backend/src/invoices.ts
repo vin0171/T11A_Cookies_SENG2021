@@ -1,7 +1,7 @@
 import { getData } from "./dataStore";
 import * as helpers from "./helper";
 import * as validators from "./validationHelpers"
-import { Company, EmptyObject, Invoice, InvoiceGroups, Session, User } from "./interface";
+import { Company, EmptyObject, Invoice, InvoiceGroups, InvoiceState, InvoiceStatus, Session, User } from "./interface";
 import { get } from "http";
 import { getCompany, getInvoice, getUser } from "./interfaceHelpers";
 
@@ -64,16 +64,16 @@ export function editInvoiceDetails(sender: string, receiver: string, issueDate: 
  * 
  * @param {string} token - token of the user
  * @param  {string} status - status of the invoice
- * @returns {boolean}
+ * @returns {}
  */  
-export function editInvoiceStatus(token: string, invoiceId: number, status: string): EmptyObject {
+export function editInvoiceState(token: string, invoiceId: number, status: string): EmptyObject {
     const userInfo: User  = validators.validateSessionToken(token);
-    const invoice: Invoice = getInvoice(invoiceId);
-
 	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
+    const validStatuses = Object.keys(InvoiceState);
+    if (!validStatuses.includes(status)) throw helpers.errorReturn(400, 'Read the status enum again piggy');
+    invoiceInfo.state
+    // Have to move invoice in companies and 
 
-    // const companyOfUser: Company = getCompany(userInfo.worksAt);
-    // const companyOwnsInvoice = Object.values(companyOfUser.invoices).some(invoiceIds => { return invoiceIds.includes(invoiceId)});
 
     return {}
 }
