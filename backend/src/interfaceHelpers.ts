@@ -26,6 +26,7 @@ export function createUser(email: string, password: string, nameFirst: string, n
 	}
     
     return {
+        token: null,
         userId: uuidv4(),
         companyId: null,
         email: email,
@@ -38,7 +39,7 @@ export function createUser(email: string, password: string, nameFirst: string, n
         gender: Gender.OTHER,
         timeCreated: new Date(),
         previousPasswords: [],
-        token: null,
+        invoices: []
     }
 }
 
@@ -104,11 +105,7 @@ export function createCompany(companyName: string, companyAbn: string, headquart
         owner: user.userId,
         admins: [user.userId],
         members: [user.userId],
-        invoices: {
-            main: [],
-            trash: [],
-            archive: []
-        }
+        invoices: []
     }
     }
     

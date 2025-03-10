@@ -5,6 +5,7 @@ import * as users from './users';
 import { saveDataStore, setData } from "./dataStore";
 import { validateLocation } from "./validationHelpers";
 import { Location } from "./interface";
+import { token } from "morgan";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
@@ -73,7 +74,7 @@ function routes(app: Express) {
       }
     });
 
-    app.get('/v1/company/userAdd', async (req: Request, res: Response, next: NextFunction) => {
+    app.post('/v1/company/userAdd', async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { companyId, userEmailToAdd } = req.body;
         const token = req.headers['authorization'].split(' ')[1];
@@ -114,39 +115,38 @@ function routes(app: Express) {
       }
     });
 
-    app.put('/v1/invoice/:invoiceId/edit/details', (req: Request, res: Response, next: NextFunction) => {
-        // change whatever
-        const { sender, receiver, issueDate, dueDate } = req.body;
-        const response = invoices.editInvoiceDetails(sender, receiver, issueDate, dueDate);
-      
-        res.json("Not Implemented");
+    app.put('/v1/invoice/:invoiceId/edit', (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const token = req.headers['authorization'].split(' ')[1];
+          const { invoiceId, edits } = req.body;
+          const response = invoices.editInvoiceDetails(token, invoiceId, edits);
+          res.status(200).json(response);
+        } catch(err) {
+          next(err)
+        }
       });
       
-    app.put('/v1/invoice/:invoiceId/edit/status', (req: Request, res: Response, next: NextFunction) => {
-        // change whatever
-        const { token, status } = req.body;
-        // const response = invoices.editInvoiceStatus(token, status);
-      
-        res.json("Not Implemented");
-    });
-      
-      // CHECK HAS TO be in Trash
     app.delete('/v1/invoice/:invoiceId', (req: Request, res: Response, next: NextFunction) => {
-        // change whatever
-        const invoiceId = parseInt(req.params.invoiceId);
-        const { token } = req.body;
+      try {
+        const token = req.headers['authorization'].split(' ')[1];
+        const invoiceId  = req.params.invoiceId;
         const response = invoices.deleteInvoice(token, invoiceId);
-      
-        res.json("Not Implemented");
+        res.status(200).json(response);
+      } catch(err) {
+        next(err)
+      }
     });
       
       
     app.get('/v1/invoice/list', (req: Request, res: Response, next: NextFunction) => {
-        // change whatever
-        const { sender, receiver, issueDate, dueDate } = req.body;
-        const response = invoices.listCompanyInvoices(sender, receiver);
-      
-        res.json("Not Implemented");
+      try {
+        const token = req.headers['authorization'].split(' ')[1];
+        const companyId = req.params.companyId;
+        const response = invoices.listCompanyInvoices(token, companyId);
+        res.status(200).json(response);
+      } catch(err) {
+        next(err)
+      }
     });
 
     app.use((err: any, req: Request, res: Response, next: NextFunction) => {

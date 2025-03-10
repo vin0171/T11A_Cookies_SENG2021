@@ -79,6 +79,7 @@ export interface Invoice {
 }
 
 export interface User {
+  token: string,
   userId: string,
   companyId: string,
   email: string,
@@ -90,14 +91,8 @@ export interface User {
   age: number,
   gender: Gender,
   timeCreated: Date,
-  previousPasswords: string[]
-  token: string,
-}
-
-export interface InvoiceGroups {
-  main: number[],
-  trash: number[],
-  archive: number[]
+  previousPasswords: string[],
+  invoices: Invoice[]
 }
 
 export interface Location {
@@ -118,7 +113,7 @@ export interface Company {
   owner: string,
   admins: string[],
   members: string[],
-  invoices: InvoiceGroups
+  invoices: Invoice[]
 }
 
 export interface companyRequestBody {
