@@ -6,7 +6,6 @@ let data: DataStore = {
     companies: [],
     users: [],
     invoices: [],
-    sessions: [],
 };
 
 

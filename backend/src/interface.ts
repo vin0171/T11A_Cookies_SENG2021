@@ -138,7 +138,6 @@ export interface DataStore {
     companies: Company[]
     users: User[],
     invoices: Invoice[],
-    sessions: Session[],
 }
 
 export interface UserSessionInfo {

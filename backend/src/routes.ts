@@ -20,8 +20,7 @@ function routes(app: Express) {
       setData({
         companies: [],
         users: [],
-        invoices: [],
-        sessions: []});
+        invoices: []});
       res.status(200).json({})
     })
     
