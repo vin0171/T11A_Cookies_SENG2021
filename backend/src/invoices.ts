@@ -49,13 +49,9 @@ export function createInvoice(token: string, invoiceDetails: InvoiceDetails): In
  * 
  * @returns {String | Invoice}
  */
-export function retrieveInvoice(token: string, invoiceId: string, contentType: string): Invoice | String | void {
+export function retrieveInvoice(token: string, invoiceId: string, contentType: string): Invoice {
     const userInfo: User  = validators.validateToken(token);
 	const invoiceInfo: Invoice = validators.validateUsersPerms(userInfo, invoiceId);
-    if (contentType.includes('application/xml'))  {
-        // TODO: convert the response to an UBL2.0 document 
-        // what do u mena convert it to a  ubl 2.0 how the fuck do i do that
-    } 
     return invoiceInfo;
 }
 

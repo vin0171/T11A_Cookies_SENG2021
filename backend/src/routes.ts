@@ -4,8 +4,9 @@ import * as companies from './companies';
 import * as users from './users';
 import { saveDataStore, setData } from "./dataStore";
 import { validateLocation } from "./validationHelpers";
-import { Location } from "./interface";
+import { Invoice, Location } from "./interface";
 import { token } from "morgan";
+import { InvoiceConverter } from "./InvoiceConverter";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
@@ -101,14 +102,13 @@ function routes(app: Express) {
         const contentType = req.headers['content-type'].split(' ')[0];
         const invoiceId = req.params.invoiceId;
         const token = req.headers['authorization'].split(' ')[1];
-        if (contentType.includes('application/json')) {
-          const response = invoices.retrieveInvoice(token, invoiceId, contentType);
-          res.status(200).json(response);
-        } else {
-          // Send the UBL as a Text-File
-          const response = invoices.retrieveInvoice(token, invoiceId, contentType);
-          res.status(200).send(response);
+        const response: Invoice = invoices.retrieveInvoice(token, invoiceId, contentType);
+        if (contentType.includes('application/xml'))  {
+          const invoiceUBL = new InvoiceConverter(response).parseToUBL();
+          res.status(200).send(invoiceUBL);
+          return;
         } 
+        res.status(200).json(response);
       } catch(err) {
         next(err);
       }
