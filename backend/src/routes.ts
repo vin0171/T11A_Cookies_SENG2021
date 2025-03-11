@@ -4,8 +4,9 @@ import * as companies from './companies';
 import * as users from './users';
 import { saveDataStore, setData } from "./dataStore";
 import { validateLocation } from "./validationHelpers";
-import { Location } from "./interface";
+import { Invoice, Location } from "./interface";
 import { token } from "morgan";
+import { InvoiceConverter } from "./InvoiceConverter";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
@@ -96,22 +97,22 @@ function routes(app: Express) {
       }
     });
     
-    // app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
-    //   try {
-    //     const contentType = req.headers['content-type'].split(' ')[0];
-    //     const invoiceId = req.params.invoiceId;
-    //     const token = req.headers['authorization'].split(' ')[1];
-    //     const response = invoices.retrieveInvoice(token, invoiceId);
-    //     if (contentType.includes('application/json')) {
-    //       res.status(200).json(response);
-    //     } else {
-    //       const UBLresponse = Converter.parseToUBL(response);
-    //       res.status(200).send(UBLresponse);
-    //     } 
-    //   } catch(err) {
-    //     next(err);
-    //   }
-    // });
+    app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const contentType = req.headers['content-type'].split(' ')[0];
+        const invoiceId = req.params.invoiceId;
+        const token = req.headers['authorization'].split(' ')[1];
+        const response: Invoice = invoices.retrieveInvoice(token, invoiceId, contentType);
+        if (contentType.includes('application/xml'))  {
+          const invoiceUBL = new InvoiceConverter(response).parseToUBL();
+          res.status(200).send(invoiceUBL);
+          return;
+        } 
+        res.status(200).json(response);
+      } catch(err) {
+        next(err);
+      }
+    });
 
     app.put('/v1/invoice/:invoiceId/edit', (req: Request, res: Response, next: NextFunction) => {
         try {
