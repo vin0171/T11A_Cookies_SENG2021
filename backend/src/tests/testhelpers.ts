@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { Express } from 'express';
-import { companyRequestBody, TokenObject } from '../interface';
+import { companyRequestBody } from '../interface';
 
 export enum HTTPMethod {
     POST = 'POST',
@@ -22,7 +22,7 @@ const requestHelper = async (
   method: HTTPMethod,
   path: string,
   requestBody: object = {},
-  token?: TokenObject,
+  token?: String,
   format: Format = Format.JSON
 ) => {
   let req;
@@ -48,8 +48,8 @@ const requestHelper = async (
   req.set("Accept", `application/${format}`);
 
   // whoever wrote this is special af
-  if (token?.token) {
-    req.set("Authorization", `Bearer ${token.token}`);
+  if (token) {
+    req.set("Authorization", `Bearer ${token}`);
   }
 
   // Only send a request body for methods that support it
@@ -59,7 +59,6 @@ const requestHelper = async (
 
   return await req;
 };
-
 
 export const requestClear = async (app: Express) => {
   return await requestHelper(app, HTTPMethod.DELETE, '/v1/clear', {});
@@ -74,26 +73,26 @@ export const requestUserLogin = async (app: Express, email: string, password: st
 };
   
 export const requestUserLogout = async (app: Express, token: string) => {
-  return await requestHelper(app, HTTPMethod.POST, '/v1/user/logout', { }, { token });
+  return await requestHelper(app, HTTPMethod.POST, '/v1/user/logout', { }, token);
 };
- 
+
 export const requestCompanyRegister = async (app: Express, companyData: companyRequestBody ) => {
   return await requestHelper(app, HTTPMethod.POST, '/v1/company/register', companyData);
 }
   
-export const requestCompanyAddUser = async (app: Express, token: string, companyId: number, userEmailToAdd: string) => {
-  return await requestHelper(app, HTTPMethod.PUT, '/v1/company/userAdd', { companyId, userEmailToAdd }, { token });
+export const requestCompanyAddUser = async (app: Express, token: string, companyId: string, userEmailToAdd: string) => {
+  return await requestHelper(app, HTTPMethod.PUT, '/v1/company/userAdd', { companyId, userEmailToAdd }, token);
 };
 
 export const requestCreateInvoice = async (app: Express, token: string, invoiceDetails: object) => {
-  return await requestHelper(app, HTTPMethod.POST, '/v1/invoice', invoiceDetails , { token });
+  return await requestHelper(app, HTTPMethod.POST, '/v1/invoice', invoiceDetails , token);
 }
 
-export const requestGetInvoice = async (app: Express, token: string, invoiceId: number, format: Format) => {
-  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/:invoiceId', { invoiceId }, { token }, format)
+export const requestGetInvoice = async (app: Express, token: string, invoiceId: string, format: Format) => {
+  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/:invoiceId', { invoiceId }, token, format)
 }
 
-export const requestListCompanyInvoice = async (app: Express, token: string, companyId: number) => {
-  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/list', { companyId }, { token })
+export const requestListCompanyInvoice = async (app: Express, token: string, companyId: string) => {
+  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/list', { companyId }, token)
 }
   

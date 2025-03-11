@@ -2,14 +2,14 @@ import { Express, NextFunction, Request, Response } from "express";
 import * as invoices from './invoices';
 import * as companies from './companies';
 import * as users from './users';
-import * as Converter from './Converter';
 import { saveDataStore, setData } from "./dataStore";
 import { validateLocation } from "./validationHelpers";
 import { Location } from "./interface";
+import { token } from "morgan";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
-    app.post('/echo', (req: Request, res: Response) => {
+    app.post('/echo', (res: Response) => {
         res.send('POST request to the homepage')
     })
 // ========================================================================= //
@@ -20,9 +20,7 @@ function routes(app: Express) {
       setData({
         companies: [],
         users: [],
-        invoices: [],
-        sessions: [],
-        otherData: {companiesCount: 0, userCount: 0, invoiceCount: 0, sessionCount: 0}});
+        invoices: []});
       res.status(200).json({})
     })
     
@@ -40,8 +38,8 @@ function routes(app: Express) {
     app.post('/v1/user/login', async (req: Request, res: Response, next: NextFunction) => {
       try {       
         const { email, password } = req.body;
-        const response = users.userLogin(email, password);
-        res.status(200).json(response.token);
+        const token = users.userLogin(email, password);
+        res.status(200).json(token);
         saveDataStore();
       } catch(err) {    
         next(err);
@@ -75,7 +73,7 @@ function routes(app: Express) {
       }
     });
 
-    app.get('/v1/company/userAdd', async (req: Request, res: Response, next: NextFunction) => {
+    app.post('/v1/company/userAdd', async (req: Request, res: Response, next: NextFunction) => {
       try {
         const { companyId, userEmailToAdd } = req.body;
         const token = req.headers['authorization'].split(' ')[1];
@@ -98,60 +96,55 @@ function routes(app: Express) {
       }
     });
     
-    app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const contentType = req.headers['content-type'].split(' ')[0];
-        const invoiceId = parseInt(req.params.invoiceId);
-        const token = req.headers['authorization'].split(' ')[1];
-        const response = invoices.retrieveInvoice(token, invoiceId);
-        if (contentType.includes('application/json')) {
-          res.status(200).json(response);
-        } else {
-          const UBLresponse = Converter.parseToUBL(response);
-          res.status(200).send(UBLresponse);
-        } 
-      } catch(err) {
-        next(err);
-      }
-    });
+    // app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+    //   try {
+    //     const contentType = req.headers['content-type'].split(' ')[0];
+    //     const invoiceId = req.params.invoiceId;
+    //     const token = req.headers['authorization'].split(' ')[1];
+    //     const response = invoices.retrieveInvoice(token, invoiceId);
+    //     if (contentType.includes('application/json')) {
+    //       res.status(200).json(response);
+    //     } else {
+    //       const UBLresponse = Converter.parseToUBL(response);
+    //       res.status(200).send(UBLresponse);
+    //     } 
+    //   } catch(err) {
+    //     next(err);
+    //   }
+    // });
 
-    app.put('/v1/invoice/:invoiceId/edit/details', (req: Request, res: Response) => {
-        // change whatever
-        const { sender, receiver, issueDate, dueDate } = req.body;
-        const response = invoices.editInvoiceDetails(sender, receiver, issueDate, dueDate);
-      
-        res.json("Not Implemented");
+    app.put('/v1/invoice/:invoiceId/edit', (req: Request, res: Response, next: NextFunction) => {
+        try {
+          const token = req.headers['authorization'].split(' ')[1];
+          const { invoiceId, edits } = req.body;
+          const response = invoices.editInvoiceDetails(token, invoiceId, edits);
+          res.status(200).json(response);
+        } catch(err) {
+          next(err)
+        }
       });
       
-    app.put('/v1/invoice/:invoiceId/edit/state', async (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/v1/invoice/:invoiceId', (req: Request, res: Response, next: NextFunction) => {
       try {
-        const { status } = req.body;
-        const invoiceId = parseInt(req.params.invoiceId);
         const token = req.headers['authorization'].split(' ')[1];
-        const response = invoices.editInvoiceState(token, invoiceId, status);
+        const invoiceId  = req.params.invoiceId;
+        const response = invoices.deleteInvoice(token, invoiceId);
         res.status(200).json(response);
       } catch(err) {
-        next(err);
+        next(err)
       }
     });
       
-      // CHECK HAS TO be in Trash
-    app.delete('/v1/invoice/:invoiceId', (req: Request, res: Response) => {
-        // change whatever
-        const invoiceId = parseInt(req.params.invoiceId);
-        const { token } = req.body;
-        const response = invoices.deleteInvoice(token, invoiceId);
       
-        res.json("Not Implemented");
-    });
-      
-      
-    app.get('/v1/invoice/list', (req: Request, res: Response) => {
-        // change whatever
-        const { sender, receiver, issueDate, dueDate } = req.body;
-        const response = invoices.listCompanyInvoices(sender, receiver);
-      
-        res.json("Not Implemented");
+    app.get('/v1/invoice/list', (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const token = req.headers['authorization'].split(' ')[1];
+        const companyId = req.params.companyId;
+        const response = invoices.listCompanyInvoices(token, companyId);
+        res.status(200).json(response);
+      } catch(err) {
+        next(err)
+      }
     });
 
     app.use((err: any, req: Request, res: Response, next: NextFunction) => {

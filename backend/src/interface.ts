@@ -1,3 +1,5 @@
+import { Session } from "inspector/promises";
+import { StringMappingType } from "typescript";
 
 export interface ErrorObject {
   status: number,
@@ -53,9 +55,7 @@ export interface InvoiceItem {
   totalAmount: number
 }
 
-export interface Invoice {
-  invoiceId: number,
-  companyOwnerId: number,
+export interface InvoiceDetails {
   sender: Participant,
   receiver: Participant,
   issueDate: number,
@@ -70,10 +70,17 @@ export interface Invoice {
   terms: string,
 }
 
+export interface Invoice {
+  invoiceId: string,
+  userId: string,
+  companyId: string,
+  details: InvoiceDetails
+}
 
 export interface User {
-  userId: number,
-  companyId: number,
+  token: string,
+  userId: string,
+  companyId: string,
   email: string,
   password: string,
   nameFirst: string,
@@ -83,14 +90,8 @@ export interface User {
   age: number,
   gender: Gender,
   timeCreated: Date,
-  previousPasswords: string[]
-  worksAt: number | null
-}
-
-export interface InvoiceGroups {
-  [InvoiceState.MAIN]: number[],
-  [InvoiceState.ARCHIVED]: number[],
-  [InvoiceState.TRASHED]: number[],
+  previousPasswords: string[],
+  invoices: Invoice[]
 }
 
 export interface Location {
@@ -102,16 +103,16 @@ export interface Location {
 }
 
 export interface Company {
-  companyId: number,
+  companyId: string,
   name: string,
   abn: string,
   headquarters: Location,
   phone: string,
   email: string,
-  owner: number,
-  admins: number[],
-  members: number[],
-  invoices: InvoiceGroups
+  owner: string,
+  admins: string[],
+  members: string[],
+  invoices: Invoice[]
 }
 
 export interface companyRequestBody {
@@ -125,15 +126,6 @@ export interface companyRequestBody {
   password: string;
 }
 
-// use jwts
-export interface Session {
-  sessionId: number,
-  userId: number,
-  secureHash: string,
-  timeCreated: Date,
-  expiry: Date
-}
-
 export interface OtherData {
   companiesCount: number,
   userCount: number,
@@ -145,15 +137,17 @@ export interface DataStore {
     companies: Company[]
     users: User[],
     invoices: Invoice[],
-    sessions: Session[],
-    otherData: OtherData
-}
-
-export interface TokenObject {
-  token: string
 }
 
 export interface UserSessionInfo {
   user: User,
   company: Company,
 }
+
+// Basically means that there is must be at least a userId or an email present, but not both.
+export type UserOptions = 
+  | { userId: string; email?: never }  
+  | { email: string; userId?: never };
+
+export { Session };
+

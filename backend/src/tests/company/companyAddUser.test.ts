@@ -1,5 +1,5 @@
 import createServer from "../../server";
-import { requestUserLogin, requestCompanyAddUser, requestCompanyRegister, requestUserRegister } from "../testhelpers";
+import { requestUserLogin, requestCompanyAddUser, requestCompanyRegister, requestUserRegister, requestClear } from "../testhelpers";
 const app = createServer();
 
 const companyData = {
@@ -13,7 +13,22 @@ const companyData = {
     password: 'securePassword123',
 };
 
+beforeEach(async () => {
+    await requestClear(app);
+});
+
+afterEach(async () => {
+    await requestClear(app);
+});
+
+
 describe('companyAddUser', () => {
+    beforeEach(async () => {
+        await requestUserRegister(app, 'test@gmail.com', 'def456456', 'Jane', 'Doe');
+        await requestUserRegister(app, 'test2@gmail.com', 'abc123123', 'John', 'Smith');
+    });
+
+
     test('Successfully add singular user', async () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         expect(companyResponse.status).toStrictEqual(200);
@@ -27,7 +42,7 @@ describe('companyAddUser', () => {
         expect(addUserResponse.body).toStrictEqual({});
     });
 
-    test('Company has been made and you adding multiple users ', async () => {
+    test('Add multiple users ', async () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
         const companyId = companyResponse.body.companyId;
         const adminToken = (await requestUserLogin(app,companyData.email, companyData.password)).body.token;
@@ -46,7 +61,7 @@ describe('companyAddUser', () => {
     test('No such company found in system', async () => {
         const token = (await requestUserRegister(app, 'omg@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree")).body.token;
         await requestUserRegister(app, 'omgs@techcorp.com', 'verySecurePassword@123', "nodetravesal", "notsofree");
-        const invalidCompanyId = 2131231231331;
+        const invalidCompanyId = '2131231231331';
         const response = await requestCompanyAddUser(app, token, invalidCompanyId, 'omgs@techcorp.com');
         expect(response.status).toStrictEqual(400);
         expect(response.body).toStrictEqual({ error: expect.any(String) });

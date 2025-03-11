@@ -1,8 +1,8 @@
 import { create } from 'domain';
 import { getData, setData } from './dataStore';
 import * as helpers from './helper';
-import {TokenObject, Gender, User, Session, EmptyObject } from './interface';
-import { createSession, createToken, createUser, validateUser } from './interfaceHelpers';
+import { Gender, User, Session, EmptyObject } from './interface';
+import { createToken, createUser, validateUser } from './interfaceHelpers';
 import { authenticateUser } from './validationHelpers';
 
 /**
@@ -16,26 +16,21 @@ import { authenticateUser } from './validationHelpers';
  * @param {string} password - password the user wants to use
  * @param {string} nameFirst - First name of the user
  * @param {string} nameLast - Last name of the user
- * @returns {{authUserId: number}}
+ * @returns {{authUserId: string}}
  */
 
 // Change age to DOB
-export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): TokenObject {
+export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): String {
     const dataStore = getData();
 
     const newUser: User = createUser(email, password, nameFirst, nameLast, age);
 
 	dataStore.users.push(newUser);
 
-	const newSession: Session = createSession(newUser);
-
-	dataStore.sessions.push(newSession);
-
-	const token: TokenObject = createToken(newSession);
+	const token: String = createToken(newUser);
 
 	return token;
 }
-
 
 /**
  * Stub for the authLogin function.
@@ -46,9 +41,9 @@ export function registerUser(email: string, password: string, nameFirst: string,
  *
  * @param {string} email - email of the user
  * @param {string} password - password the user wants to use
- * @returns {{authUserId: number}}
+ * @returns {{authUserId: string}}
  */
-export function userLogin(email: string, password: string): TokenObject {
+export function userLogin(email: string, password: string): String {
 	const dataStore = getData();
 
 	// Check if email is valid
@@ -56,14 +51,9 @@ export function userLogin(email: string, password: string): TokenObject {
 
 	user.numSuccessfulLogins++;
 	user.numFailedPasswordsSinceLastLogin = 0;
-
-	const newSession: Session = createSession(user);
-	dataStore.sessions.push(newSession);
-
-	const token: TokenObject = createToken(newSession);
-	return token;
+	user.token = createToken(user);
+	return user.token;
 }
-
 
 /**
  * Stub for the authLogout function.

@@ -1,36 +1,61 @@
-import { getData } from "./dataStore";
-import * as helpers from "./helper";
 import * as validators from "./validationHelpers"
-import { Company, EmptyObject, Invoice, InvoiceGroups, InvoiceState, InvoiceStatus, Session, User } from "./interface";
-import { get } from "http";
-import { getCompany, getInvoice, getUser } from "./interfaceHelpers";
+import { EmptyObject, Invoice, InvoiceDetails, InvoiceState, User } from "./interface";
+import { getInvoice } from "./interfaceHelpers";
+import { getData } from "./dataStore";
+import {v4 as uuidv4} from 'uuid';
+import * as helpers from './helper';
 
 
 /**
  * Stub for the createInvoice function.
  * 
- * Create an invoice with a sender, receiver, issue date, and due date,
- * then returns a boolean.
+ * Create an invoice with a given details and return it.
  * 
- * @param {object} invoiceDetails - contains all invoice details
- * @returns {object}
+ * @param {string} token - the token of the current user
+ * @param {InvoiceDetails} invoiceDetails - contains all invoice details
+ * @returns {string}
  */
-export function createInvoice(token: string, invoiceDetails: object): object {
-    return {invoiceId: 1};
+export function createInvoice(token: string, invoiceDetails: InvoiceDetails): Invoice {
+    const user = validators.validateToken(token)
+    const data = getData();
+    const invoiceId = uuidv4();
+    const invoice = {
+        invoiceId: invoiceId, 
+        userId: user.userId,
+        // I believe this should be either null or a string
+        companyId: user.companyId,
+        details: invoiceDetails
+    }
+    data.invoices.push(invoice)
+    user.invoices.push(invoice)
+    // You could definitely make this into a function but i dont WANT to
+    if (user.companyId !== null) {
+        const company = data.companies.find((c) => c.companyId === user.companyId);
+        if (company === null) {
+            throw helpers.errorReturn(400, 'Error: Company does not exist'); 
+        } 
+        company.invoices.push(invoice)
+    }
+    return invoice
 }
-
 
 /**
  * Stub for the getInvoice function.
  * 
- * Get an invoice with a sender, receiver, issue date, and due date,
- * then returns a boolean.
- * @returns {Invoice} - A JSON-Object representing the Invoice
- * @returns {String} - A string representing the UBL 
+ * Return an invoice with the given invoice id and content type.
+ * @param {string} token - the token of the current user
+ * @param {string} invoiceId -  the id of the invoice we want to retrieve
+ * @param {string} contentType - the type we want the invoice to be returned as (json or xml)
+ * 
+ * @returns {String | Invoice}
  */
-export function retrieveInvoice(token: string, invoiceId: number, ): Invoice {
-    const userInfo: User  = validators.validateSessionToken(token);
-	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
+export function retrieveInvoice(token: string, invoiceId: string, contentType: string): Invoice | String | void {
+    const userInfo: User  = validators.validateToken(token);
+	const invoiceInfo: Invoice = validators.validateUsersPerms(userInfo, invoiceId);
+    if (contentType.includes('application/xml'))  {
+        // TODO: convert the response to an UBL2.0 document 
+        // what do u mena convert it to a  ubl 2.0 how the fuck do i do that
+    } 
     return invoiceInfo;
 }
 
@@ -38,98 +63,68 @@ export function retrieveInvoice(token: string, invoiceId: number, ): Invoice {
 /**
  * Stub for the editInvoiceDetails function.
  * 
- * Edit the details of an invoice with a sender, receiver, issue date, and due date,
- * then returns a boolean.
+ * Edit the details of an invoice with the given parameters and return the invoice.
  * 
- * @param {string} sender - sender of the invoice
- * @param  {string} receiver - receiver of the invoice
- * @param  {string} issueDate - issue date of the invoice
- * @param  {string} dueDate - due date of the invoice
- * @returns {boolean}
+ * @param {string} token - the token of the current user
+ * @param {Invoice} invoiceId - the id of the invoice to be edited
+ * @param {InvoiceDetails} edits - the updated details of the invoice
+ * @returns {Invoice}
  */
-export function editInvoiceDetails(sender: string, receiver: string, issueDate: string, dueDate: string): boolean {
-
-    return null;
+export function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>): Invoice {
+    const user: User  = validators.validateToken(token);
+	let invoice: Invoice = validators.validateAdminPerms(user, invoiceId);
+    const updatedInvoice = {...invoice, details: {...invoice.details, ...edits}}
+    invoice = updatedInvoice
+    return updatedInvoice;
 }
-
-
-/**
- * Stub for the editInvoiceStatus function.
- * 
- * Edit the status of an invoice with a token and status,
- * then returns a boolean.
- * 
- * @param {string} token - token of the user
- * @param  {string} status - status of the invoice
- * @returns {}
- */  
-export function editInvoiceState(token: string, invoiceId: number, status: string): EmptyObject {
-    const userInfo: User  = validators.validateSessionToken(token);
-	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId);
-    
-    // Convert the status string to an InvoiceState enum
-    const newStatus: InvoiceState | undefined = Object.values(InvoiceState).find(key => key === status);
-    if (newStatus === undefined) throw helpers.errorReturn(400, 'open your eyes pelase');
-    // Change the state to the same state doesnt really do anything
-    if (newStatus === invoiceInfo.state) return {}; 
-
-    // Move invoice inside a Company InvoiceGroup to another Company InvoiceGroup
-    const currentState: InvoiceState = invoiceInfo.state;
-    const companyInvoices: InvoiceGroups = getCompany(invoiceInfo.companyOwnerId).invoices;
-
-    // Remove the company invoice from the current state 
-    const newInvoiceState = companyInvoices[currentState].filter(invoiceNo => invoiceNo !== invoiceId);
-    companyInvoices[currentState] = newInvoiceState;
-
-    // Add the company invoice to the new state
-    companyInvoices[newStatus].push(invoiceId);
-
-    // Set the state of the invoice to the new status
-    invoiceInfo.state = newStatus;
-
-    return {}
-}
-
 
 /** Stub for the deleteInvoice function
  * 
- * Delete an invoice with a token and invoiceId,
- * then returns a boolean.
+ * Delete an invoice with the given invoice id
  * 
- * @param {string} token - token of the user    
+ * @param {string} token - token of the user     
  * @param {number} invoiceId - id of the invoice
+ * @returns {null}
  */
-export function deleteInvoice(token: string, invoiceId: number): EmptyObject {
-    const userInfo: User  = validators.validateSessionToken(token);
-	const invoiceInfo: Invoice = validators.validateUsersAccessToInvoice(userInfo, invoiceId); 
-    // Must be in the trash state in order to delete  
-    if (invoiceInfo.state !== InvoiceState.TRASHED) throw helpers.errorReturn(400, 'golden chiicken wind');
-
-    // Delete reference from invoices
-    const dataStore = getData();
-    dataStore.invoices = dataStore.invoices.filter(inv => inv.invoiceId === invoiceId);
-
-    // Delete reference from companys.invoices
-    const companyInvoices: InvoiceGroups = getCompany(invoiceInfo.companyOwnerId).invoices;
-    // Direct declaration of Trash in path to make it like secure ig 
-    const newInvoiceGroupState = companyInvoices[InvoiceState.TRASHED].filter(invNo => invNo !== invoiceId);
-    companyInvoices[invoiceInfo.state] = newInvoiceGroupState;
-
-    return {};
+export function deleteInvoice(token: string, invoiceId: string) : null {
+    const data = getData();
+    const userInfo: User  = validators.validateToken(token);
+	const invoice: Invoice = validators.validateAdminPerms(userInfo, invoiceId);
+    data.invoices.splice(data.invoices.indexOf(invoice), 1)
+    // i also need to delete the invoice from the user and the company if they are in one.
+    userInfo.invoices.splice(userInfo.invoices.indexOf(invoice), 1)
+    if (userInfo.companyId !== null) {
+        const company = data.companies.find((c) => c.companyId === userInfo.companyId);
+        if (company === null) {
+            throw helpers.errorReturn(400, 'Error: Company does not exist'); 
+        } 
+        company.invoices.splice(company.invoices.indexOf(invoice), 1)
+    }
+    return null;
 }
 
 
 /** Stub for the listCompanyInvoices function 
  * 
- * List all invoices of a company,
- * then returns a JSON list.
+ * Returns a list of every invoice in a given company.
  * 
  * @param {string} token - token of the user    
- * @param {string} companyName - name of the company
- * @returns {boolean}
+ * @param {string} companyId - the id of the company
+ * @returns {Invoice[]}
  * 
 */
-export function listCompanyInvoices(token: string, companyName: string): boolean {
-    
-    return null;
+export function listCompanyInvoices(token: string, companyId: string): Invoice[] {
+    const data = getData()
+    const user = validators.validateToken(token);
+    const company = data.companies.find((c) => c.companyId === companyId);
+    if (company === null) {
+        throw helpers.errorReturn(400, 'Error: Company does not exist'); 
+    } 
+    if (user.companyId != company.companyId) {
+        throw helpers.errorReturn(403, 'Error: User is not authorised')
+    }
+    return company.invoices
 }
+
+
+// TODO, list user invoices 

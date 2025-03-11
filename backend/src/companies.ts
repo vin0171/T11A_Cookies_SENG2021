@@ -1,5 +1,6 @@
+import { isErrored } from "stream";
 import * as helpers from "./helper";
-import { Company, Location, TokenObject, User } from "./interface";
+import { Company, Location, User } from "./interface";
 import { createCompany, getCompany, getUser } from "./interfaceHelpers";
 import * as validators from './validationHelpers';
 
@@ -8,7 +9,8 @@ import * as validators from './validationHelpers';
  * Stub for the registerCompany function.
  *
  * Register a company with a name, ABN, email, password, and contact number,
- * then returns a Token.
+ * then returns a Token. 
+ * This company is registered under an admin account.
  *
  *
  * @param {string} companyName - name of the company
@@ -19,18 +21,17 @@ import * as validators from './validationHelpers';
  * @returns {{authUserId: number}}
  */
 export function registerCompany(token: string, companyName: string, companyAbn: string, headquarters: Location, 
-    companyEmail: string, contactNumber: string): number {
+    companyEmail: string, contactNumber: string): string {
 
-    const user: User = validators.validateSessionToken(token);
+    const user: User = validators.validateToken(token);
     
-    if (user.worksAt !== null) {
+    if (user.companyId !== null) {
         throw helpers.errorReturn(400, 'Error: User already works at a company');
     }
     
     const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user);
     
-    user.worksAt = newCompany.companyId;
-
+    user.companyId = newCompany.companyId;
     return newCompany.companyId;
 }
 
@@ -47,22 +48,26 @@ export function registerCompany(token: string, companyName: string, companyAbn: 
  * @returns {object}
  */
 
-// shuold check if the users token is valid to edit that company
-export function addCompanyUser(token: string, companyId: number, email: string): boolean {
-    const user: User = validators.validateSessionToken(token);
+export function addCompanyUser(token: string, companyId: string, email: string): boolean {
+    const user: User = validators.validateToken(token);
     const company: Company = getCompany(companyId);
+    if (!company.members.includes(user.userId)) {
+        throw helpers.errorReturn(403, 'Error: User is not apart of this company')
+    }
+
+    if (!company.admins.includes(user.userId)) {
+        throw helpers.errorReturn(403, 'Error: User is not authorised to add users')
+    }
 
     // Check if email is valid
-    const newUser: User = getUser(null, email);
+    const newUser: User = getUser({email: email});
 
-    if (newUser.worksAt !== null) {
+    if (newUser.companyId !== null) {
         throw helpers.errorReturn(400, 'Error: User already works at a company');
     }
     
     company.members.push(newUser.userId);
-    newUser.worksAt = companyId;
-
-
+    newUser.companyId = companyId;
     return null;
 }
 
