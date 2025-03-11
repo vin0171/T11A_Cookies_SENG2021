@@ -70,6 +70,66 @@ const invoiceDetails: Invoice = {
   }
 }
 
+const details2: Invoice = {
+  "invoiceId": "INV-123456",
+  "userId": "USR-123456",
+  "companyId": "CMPY-321321",
+  "details": {
+    "sender": {
+      "companyName": "Turples Industry Inc.",
+      "address": "100 Orbilvion Street",
+      "country": "Australia",
+      "phone": "+31 23123 323",
+      "email": "realEmail@gmail.com",
+      "taxIdentificationNumber": "2313123213123",
+      "bankName": "Commonwealth Bank",
+      "bankAccount": "123-356",
+      "iban": "AT611904300234573201",
+      "swift": "AAAA BB CC DDD",
+      "website": "website.com.au",
+      "logo": "Falcon.IO",
+      "notes": "Slightly damaged on border"
+    },
+    "receiver": {
+      "companyName": "Turples Industry Inc.",
+      "address": "100 Orbilvion Street",
+      "country": "Australia",
+      "phone": "+31 23123 323",
+      "email": "realEmail@gmail.com",
+      "taxIdentificationNumber": "2313123213123",
+      "bankName": "Commonwealth Bank",
+      "bankAccount": "123-356",
+      "iban": "AT611904300234573201",
+      "swift": "AAAA BB CC DDD",
+      "website": "website.com.au",
+      "logo": "Falcon.IO",
+      "notes": "Slightly damaged on border"
+    },
+    "issueDate": 32434242,
+    "dueDate": 31232131,
+    "repeating": true,
+    "status": InvoiceStatus.DRAFT,
+    "state": InvoiceState.MAIN,
+    "items": [
+      {
+        "itemSku": "SKU12345",
+        "itemName": "Wireless Keyboard",
+        "description": "Ergonomic wireless keyboard with backlight",
+        "quantity": 2,
+        "unitPrice": 50,
+        "discountAmount": 5,
+        "taxAmount": 4.5,
+        "taxRate": 0.09,
+        "totalAmount": 99.5
+      }
+    ],
+    "currency": "AUD",
+    "total": 2133123122,
+    "notes": "Slightly damaged on border",
+    "terms": "15 percent off if paid within 2 days"
+  }
+}
+
 const XML_NAMESPACES = {
   xmlns: 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2',
   'xmlns:cac': 'urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2',
@@ -143,7 +203,7 @@ export class InvoiceConverter {
     }
 }
 
-// const invoices = new InvoiceConverter(invoiceDetails).parseToUBL();
+// const invoices = new InvoiceConverter(details2).parseToUBL();
 // console.log(invoices);
 
 
