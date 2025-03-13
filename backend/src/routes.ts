@@ -135,7 +135,6 @@ function routes(app: Express) {
       }
     });
       
-      
     app.get('/v1/invoice/list', (req: Request, res: Response, next: NextFunction) => {
       try {
         const token = req.headers['authorization'].split(' ')[1];

@@ -2,7 +2,7 @@ import {v4 as uuidv4} from 'uuid';
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
-import {Gender, User,Company, Location, Invoice, UserOptions} from './interface';
+import {Gender, User,Company, Location, Invoice, InvoiceState, UserOptions} from './interface';
 import { SECRET } from "./helper";
 import jwt from 'jsonwebtoken';
 
@@ -124,11 +124,18 @@ export function createInvoice() {
 }
 
 
-export function getInvoice(invoiceId: string): Invoice {
+export function getInvoice(invoiceId: string, includeTrashed = false): Invoice {
     const dataStore = getData();
-    const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
-    if (invoice === undefined) {
+    
+    let invoice = dataStore.invoices.find((inv) => inv.invoiceId === invoiceId);
+
+    if (!invoice) {
         throw helpers.errorReturn(400, 'Error: Invoice does not exist');
     }
+
+    if (!includeTrashed && invoice.details.state === InvoiceState.TRASHED) {
+        throw helpers.errorReturn(403, 'Error: Invoice is in trash and cannot be accessed');
+    }
+
     return invoice;
 }

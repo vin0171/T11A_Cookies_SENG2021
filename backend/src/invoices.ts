@@ -27,7 +27,7 @@ export function createInvoice(token: string, invoiceDetails: InvoiceDetails): In
         details: invoiceDetails
     }
     data.invoices.push(invoice)
-    user.invoices.push(invoice)
+    user.invoices.push(invoice)/
     // You could definitely make this into a function but i dont WANT to
     if (user.companyId !== null) {
         const company = data.companies.find((c) => c.companyId === user.companyId);
@@ -58,7 +58,6 @@ export function retrieveInvoice(token: string, invoiceId: string, contentType: s
     } 
     return invoiceInfo;
 }
-
 
 /**
  * Stub for the editInvoiceDetails function.
@@ -103,6 +102,22 @@ export function deleteInvoice(token: string, invoiceId: string) : null {
     return null;
 }
 
+// export function deleteInvoice(token: string, invoiceId: string): null {
+//     const user = validateToken(token);
+//     let invoice = validateAdminPerms(user, invoiceId);
+
+//     if (invoice.details.state === InvoiceState.TRASHED) {
+//         // If already trashed, permanently delete it
+//         const data = getData();
+//         data.invoices = data.invoices.filter((inv) => inv.invoiceId !== invoiceId);
+//         setData(data);
+//         return null;
+//     }
+
+//     // Otherwise, move to trash first
+//     invoice.details.state = InvoiceState.TRASHED;
+//     return null;
+// }
 
 /** Stub for the listCompanyInvoices function 
  * 

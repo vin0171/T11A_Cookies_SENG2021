@@ -21,13 +21,11 @@ afterEach(async () => {
     await requestClear(app);
 });
 
-
 describe('companyAddUser', () => {
     beforeEach(async () => {
         await requestUserRegister(app, 'test@gmail.com', 'def456456', 'Jane', 'Doe');
         await requestUserRegister(app, 'test2@gmail.com', 'abc123123', 'John', 'Smith');
     });
-
 
     test('Successfully add singular user', async () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
@@ -66,7 +64,6 @@ describe('companyAddUser', () => {
         expect(response.status).toStrictEqual(400);
         expect(response.body).toStrictEqual({ error: expect.any(String) });
     });
-
 
     test('No such user found in system', async () => {
         const companyResponse = await requestCompanyRegister(app, companyData);
