@@ -1,6 +1,6 @@
 import * as validators from "./validationHelpers"
 import { EmptyObject, Invoice, InvoiceDetails, InvoiceState, User } from "./interface";
-import { getInvoice } from "./interfaceHelpers";
+import { generateInvoice, getInvoice} from "./interfaceHelpers";
 import { getData } from "./dataStore";
 import {v4 as uuidv4} from 'uuid';
 import * as helpers from './helper';
@@ -15,28 +15,24 @@ import * as helpers from './helper';
  * @param {InvoiceDetails} invoiceDetails - contains all invoice details
  * @returns {string}
  */
-export function createInvoice(token: string, invoiceDetails: InvoiceDetails): Invoice {
+export function createInvoice(token: string, invoiceDetails: InvoiceDetails) {
     const user = validators.validateToken(token)
+    
     const data = getData();
     const invoiceId = uuidv4();
-    const invoice = {
-        invoiceId: invoiceId, 
-        userId: user.userId,
-        // I believe this should be either null or a string
-        companyId: user.companyId,
-        details: invoiceDetails
-    }
-    data.invoices.push(invoice)
-    user.invoices.push(invoice)
+    const invoiceInfo : Invoice = generateInvoice(invoiceId, user.userId, user.companyId, invoiceDetails);
+
+    data.invoices.push(invoiceInfo)
+    user.invoices.push(invoiceInfo)
     // You could definitely make this into a function but i dont WANT to
     if (user.companyId !== null) {
         const company = data.companies.find((c) => c.companyId === user.companyId);
         if (company === null) {
             throw helpers.errorReturn(400, 'Error: Company does not exist'); 
         } 
-        company.invoices.push(invoice)
+        company.invoices.push(invoiceInfo);
     }
-    return invoice
+    return {invoiceId: invoiceInfo.invoiceId};
 }
 
 /**
