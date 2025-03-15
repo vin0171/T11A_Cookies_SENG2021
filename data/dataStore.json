@@ -1,10 +1,33 @@
 {
-  "companies": [],
+  "companies": [
+    {
+      "companyId": "69bd40e2-cd96-449b-a5a0-c3b6ee6ecc45",
+      "name": "Tech Corp",
+      "abn": "12345678901",
+      "headquarters": {
+        "address": "123 Tech Street",
+        "city": "San Francisco",
+        "state": "CA",
+        "postcode": "94105",
+        "country": "USA"
+      },
+      "phone": "1234567890",
+      "email": "adminOfCompanyEmail@gmail.com",
+      "owner": "6930e829-b146-4f7a-8033-01a44f13b6c8",
+      "admins": [
+        "6930e829-b146-4f7a-8033-01a44f13b6c8"
+      ],
+      "members": [
+        "6930e829-b146-4f7a-8033-01a44f13b6c8"
+      ],
+      "invoices": []
+    }
+  ],
   "users": [
     {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI1MmFiZjdlMC0xNGU3LTQ5YWMtYjhmOC0xMGJmZDk5ODA3OWQiLCJpYXQiOjE3NDIwMDkzNjcsImV4cCI6MTc0MjYxNDE2N30.CGx4IpbE0awk66zXurcJMLQ6osP77USu0ThF9i87_yY",
-      "userId": "52abf7e0-14e7-49ac-b8f8-10bfd998079d",
-      "companyId": "238aea9b-6384-47ab-8919-08caf988a131",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OTMwZTgyOS1iMTQ2LTRmN2EtODAzMy0wMWE0NGYxM2I2YzgiLCJpYXQiOjE3NDIwMTA5MzgsImV4cCI6MTc0MjYxNTczOH0.m4e4XFVmG_lDoi5nvCh8pwSXwcqg12ynAk7tJXC0Jug",
+      "userId": "6930e829-b146-4f7a-8033-01a44f13b6c8",
+      "companyId": "69bd40e2-cd96-449b-a5a0-c3b6ee6ecc45",
       "email": "adminOfCompanyEmail@gmail.com",
       "password": "92f00536223d27418e088059586f02bdc028a697faf7b983b27bf9455ecfdf11",
       "nameFirst": "Valid",
@@ -12,7 +35,52 @@
       "numSuccessfulLogins": 0,
       "numFailedPasswordsSinceLastLogin": 0,
       "gender": "OTHER",
-      "timeCreated": "2025-03-15T03:29:27.070Z",
+      "timeCreated": "2025-03-15T03:55:38.592Z",
+      "previousPasswords": [],
+      "invoices": []
+    },
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3MTUzZDcyMS1hNzA2LTRkMTQtODgyYS1kNjM2NmIzODM1NjkiLCJpYXQiOjE3NDIwMTA5MzgsImV4cCI6MTc0MjYxNTczOH0.to2f-eMwCDi4c9mIjRMjOZZOWxJkxJbHQ97uUqYPxfU",
+      "userId": "7153d721-a706-4d14-882a-d6366b383569",
+      "companyId": null,
+      "email": "test@gmail.com",
+      "password": "9854b63110f6cc6cd5431af52e9a84661e8f5fa38139fc0dfc37a0be48cd271a",
+      "nameFirst": "Jane",
+      "nameLast": "Doe",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-15T03:55:38.594Z",
+      "previousPasswords": [],
+      "invoices": []
+    },
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxYTQ5ZTY2OC0wOTBmLTRlNjUtODg1Zi00NTQ1MWMwM2I0OWMiLCJpYXQiOjE3NDIwMTA5MzgsImV4cCI6MTc0MjYxNTczOH0.mjTVN2QPVyoo5fp2MQXSnS8MsOVMy5cbFycfMS9wPKM",
+      "userId": "1a49e668-090f-4e65-885f-45451c03b49c",
+      "companyId": null,
+      "email": "test2@gmail.com",
+      "password": "1b8db1ff2cd446d7ed9a9281980bc1a981620e3a7c0514da0c83cfe9a8abf0ef",
+      "nameFirst": "John",
+      "nameLast": "Smith",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-15T03:55:38.598Z",
+      "previousPasswords": [],
+      "invoices": []
+    },
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3M2I3YjMyMy0zYjBkLTRlMjQtYmFkMC1hZDkzYjk0MDBkYzkiLCJpYXQiOjE3NDIwMTA5MzgsImV4cCI6MTc0MjYxNTczOH0.NNWP2Vg_ULo8cvKLAvRVtV6QjWuhB4nuWnnWSLin9MA",
+      "userId": "73b7b323-3b0d-4e24-bad0-ad93b9400dc9",
+      "companyId": null,
+      "email": "omg@techcorp.com",
+      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
+      "nameFirst": "nodetravesal",
+      "nameLast": "notsofree",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-15T03:55:38.606Z",
       "previousPasswords": [],
       "invoices": []
     }

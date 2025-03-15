@@ -1,3 +1,4 @@
+import { companyRequestBody } from "../interface";
 
 export const sampleInvoiceDetails = {
     sender: {
@@ -156,25 +157,29 @@ export const sampleInvoiceDetails2 = {
     terms: "Net 30 days, 3% discount if paid within 10 days. Late fee of 1% per month after due date."
 };
 
-export const companyData = {
-    name: 'Tech Corp',
+export const companyData: companyRequestBody = {
+    companyName: 'Tech Corp',
+    companyAbn: '12345678901',  
+    companyEmail: 'adminOfCompanyEmail@gmail.com',
+    contactNumber: '1234567890',
     address: '123 Tech Street',
     city: 'San Francisco',
     state: 'CA',
     postcode: '94105',
-    phone: '123-456-7890',
-    email: 'adminOfCompanyEmail@gmail.com',
-    password: 'adminOfCompanyPw@gmail.com', 
+    country: 'USA',  
 };
 
 
+
+
 export const companyData2 = {
-    name: 'Company Two',
+    companyName: 'Company Two',  
+    companyAbn: '12345678900',   
+    companyEmail: 'company2@example.com', 
+    contactNumber: '1234567892',  
     address: '123 Tech Street',
     city: 'San Francisco',
     state: 'CA',
     postcode: '94105',
-    phone: '123-456-7890',
-    email: 'company2@example.com',
-    password: 'password123',
+    country: 'USA',  
 };

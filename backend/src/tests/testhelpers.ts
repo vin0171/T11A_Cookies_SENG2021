@@ -82,7 +82,7 @@ export const requestCompanyRegister = async (app: Express, token: string, compan
 }
   
 export const requestCompanyAddUser = async (app: Express, token: string, companyId: string, userEmailToAdd: string) => {
-  return await requestHelper(app, HTTPMethod.PUT, '/v1/company/userAdd', { companyId, userEmailToAdd }, token);
+  return await requestHelper(app, HTTPMethod.POST, '/v1/company/userAdd', { companyId, userEmailToAdd }, token);
 };
 
 export const requestCreateInvoice = async (app: Express, token: string, invoiceDetails: object) => {

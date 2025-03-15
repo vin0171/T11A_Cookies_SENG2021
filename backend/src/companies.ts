@@ -1,5 +1,6 @@
+import { getData } from "./dataStore";
 import * as helpers from "./helper";
-import { Company, Location, User } from "./interface";
+import { Company, EmptyObject, Location, User } from "./interface";
 import { createCompany, getCompany, getUser } from "./interfaceHelpers";
 import * as validators from './validationHelpers';
 
@@ -26,7 +27,8 @@ export function registerCompany(token: string, companyName: string, companyAbn: 
     }
     
     const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user);
-    
+    const dataStore = getData();
+    dataStore.companies.push(newCompany);
     user.companyId = newCompany.companyId;
     return newCompany.companyId;
 }
@@ -44,7 +46,7 @@ export function registerCompany(token: string, companyName: string, companyAbn: 
  * @returns {object}
  */
 
-export function addCompanyUser(token: string, companyId: string, email: string): boolean {
+export function addCompanyUser(token: string, companyId: string, email: string): EmptyObject {
     const user: User = validators.validateToken(token);
     const company: Company = getCompany(companyId);
     if (!company.members.includes(user.userId)) {
@@ -64,7 +66,7 @@ export function addCompanyUser(token: string, companyId: string, email: string):
     
     company.members.push(newUser.userId);
     newUser.companyId = companyId;
-    return null;
+    return {};
 }
 
 
