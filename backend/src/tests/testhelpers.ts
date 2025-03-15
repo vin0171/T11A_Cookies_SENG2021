@@ -10,7 +10,7 @@ export enum HTTPMethod {
 }
 
 export enum Format {
-    UBL = 'ubl',
+    UBL = 'xml',
     JSON = 'json'
 }
 
@@ -90,7 +90,7 @@ export const requestCreateInvoice = async (app: Express, token: string, invoiceD
 }
 
 export const requestGetInvoice = async (app: Express, token: string, invoiceId: string, format: Format) => {
-  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/:invoiceId', { invoiceId }, token, format)
+  return await requestHelper(app, HTTPMethod.GET, `/v1/invoice/${invoiceId}`, {}, token, format)
 }
 
 export const requestListCompanyInvoice = async (app: Express, token: string, companyId: string) => {

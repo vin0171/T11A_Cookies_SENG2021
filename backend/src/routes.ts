@@ -97,7 +97,7 @@ function routes(app: Express) {
     
     app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const contentType = req.headers['content-type'].split(' ')[0];
+        const contentType = req.headers['accept'].split(' ')[0];
         const invoiceId = req.params.invoiceId;
         const token = req.headers['authorization'].split(' ')[1];
         const response: Invoice = invoices.retrieveInvoice(token, invoiceId, contentType);

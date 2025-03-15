@@ -11,7 +11,9 @@ beforeEach(async () => {
 afterEach(async () => {
   await requestClear(app);
 });
+
 const globalPassword = "adminOfCompanyPw@gmail.com122";
+
 describe('createInvoice tests', () => {
     test('Creates an invoice for company from JSON document', async () => {
         const adminToken = (await requestUserRegister(app, companyData.companyEmail, globalPassword , "Firstname", "Lastnane")).body.token;
@@ -124,7 +126,6 @@ describe('createInvoice tests', () => {
               terms: sampleInvoiceDetails.terms
           };
     
-      
           const invoiceRes = (await requestCreateInvoice(app, adminToken, invalidInvoiceDetails));
           expect(invoiceRes.status).toStrictEqual(400);
           expect(invoiceRes.body).toStrictEqual({ error: expect.any(String)});
