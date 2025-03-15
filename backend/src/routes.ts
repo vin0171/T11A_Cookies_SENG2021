@@ -29,7 +29,7 @@ function routes(app: Express) {
       try {
         const { email, password, nameFirst, nameLast, age } = req.body;
         const response = users.registerUser(email, password, nameFirst, nameLast, age); 
-        res.status(200).json(response);
+        res.status(200).json({token: response});
         saveDataStore();
       } catch(err) {    
         next(err);
@@ -40,7 +40,7 @@ function routes(app: Express) {
       try {       
         const { email, password } = req.body;
         const token = users.userLogin(email, password);
-        res.status(200).json(token);
+        res.status(200).json({token: token});
         saveDataStore();
       } catch(err) {    
         next(err);

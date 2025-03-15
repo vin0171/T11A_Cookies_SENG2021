@@ -2,62 +2,35 @@
   "companies": [],
   "users": [
     {
-      "userId": "c2832f36-6879-486d-9152-71212458b862",
+      "token": null,
+      "userId": "42bd9230-db86-434f-994d-b92fd2089869",
       "companyId": null,
-      "email": "omg@techcorp.com",
-      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
-      "nameFirst": "nodetravesal",
-      "nameLast": "notsofree",
-      "numSuccessfulLogins": 0,
+      "email": "dasda@gmail.com",
+      "password": "190fb8c0742e355343aeb0af320053911e299867cfdeadc5f03df7f6b310b22a",
+      "nameFirst": "Jane",
+      "nameLast": "Doe",
+      "numSuccessfulLogins": 1,
       "numFailedPasswordsSinceLastLogin": 0,
       "gender": "OTHER",
-      "timeCreated": "2025-03-09T13:25:28.547Z",
+      "timeCreated": "2025-03-15T02:54:23.037Z",
       "previousPasswords": [],
-      "token": null
+      "invoices": []
     },
     {
-      "userId": "6c75c556-feaa-4e8b-b956-c16b820c3679",
+      "token": null,
+      "userId": "0b1962f2-c9dc-4790-ad6e-95b8af31659f",
       "companyId": null,
-      "email": "omsg@techcorp.com",
-      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
-      "nameFirst": "nodetravesal",
-      "nameLast": "notsofree",
-      "numSuccessfulLogins": 0,
+      "email": "washed@gmail.com",
+      "password": "5840f60c7d638fec90002a2aa46eaa1629bacd49da62b3e0d6ec72adb3dcdc98",
+      "nameFirst": "Jane",
+      "nameLast": "Doe",
+      "numSuccessfulLogins": 1,
       "numFailedPasswordsSinceLastLogin": 0,
       "gender": "OTHER",
-      "timeCreated": "2025-03-09T13:25:28.552Z",
+      "timeCreated": "2025-03-15T02:54:23.040Z",
       "previousPasswords": [],
-      "token": null
-    },
-    {
-      "userId": "b521f4b1-e612-45fd-9f31-e698196d1704",
-      "companyId": null,
-      "email": "omscg@techcorp.com",
-      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
-      "nameFirst": "nodetravesal",
-      "nameLast": "notsofree",
-      "numSuccessfulLogins": 0,
-      "numFailedPasswordsSinceLastLogin": 0,
-      "gender": "OTHER",
-      "timeCreated": "2025-03-09T13:25:28.556Z",
-      "previousPasswords": [],
-      "token": null
-    },
-    {
-      "userId": "66f85bae-8485-4563-8a17-c29eeefa2317",
-      "companyId": null,
-      "email": "omgs@techcorp.com",
-      "password": "d1410666d54241406b53c3a17b2ec38fc7c7e1bb461ac6e3a097a3e0f85d00b6",
-      "nameFirst": "nodetravesal",
-      "nameLast": "notsofree",
-      "numSuccessfulLogins": 0,
-      "numFailedPasswordsSinceLastLogin": 0,
-      "gender": "OTHER",
-      "timeCreated": "2025-03-09T13:25:28.566Z",
-      "previousPasswords": [],
-      "token": null
+      "invoices": []
     }
   ],
-  "invoices": [],
-  "sessions": []
+  "invoices": []
 }

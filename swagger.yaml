@@ -7,14 +7,12 @@ info:
   version: 1.0.0
 
 tags:
-  - name: "Invoice Endpoints (Iteration 1: Sprint 2)"
-    description: The Invoice routes designed and created in Sprint 2
+  - name: "User Authentication (Iteration 1: Sprint 2)"
+    description: The user routes designed and created in Sprint 2
   - name: "Company Endpoints (Iteration 1: Sprint 2)"
     description: The Company routes designed and created in Sprint 2
-  - name: "User Authentication (Iteration 1: Sprint 2)"
-    description: The user auth routes designed and created in Sprint 2
-  - name: "API System Status"
-    description: The routes that monitor the system status of the API
+  - name: "Invoice Endpoints (Iteration 1: Sprint 2)"
+    description: The Invoice routes designed and created in Sprint 2
 
 components:
   schemas:
@@ -24,115 +22,262 @@ components:
       type: object
     InvoiceId:
       type: string
-      example: "123456"
-    Password:
+      example: "INV-123456"
+    UserID:
       type: string
-      example: "Password@123"
-    Token:
+      example: "USR-123456"
+    CompanyID:
       type: string
-      example: "23748sad"
-    InvoiceStatus:
-      type: string
-      enum: [ARCHIVE, TRASH, ACTIVE, ALL]
-    FormatType:
-      type: string
-      enum: [JSON, UBL]
-    BusinessABN:
-      type: integer
-      example: 12345678901
-    Permission:
-      type: string
-      enum: [ADMIN, MEMBER]
-    OfficeLocation:
-      type: string
-      example: "UNSW"
+      example: "CMPY-321321"
     Email:
       type: string
-      example: "johan@unsw.edu.au"
+      example: "realEmail@gmail.com"
+    Password:
+      type: string
+      example: "hashedPassword"
+    NameFirst:
+      type: string
+      example: "John" 
+    NameLast:
+      type: string
+      example: "Doe"
+    NumSuccessfulLogins:
+      type: number
+      example: 2
+    NumFailedPasswordsSinceLastLogin:
+      type: number
+      example: 3
+    Age:
+      type: string
+      example: 22
+    Gender:
+      type: string
+      enum: [MALE, FEMALE, OTHER]
+    TimeCreated:
+      type: number
+      example: 2321332
+    Address:
+      type: string
+      example: "100 Orbilvion Street"
+    City:
+      type: string
+      example: "Sydney"
+    Postcode:
+      type: string
+      example: "2195"
+    Country:
+      type: string
+      example: "Australia"
+    Name:
+      type: string
+      example: "John Doe"
+    Abn: 
+      type: string
+      example: "51 824 753 556"
+    Owner:
+      type: string
+      example: "Admin One"
+    Phone:
+      type: string
+      example: "+31 23123 323"
+    CompanyName:
+      type: string
+      example: "Turples Industry Inc."
+    TaxIdentificationNumber:
+      type: string
+      example: "2313123213123"
+    BankName:
+      type: string
+      example: "Commonwealth Bank"
+    BankAccount:
+      type: string
+      example: "123-356"
+    Iban:
+      type: string
+      example:  "AT611904300234573201"
+    Swift:
+      type: string
+      example: "AAAA BB CC DDD"
+    Website:
+      type: string
+      example: "website.com.au"
+    Logo:
+      type: string
+      example: "Falcon.IO"
+    Notes:
+      type: string
+      example: "Slightly damaged on border"
+    ItemSku:
+        type: string
+        example: "SKU12345"
+    ItemName:
+      type: string
+      example: "Wireless Keyboard"
+    Description:
+      type: string
+      example: "Ergonomic wireless keyboard with backlight"
+    Quantity:
+      type: integer
+      example: 2
+    UnitPrice:
+      type: number
+      format: float
+      example: 50.0
+    DiscountAmount:
+      type: number
+      format: float
+      example: 5.0
+    TaxAmount:
+      type: number
+      format: float
+      example: 4.5
+    TaxRate:
+      type: number
+      format: float
+      example: 0.09
+    TotalAmount:
+      type: number
+      format: float
+      example: 99.5
+    IssueDate:
+      type: number
+      example: 32434242
+    DueDate:
+      type: number
+      example: 31232131
     Repeating:
       type: boolean
       example: true
-    IssueDate:
+    Status:
       type: string
-      example: "3123123123"
-    DueDate:
+      enum: [DRAFT, SENT, PAID, CANCELLED]
+    InvoiceState:
       type: string
-      example: "1345623434"
-    Notes:
+      enum: [MAIN, ARCHIVED, TRASHED]
+    Currency:
       type: string
-      example: "Notes for this invoice..."
-    ShippingDate:
+      example: "AUD"
+    Total:
+      type: number
+      example: 2133123122
+    State:
       type: string
-      example: "42342342331"
-    NameFirst:
+      example: "NSW"
+    Terms:
       type: string
-      example: "vincent"
-    NameLast:
+      example: "15 percent off if paid within 2 days"
+    Token:
       type: string
-      example: "last"
-    Memo:
-      type: string
-      example: "The memo of the invoice is..."
-    Sender:
-      type: string
-      example: "Amazon"
-    Receiver:
-      type: string
-      example: "Google"
-          
-    # Body/Return Objects 
-    Invoice:
+      example: 'jwtToken'
+    Error:
       type: object
       properties:
+        error:
+          type: string
+          example: 'OutputErrorString'
+      
+      
+    InvoiceItem:
+      type: object
+      properties:
+        itemSku:
+          $ref: '#/components/schemas/ItemSku'
+        itemName:
+          $ref: '#/components/schemas/ItemName'
+        description:
+          $ref: '#/components/schemas/Description'
+        quantity:
+          $ref: '#/components/schemas/Quantity'
+        unitPrice:
+          $ref: '#/components/schemas/UnitPrice'
+        discountAmount:
+          $ref: '#/components/schemas/DiscountAmount'
+        taxAmount:
+          $ref: '#/components/schemas/TaxAmount'
+        taxRate:
+          $ref: '#/components/schemas/TaxRate'
+        totalAmount:
+          $ref: '#/components/schemas/TotalAmount'
+    Participant:
+      type: object
+      properties:
+        companyName:
+          $ref: '#/components/schemas/CompanyName'
+        address:
+          $ref: '#/components/schemas/Address'
+        country:
+          $ref: '#/components/schemas/Country'
+        phone:
+          $ref: '#/components/schemas/Phone'
+        email:
+          $ref: '#/components/schemas/Email'
+        taxIdentificationNumber:
+          $ref: '#/components/schemas/TaxIdentificationNumber'
+        bankName:
+          $ref: '#/components/schemas/BankName'
+        bankAccount:
+          $ref: '#/components/schemas/BankAccount'
+        iban:
+          $ref: '#/components/schemas/Iban'
+        swift:
+          $ref: '#/components/schemas/Swift'
+        website:
+          $ref: '#/components/schemas/Website'
+        logo:
+          $ref: '#/components/schemas/Logo'
         notes:
           $ref: '#/components/schemas/Notes'
-        shippingDate:
-          $ref: '#/components/schemas/ShippingDate'
+    InvoiceDetails:
+      type: object
+      properties:
+        sender:
+          $ref: '#/components/schemas/Participant'
+        receiver:
+          $ref: '#/components/schemas/Participant'
         issueDate:
           $ref: '#/components/schemas/IssueDate'
         dueDate:
           $ref: '#/components/schemas/DueDate'
-        memo:
-          $ref: '#/components/schemas/Memo'
         repeating:
           $ref: '#/components/schemas/Repeating'
-        sender: 
-          $ref: '#/components/schemas/Sender'
-        receiver:
-          $ref: '#/components/schemas/Receiver'
-          
-    Company:
+        status:
+          $ref: '#/components/schemas/Status'
+        state:
+          $ref: '#/components/schemas/InvoiceState'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItem'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        total:
+          $ref: '#/components/schemas/Total'
+        notes:
+          $ref: '#/components/schemas/Notes'
+        terms:
+          $ref: '#/components/schemas/Terms'
+    Invoice:
       type: object
-      required:
-        - businessABN
-        - officeLocation
-        - companyName
       properties:
-        CEO:
-          $ref: '#/components/schemas/Email'
-        businessABN: 
-          $ref: '#/components/schemas/BusinessABN'
-        companyName:
-          type: string
-        officeLocation:
-          $ref: '#/components/schemas/OfficeLocation'  
-        users:
-          type: object
-          properties:
-            employees:
-              type: array
-              items:
-                $ref: '#/components/schemas/Email'
-      
+        invoiceId:
+          $ref: '#/components/schemas/InvoiceId'
+        userId:
+          $ref: '#/components/schemas/UserID'
+        companyId:
+          $ref: '#/components/schemas/CompanyID'
+        details:
+          $ref: '#/components/schemas/InvoiceDetails'
 
     User:
       type: object
-      required:
-        - email
-        - password
-        - nameFirst
-        - nameLast
       properties:
+        token:
+          type: string
+          example: "jwt_token_here"
+        userId:
+          $ref: '#/components/schemas/UserID'
+        companyId:
+          $ref: '#/components/schemas/CompanyID'
         email:
           $ref: '#/components/schemas/Email'
         password:
@@ -141,26 +286,71 @@ components:
           $ref: '#/components/schemas/NameFirst'
         nameLast:
           $ref: '#/components/schemas/NameLast'
-        content:
-          type: string
-          
-    Login:
+        numSuccessfulLogins:
+          $ref: '#/components/schemas/NumSuccessfulLogins'
+        numFailedPasswordsSinceLastLogin:
+          $ref: '#/components/schemas/NumFailedPasswordsSinceLastLogin'
+        age:
+          $ref: '#/components/schemas/Age'
+        gender:
+          $ref: '#/components/schemas/Gender'
+        timeCreated:
+          $ref: '#/components/schemas/TimeCreated'
+        previousPasswords:
+          type: array
+          items:
+            $ref: '#/components/schemas/Password'
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invoice'
+
+    Location:
       type: object
-      required:
-        - email
-        - password
       properties:
+        address:
+          $ref: '#/components/schemas/Address'
+        city:
+          $ref: '#/components/schemas/City'
+        state:
+          $ref: '#/components/schemas/State'
+        postcode:
+          $ref: '#/components/schemas/Postcode'
+        country:
+          $ref: '#/components/schemas/Country'
+
+    Company:
+      type: object
+      properties:
+        companyId:
+          $ref: '#/components/schemas/CompanyID'
+        name:
+          $ref: '#/components/schemas/CompanyName'
+        abn:
+          $ref: '#/components/schemas/Abn'
+        headquarters:
+          $ref: '#/components/schemas/Location'
+        phone:
+          $ref: '#/components/schemas/Phone'
         email:
           $ref: '#/components/schemas/Email'
-        password:
-          $ref: '#/components/schemas/Password'
+        owner:
+          $ref: '#/components/schemas/Owner'
+        admins:
+          type: array
+          items:
+            type: string
+        members:
+          type: array
+          items:
+            type: string
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invoice'
 
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-        
+
+      
   parameters:
     Token:
       in: header
@@ -177,6 +367,131 @@ components:
       schema: 
         type: integer
         
+  requestBodies:
+    InvoiceDetailsRequestBody:
+      description: Input from user's invoice details
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              sender:
+                $ref: '#/components/schemas/Participant'
+              receiver:
+                $ref: '#/components/schemas/Participant'
+              issueDate:
+                $ref: '#/components/schemas/IssueDate'
+              dueDate:
+                $ref: '#/components/schemas/DueDate'
+              repeating:
+                $ref: '#/components/schemas/Repeating'
+              status:
+                $ref: '#/components/schemas/Status'
+              state:
+                $ref: '#/components/schemas/InvoiceState'
+              items:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvoiceItem'
+              currency:
+                $ref: '#/components/schemas/Currency'
+              total:
+                $ref: '#/components/schemas/Total'
+              notes:
+                $ref: '#/components/schemas/Notes'
+              terms:
+                $ref: '#/components/schemas/Terms'
+    CompanyRequestBody:
+      description: Company registration request
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              companyName:
+                $ref: '#/components/schemas/CompanyName'
+              address:
+                $ref: '#/components/schemas/Address'
+              city:
+                $ref: '#/components/schemas/City'
+              state:
+                $ref: '#/components/schemas/State'
+              country:
+                $ref: '#/components/schemas/Country'
+              postcode:
+                $ref: '#/components/schemas/Postcode'
+              contactNumber:
+                $ref: '#/components/schemas/Phone'
+              companyEmail:
+                $ref: '#/components/schemas/Email'
+              companyAbn:
+                $ref: '#/components/schemas/Abn'
+
+    UserRegister:
+      description: User registration request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+              - nameFirst
+              - nameLast
+            properties:
+              email:
+                $ref: '#/components/schemas/Email'
+              password:
+                $ref: '#/components/schemas/Password'
+              nameFirst:
+                $ref: '#/components/schemas/NameFirst'
+              nameLast:
+                $ref: '#/components/schemas/NameLast'
+              age:
+                $ref: '#/components/schemas/Age'
+                
+
+    UserLogin:
+      description: User login request
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                $ref: '#/components/schemas/Email'
+              password:
+                $ref: '#/components/schemas/Password'
+                
+    CompanyAddUser:
+      description: Information on which user to be added to which company
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - companyId
+            properties:
+              email:
+                $ref: '#/components/schemas/Email'
+              companyId:
+                $ref: '#/components/schemas/CompanyID'
+    InvoiceListRequest:
+      description: Information on which company 
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - companyId
+            properties:
+              companyId:
+                $ref: '#/components/schemas/CompanyID'
+      
 
   responses:
     TokenResponse:
@@ -277,14 +592,45 @@ components:
               - properties:
                   invoiceId:
                     $ref: '#/components/schemas/InvoiceId'   
-                  invoiceStatus:
-                    $ref: '#/components/schemas/InvoiceStatus'
               
         application/UBL:
-            example: "dasdsaddsa"
-              # probs use shcemas/invoice but it might need more ijnforamtion
-              # TODO: Add more properties of invoice here 
-              
+            example: |
+              <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+                <cbc:ID>INV-123456</cbc:ID>
+                <cac:InvoicePeriod>
+                  <cbc:IssueDate>32434242</cbc:IssueDate>
+                  <cbc:EndDate>31232131</cbc:EndDate>
+                </cac:InvoicePeriod>
+                <cbc:DocumentCurrencyCode>AUD</cbc:DocumentCurrencyCode>
+                <cac:AccountingSupplierParty>
+                  <cac:Party>
+                    <cac:PartyName>
+                      <cbc:Name>Turples Industry Inc.</cbc:Name>
+                    </cac:PartyName>
+                  </cac:Party>
+                </cac:AccountingSupplierParty>
+                <cac:AccountingConsumerParty>
+                  <cac:Party>
+                    <cac:PartyName>
+                      <cbc:Name>Turples Industry Inc.</cbc:Name>
+                    </cac:PartyName>
+                  </cac:Party>
+                </cac:AccountingConsumerParty>
+                <cac:InvoiceLine>
+                  <cbc:ID>1</cbc:ID>
+                  <cac:Item>
+                    <cac:itemSku>SKU12345</cac:itemSku>
+                    <cac:itemName>Wireless Keyboard</cac:itemName>
+                    <cac:description>Ergonomic wireless keyboard with backlight</cac:description>
+                    <cac:quantity>2</cac:quantity>
+                    <cac:unitPrice>50</cac:unitPrice>
+                    <cac:discountAmount>5</cac:discountAmount>
+                    <cac:taxAmount>4.5</cac:taxAmount>
+                    <cac:taxRate>0.09</cac:taxRate>
+                    <cac:totalAmount>99.5</cac:totalAmount>
+                  </cac:Item>
+                </cac:InvoiceLine>
+              </Invoice> 
     InvoiceRetrievalError400:
       description: |
         If parameters are not valid/missing
@@ -504,11 +850,7 @@ paths:
       tags:
         - "User Authentication (Iteration 1: Sprint 2)"
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
+        $ref: '#/components/requestBodies/UserRegister'
       responses:
         200:
           $ref: '#/components/responses/TokenResponse'
@@ -522,11 +864,7 @@ paths:
       tags:
         - "User Authentication (Iteration 1: Sprint 2)"
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Login'
+        $ref: '#/components/requestBodies/UserLogin'
       responses:
         200:
           $ref: '#/components/responses/TokenResponse'
@@ -558,18 +896,14 @@ paths:
   # Invoice Creation    
   /v1/invoice:
     post:
-      summary: Creates a new invoice
+      summary: Creates a new invoice  
       description: Creating an Invoice Document including the given ID and storing it
       tags:
        - "Invoice Endpoints (Iteration 1: Sprint 2)"
       parameters:
        - $ref: '#/components/parameters/Token' 
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Invoice'
+        $ref: '#/components/requestBodies/InvoiceDetailsRequestBody'
       responses:
         200:
           $ref: '#/components/responses/InvoiceCreationSuccess'
@@ -596,7 +930,6 @@ paths:
         403:
           $ref: '#/components/responses/InvoiceRetrievalError403'
                     
-  
   # Invoice Delete
     delete:
       summary: Permanently deletes the Invoice with the given ID
@@ -618,7 +951,7 @@ paths:
       
 
   # Invoice Edit 
-  /v1/invoice/{invoiceId}/edit/details:
+  /v1/invoice/{invoiceId}/edit:
     put:
       summary: Edit the details of the given InvoiceId
       description: Updates the Invoice Document with the given ID and the new content
@@ -628,10 +961,7 @@ paths:
         - $ref: '#/components/parameters/Token'
         - $ref: '#/components/parameters/InvoiceId'
       requestBody:
-        content:
-          application/json:
-            schema:
-             $ref: '#/components/schemas/Invoice'
+        $ref: '#/components/requestBodies/InvoiceDetailsRequestBody'
       responses:
         200: 
           $ref: '#/components/responses/InvoiceEditSuccess'
@@ -642,32 +972,9 @@ paths:
         403:
           $ref: '#/components/responses/InvoiceEditError403'
 
-  /v1/invoice/{invoiceId}/edit/status:
-    put:
-      summary: Edit the details of the given InvoiceId
-      description: Updates the Invoice Document to the new status (Active, Archive, Trash)
-      tags:
-        - "Invoice Endpoints (Iteration 1: Sprint 2)"
-      parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/InvoiceId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-             $ref: '#/components/schemas/Invoice'
-      responses:
-        200: 
-          $ref: '#/components/responses/InvoiceEditSuccess'
-        400:
-          $ref: '#/components/responses/InvoiceEditError400'
-        401:
-          $ref: '#/components/responses/InvoiceEditError401'
-        403:
-          $ref: '#/components/responses/InvoiceEditError403'
 
   # Invoice List
-  /v1/invoice/list:
+  /v1/company/list:
     get:
       summary: Returns a list of known invoices
       description: Fetches a list of invoice that user has access to
@@ -675,6 +982,8 @@ paths:
         - "Invoice Endpoints (Iteration 1: Sprint 2)"
       parameters:
         - $ref: '#/components/parameters/Token'
+      # requestBody:
+      #   - $ref: '#/components/requestBodies/InvoiceList'
       responses:
         200:
           $ref: '#/components/responses/InvoiceListSuccess'
@@ -706,13 +1015,12 @@ paths:
     post:
       summary: Register a company into the system under the session token's user
       description: Register a new business to be able to access the functionality of the API
+      parameters:
+        - $ref: '#/components/parameters/Token'
       tags:
         - "Company Endpoints (Iteration 1: Sprint 2)"
       requestBody:
-        content:
-          application/json:
-            schema:
-             $ref: '#/components/schemas/Company'
+        $ref: '#/components/requestBodies/CompanyRequestBody'
       responses:
         200:
           $ref: '#/components/responses/CompanyRegisterSuccess'
@@ -731,16 +1039,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Token'
       requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              description: Email of user to add to the company
-              required:
-               - email
-              properties:
-                email:
-                  $ref: '#/components/schemas/Email'
+        $ref: '#/components/requestBodies/CompanyAddUser'
       responses:
         200:
           $ref: '#/components/responses/CompanyUserAddSuccess'
@@ -749,28 +1048,14 @@ paths:
         401:
           $ref: '#/components/responses/CompanyUserAddError401'
         403:
-          $ref: '#/components/responses/CompanyUserAddError403'
-
-# ===================================================================
-# API Status Endpoint 
-# ===================================================================   
-
-  /v1/status/:
-    get:
-      summary: Returns the current Status of the API and the load its under.
-      tags:
-        - "API System Status"
-      responses:
-        200:
-          $ref: '#/components/responses/EmptyResponse'
-        500:
-          $ref: '#/components/responses/EmptyResponse'
+          $ref: '#/components/responses/CompanyUserAddError403'   
     
-
-          
+  
     
-            
-    
-        
       
+  
       
+    
+    
+
+

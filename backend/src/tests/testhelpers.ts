@@ -22,7 +22,7 @@ const requestHelper = async (
   method: HTTPMethod,
   path: string,
   requestBody: object = {},
-  token?: String,
+  token?: string,
   format: Format = Format.JSON
 ) => {
   let req;
@@ -48,8 +48,9 @@ const requestHelper = async (
   req.set("Accept", `application/${format}`);
 
   // whoever wrote this is special af
-  if (token) {
-    req.set("Authorization", `Bearer ${token}`);
+  if (token !== undefined) {
+    
+    req.set('authorization', `Bearer ${token}`);
   }
 
   // Only send a request body for methods that support it
@@ -73,7 +74,7 @@ export const requestUserLogin = async (app: Express, email: string, password: st
 };
   
 export const requestUserLogout = async (app: Express, token: string) => {
-  return await requestHelper(app, HTTPMethod.POST, '/v1/user/logout', { }, token);
+  return await requestHelper(app, HTTPMethod.POST, '/v1/user/logout', { }, token, Format.JSON);
 };
 
 export const requestCompanyRegister = async (app: Express, companyData: companyRequestBody ) => {

@@ -63,7 +63,7 @@ describe('companyRegister', () => {
         companyIds.add(companyId1);
         companyIds.add(companyId2);
         companyIds.add(companyId3);
-        expect(companyIds.size).toBe(3);
+        expect(companyIds.size).toStrictEqual(3);
 
     });
 
@@ -81,8 +81,8 @@ describe('companyRegister', () => {
         };
       
         const response = await requestCompanyRegister(app, companyData);
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe(expect.any(String));
+        expect(response.status).toStrictEqual(400);
+        expect(response.body.error).toStrictEqual(expect.any(String));
     });
 
 
@@ -102,8 +102,8 @@ describe('companyRegister', () => {
         await requestCompanyRegister(app, companyData1);
       
         const response = await requestCompanyRegister(app, companyData1);
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe(expect.any(String));
+        expect(response.status).toStrictEqual(400);
+        expect(response.body.error).toStrictEqual(expect.any(String));
     });
 
     test('Weak password status code 400', async () => {
@@ -118,8 +118,8 @@ describe('companyRegister', () => {
           password: '1', // Weak password
         };
         const response = await requestCompanyRegister(app, companyData);
-        expect(response.status).toBe(400);
-        expect(response.body.error).toBe(expect.any(String));
+        expect(response.status).toStrictEqual(400);
+        expect(response.body.error).toStrictEqual(expect.any(String));
     });
 
 

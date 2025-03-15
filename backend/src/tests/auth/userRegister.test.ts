@@ -66,7 +66,7 @@ describe('userAuthRegister', () => {
 
   test('successful registration', async () => {
     const response = await requestUserRegister(app, 'test@gmail.com', 'abc123123', 'John John-John', 'O\'Smith');
-    expect(response.body).toStrictEqual(expect.any(String));
+    expect(response.body.token).toStrictEqual(expect.any(String));
     expect(response.status).toStrictEqual(200);
     expect(response.header['content-type']).toContain('application/json');
   });
@@ -75,7 +75,7 @@ describe('userAuthRegister', () => {
     await requestUserRegister(app, 'test@gmail.com', 'abc123123', 'John', 'Smith');
     await requestUserRegister(app, 'test2@gmail.com', 'abc123123', 'John', 'Smith');
     const response = await requestUserRegister(app, 'test3@gmail.com', 'abc123123', 'John John-John', 'O\'Smith');
-    expect(response.body).toStrictEqual(expect.any(String));
+    expect(response.body.token).toStrictEqual(expect.any(String));
     expect(response.status).toStrictEqual(200);
     expect(response.header['content-type']).toContain('application/json');
   });

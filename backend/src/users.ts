@@ -3,7 +3,8 @@ import { getData, setData } from './dataStore';
 import * as helpers from './helper';
 import { Gender, User, Session, EmptyObject } from './interface';
 import { createToken, createUser, validateUser } from './interfaceHelpers';
-import { authenticateUser } from './validationHelpers';
+import { authenticateUser, validateToken } from './validationHelpers';
+import { error } from 'console';
 
 /**
  * Stub for the userRegister function.
@@ -22,13 +23,10 @@ import { authenticateUser } from './validationHelpers';
 // Change age to DOB
 export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): String {
     const dataStore = getData();
-
     const newUser: User = createUser(email, password, nameFirst, nameLast, age);
-
 	dataStore.users.push(newUser);
-
-	const token: String = createToken(newUser);
-
+	const token: string = createToken(newUser);
+	newUser.token = token;
 	return token;
 }
 
@@ -41,14 +39,10 @@ export function registerUser(email: string, password: string, nameFirst: string,
  *
  * @param {string} email - email of the user
  * @param {string} password - password the user wants to use
- * @returns {{authUserId: string}}
+
  */
-export function userLogin(email: string, password: string): String {
-	const dataStore = getData();
-
-	// Check if email is valid
+export function userLogin(email: string, password: string): string {
 	const user: User = authenticateUser(email, password);
-
 	user.numSuccessfulLogins++;
 	user.numFailedPasswordsSinceLastLogin = 0;
 	user.token = createToken(user);
@@ -65,7 +59,8 @@ export function userLogin(email: string, password: string): String {
  * @returns {}
  */
 export function userLogout(token: string): EmptyObject {
-	// TODO
-
-	return null;
+	const user: User = validateToken(token);
+	if (user.token == null) throw helpers.errorReturn(401, 'User has already logged out');
+	user.token = null;
+	return {};
 }

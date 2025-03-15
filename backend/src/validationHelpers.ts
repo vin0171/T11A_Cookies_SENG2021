@@ -82,10 +82,6 @@ export function authenticateUser(email: string, password: string) : User {
         throw helpers.errorReturn(400, 'Error: Incorrect Password');
     }
 
-    if (user.token != null) {
-        throw helpers.errorReturn(400, 'Error: User is already logged in')
-    }
-
     return user;
 }
 

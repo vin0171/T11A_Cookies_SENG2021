@@ -28,10 +28,11 @@ describe('userLogout', () => {
 
   test('error: email does not exist', async () => {
     const response = await requestUserLogout(app, "");
-    expect(response.status).toStrictEqual(400);
+    expect(response.status).toStrictEqual(401);
   });
 
   test('All params correct - logout an admin', async () => {
+    
     const response = await requestUserLogout(app, token1);
     expect(response.body).toStrictEqual({ });
     expect(response.status).toStrictEqual(200);
@@ -62,7 +63,7 @@ describe('userLogout', () => {
     await requestUserLogout(app, newToken2);
     const response = await requestUserLogout(app, newToken2);
     expect(response.body).toStrictEqual({ error: expect.any(String) });
-    expect(response.status).toStrictEqual(200);
+    expect(response.status).toStrictEqual(401);
 
   });
 
