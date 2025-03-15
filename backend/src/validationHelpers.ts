@@ -96,18 +96,19 @@ export function isValidABN(abn: string): boolean {
 
 export function validateLocation(address: string, city: string, state: string, postcode: string, country: string): Location {
     
-    if (!isValidName(address)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Address');
-    }
+    // ???? 
+    // if (!isValidName(address)) {
+    //     throw helpers.errorReturn(400, 'Error: Invalid Address');
+    // }
     if (!isValidName(city)) {
         throw helpers.errorReturn(400, 'Error: Invalid City');
     }
     if (!isValidName(state)) {
         throw helpers.errorReturn(400, 'Error: Invalid State');
     }
-    if (!isValidName(postcode)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Postcode');
-    }
+    // if (!isValidName(postcode)) {
+    //     throw helpers.errorReturn(400, 'Error: Invalid Postcode');
+    // }
     if (!isValidName(country)) {
         throw helpers.errorReturn(400, 'Error: Invalid Country');
     }
@@ -123,6 +124,7 @@ export function validateLocation(address: string, city: string, state: string, p
 
 
 export function isValidPhone(phone: string): boolean {
+    // TODO: This needs a lot of work
     const PHONE_REGEX = /^\d{10}$/;
     if (!PHONE_REGEX.test(phone)) {
         return false;

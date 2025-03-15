@@ -1,4 +1,3 @@
-import { isErrored } from "stream";
 import * as helpers from "./helper";
 import { Company, Location, User } from "./interface";
 import { createCompany, getCompany, getUser } from "./interfaceHelpers";
@@ -15,10 +14,7 @@ import * as validators from './validationHelpers';
  *
  * @param {string} companyName - name of the company
  * @param {string} companyAbn - ABN of the company
- * @param {string} adminEmail - email of the admin
- * @param {string} adminPassword - password of the admin
  * @param {string} contactNumber - contact number of the company
- * @returns {{authUserId: number}}
  */
 export function registerCompany(token: string, companyName: string, companyAbn: string, headquarters: Location, 
     companyEmail: string, contactNumber: string): string {

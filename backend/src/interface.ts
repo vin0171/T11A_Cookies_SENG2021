@@ -115,15 +115,17 @@ export interface Company {
   invoices: Invoice[]
 }
 
+
 export interface companyRequestBody {
-  name: string;
-  address: string;
-  city: string;
-  state: string;
-  postcode: string;
-  phone: string;
-  email: string;
-  password: string;
+  companyName: string,
+  companyAbn: string,
+  companyEmail: string, 
+  contactNumber: string,
+  address: string, 
+  city: string, 
+  state: string, 
+  postcode: string, 
+  country: string
 }
 
 export interface OtherData {

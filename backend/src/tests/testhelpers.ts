@@ -77,8 +77,8 @@ export const requestUserLogout = async (app: Express, token: string) => {
   return await requestHelper(app, HTTPMethod.POST, '/v1/user/logout', { }, token, Format.JSON);
 };
 
-export const requestCompanyRegister = async (app: Express, companyData: companyRequestBody ) => {
-  return await requestHelper(app, HTTPMethod.POST, '/v1/company/register', companyData);
+export const requestCompanyRegister = async (app: Express, token: string, companyData: companyRequestBody ) => {
+  return await requestHelper(app, HTTPMethod.POST, '/v1/company/register', companyData, token);
 }
   
 export const requestCompanyAddUser = async (app: Express, token: string, companyId: string, userEmailToAdd: string) => {

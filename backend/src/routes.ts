@@ -60,14 +60,12 @@ function routes(app: Express) {
     
     app.post('/v1/company/register', async (req: Request, res: Response, next: NextFunction) => {
       try {
-        // const { companyName, companyAbn, adminEmail, adminPassword, contactNumber } = req.body;
-        // const { companyName, companyAbn } = company
-        // const { adminEmail, adminPassword } = admin 
+        const token = req.headers['authorization'].split(' ')[1];
+        const {companyName, companyAbn, companyEmail, contactNumber} = req.body;
         const {address, city, state, postcode, country} = req.body;
-        const {token, companyName, companyAbn, companyEmail, contactNumber} = req.body;
         const headquarters: Location = validateLocation(address, city, state, postcode, country);
-        const response = companies.registerCompany(token, companyName, companyAbn, headquarters, companyEmail, contactNumber);
-        res.status(200).json(response);
+        const companyId = companies.registerCompany(token, companyName, companyAbn, headquarters, companyEmail, contactNumber);
+        res.status(200).json({companyId: companyId});
         saveDataStore();
       } catch(err) {
         next(err);
