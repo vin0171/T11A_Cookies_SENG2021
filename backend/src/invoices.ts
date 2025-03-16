@@ -62,12 +62,12 @@ export function retrieveInvoice(token: string, invoiceId: string, contentType: s
  * @param {InvoiceDetails} edits - the updated details of the invoice
  * @returns {Invoice}
  */
-export function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>): Invoice {
+export function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>): EmptyObject {
     const user: User  = validators.validateToken(token);
 	let invoice: Invoice = validators.validateAdminPerms(user, invoiceId);
     const updatedInvoice = {...invoice, details: {...invoice.details, ...edits}}
     invoice = updatedInvoice
-    return updatedInvoice;
+    return {};
 }
 
 /** Stub for the deleteInvoice function
@@ -78,7 +78,7 @@ export function editInvoiceDetails(token: string, invoiceId: string, edits: Part
  * @param {number} invoiceId - id of the invoice
  * @returns {null}
  */
-export function deleteInvoice(token: string, invoiceId: string) : null {
+export function deleteInvoice(token: string, invoiceId: string) : EmptyObject {
     const data = getData();
     const userInfo: User  = validators.validateToken(token);
 	const invoice: Invoice = validators.validateAdminPerms(userInfo, invoiceId);
@@ -92,7 +92,7 @@ export function deleteInvoice(token: string, invoiceId: string) : null {
         } 
         company.invoices.splice(company.invoices.indexOf(invoice), 1)
     }
-    return null;
+    return {};
 }
 
 
@@ -105,7 +105,7 @@ export function deleteInvoice(token: string, invoiceId: string) : null {
  * @returns {Invoice[]}
  * 
 */
-export function listCompanyInvoices(token: string, companyId: string): Invoice[] {
+export function listCompanyInvoices(token: string, companyId: string): string[] {
     const data = getData()
     const user = validators.validateToken(token);
     const company = data.companies.find((c) => c.companyId === companyId);
@@ -115,7 +115,7 @@ export function listCompanyInvoices(token: string, companyId: string): Invoice[]
     if (user.companyId != company.companyId) {
         throw helpers.errorReturn(403, 'Error: User is not authorised')
     }
-    return company.invoices
+    return company.invoices.map(invoice => invoice.invoiceId);
 }
 
 

@@ -49,7 +49,6 @@ const requestHelper = async (
 
   // whoever wrote this is special af
   if (token !== undefined) {
-    
     req.set('authorization', `Bearer ${token}`);
   }
 
@@ -94,6 +93,10 @@ export const requestGetInvoice = async (app: Express, token: string, invoiceId: 
 }
 
 export const requestListCompanyInvoice = async (app: Express, token: string, companyId: string) => {
-  return await requestHelper(app, HTTPMethod.GET, '/v1/invoice/list', { companyId }, token)
+  return await requestHelper(app, HTTPMethod.GET, `/v1/company/${companyId}/invoices`,  {}, token);
+}
+
+export const requestDeleteInvoice = async (app: Express, token: string, invoiceId: string) => {
+  return await requestHelper(app, HTTPMethod.DELETE, `/v1/invoice/${invoiceId}`, {}, token);
 }
   

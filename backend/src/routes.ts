@@ -83,6 +83,17 @@ function routes(app: Express) {
       }
     });
 
+    app.get('/v1/company/:companyId/invoices', async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const token = req.headers['authorization'].split(' ')[1];
+        const companyId = req.params.companyId;
+        const response = invoices.listCompanyInvoices(token, companyId);
+        res.status(200).json({invoices: response});
+      } catch(err) {
+        next(err)
+      }
+    });
+
     app.post('/v1/invoice', async (req: Request, res: Response, next: NextFunction) => {
       try {
         const invoiceDetails = req.body;
@@ -112,7 +123,7 @@ function routes(app: Express) {
       }
     });
 
-    app.put('/v1/invoice/:invoiceId/edit', (req: Request, res: Response, next: NextFunction) => {
+    app.put('/v1/invoice/:invoiceId/edit', async (req: Request, res: Response, next: NextFunction) => {
         try {
           const token = req.headers['authorization'].split(' ')[1];
           const { invoiceId, edits } = req.body;
@@ -123,23 +134,11 @@ function routes(app: Express) {
         }
       });
       
-    app.delete('/v1/invoice/:invoiceId', (req: Request, res: Response, next: NextFunction) => {
+    app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
       try {
         const token = req.headers['authorization'].split(' ')[1];
         const invoiceId  = req.params.invoiceId;
         const response = invoices.deleteInvoice(token, invoiceId);
-        res.status(200).json(response);
-      } catch(err) {
-        next(err)
-      }
-    });
-      
-      
-    app.get('/v1/invoice/list', (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const token = req.headers['authorization'].split(' ')[1];
-        const companyId = req.params.companyId;
-        const response = invoices.listCompanyInvoices(token, companyId);
         res.status(200).json(response);
       } catch(err) {
         next(err)
