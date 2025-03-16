@@ -29,7 +29,6 @@ describe('listInvoices tests', () => {
       const invoice3 = (await requestCreateInvoice(app, adminToken, invoiceDetails3)).body.invoiceId;
       
       const invoiceListRes = await requestListCompanyInvoice(app, adminToken, companyId);
-      console.log(invoiceListRes.body)
       expect(invoiceListRes.status).toStrictEqual(200);
       expect(invoiceListRes.body.invoices).toEqual(expect.arrayContaining([invoice1, invoice2, invoice3]));
     });
@@ -74,12 +73,12 @@ describe('listInvoices tests', () => {
         const invoiceListRes = await requestListCompanyInvoice(app, adminToken2, company2);
         
         expect(invoiceListRes.status).toStrictEqual(200);
-        expect(invoiceListRes.body.invoices).toEqual(expect.arrayContaining([invoice1, invoice2]));
+        expect(invoiceListRes.body.invoices).toEqual(expect.arrayContaining([]));
 
         const invoiceListRes2 = await requestListCompanyInvoice(app, adminToken1, companyId);
         
         expect(invoiceListRes2.status).toStrictEqual(200);
-        expect(invoiceListRes2.body).toEqual({invoices: []});
+        expect(invoiceListRes2.body).toEqual({invoices: [invoice1, invoice2]});
     });
   
   

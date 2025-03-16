@@ -10,9 +10,6 @@ import { InvoiceConverter } from "./InvoiceConverter";
 // import errorHandler from 'middleware-http-errors';
 
 function routes(app: Express) {
-    app.post('/echo', (res: Response) => {
-        res.send('POST request to the homepage')
-    })
 // ========================================================================= //
 // Iteration 1 
 // ========================================================================= //

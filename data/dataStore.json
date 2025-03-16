@@ -1,7 +1,7 @@
 {
   "companies": [
     {
-      "companyId": "334b7cb0-20a1-4e0d-ba4a-c7b63c14ad96",
+      "companyId": "5171d6ad-4ff9-4216-8379-cf961185c67a",
       "name": "Tech Corp",
       "abn": "12345678901",
       "headquarters": {
@@ -13,32 +13,405 @@
       },
       "phone": "1234567890",
       "email": "adminOfCompanyEmail@gmail.com",
-      "owner": "c22bfa34-2f01-4f2d-947d-7323d3862deb",
+      "owner": "bf460a3c-0fd6-4a7e-b493-8c348363e50d",
       "admins": [
-        "c22bfa34-2f01-4f2d-947d-7323d3862deb"
+        "bf460a3c-0fd6-4a7e-b493-8c348363e50d"
       ],
       "members": [
-        "c22bfa34-2f01-4f2d-947d-7323d3862deb"
+        "bf460a3c-0fd6-4a7e-b493-8c348363e50d"
+      ],
+      "invoices": [
+        {
+          "invoiceId": "8446cb64-1294-414b-9441-5aa5cc643b40",
+          "userId": "bf460a3c-0fd6-4a7e-b493-8c348363e50d",
+          "companyId": "5171d6ad-4ff9-4216-8379-cf961185c67a",
+          "details": {
+            "sender": {
+              "companyName": "ABC Corp",
+              "address": "123 Business St, City, Country",
+              "country": "USA",
+              "phone": "+123456789",
+              "email": "billing@abccorp.com",
+              "taxIdentificationNumber": "AB123456",
+              "bankName": "Bank XYZ",
+              "bankAccount": "987654321",
+              "iban": "US12345678901234567890",
+              "swift": "XYZBANK123"
+            },
+            "receiver": {
+              "companyName": "GlobalTech GmbH",
+              "address": "456 Innovation Blvd, Berlin, Germany",
+              "country": "Germany",
+              "phone": "+49 30 1234567",
+              "email": "billing@globaltech.com",
+              "taxIdentificationNumber": "DE123456789",
+              "bankName": "Deutsche Bank",
+              "bankAccount": "1234567890",
+              "iban": "DE89370400440532013000",
+              "swift": "DEUTDEFF"
+            },
+            "issueDate": 1741394440,
+            "dueDate": 1753490385089,
+            "repeating": false,
+            "currency": "USD",
+            "notes": "Random note for testing pruposes",
+            "items": [
+              {
+                "itemSku": "SKU7984",
+                "itemName": "Product Beta",
+                "description": "Description for Product Beta",
+                "quantity": 9,
+                "unitPrice": 324.38,
+                "discountAmount": 43.9,
+                "taxAmount": 42.07,
+                "taxRate": 15,
+                "totalAmount": 2902.95
+              }
+            ],
+            "terms": "Net 30 days, 2% discount if paid within 10 days. Late fee of 1.5% per month after due date."
+          }
+        },
+        {
+          "invoiceId": "54ea8db8-933f-4851-b3bc-5f56f5dbc3e7",
+          "userId": "bf460a3c-0fd6-4a7e-b493-8c348363e50d",
+          "companyId": "5171d6ad-4ff9-4216-8379-cf961185c67a",
+          "details": {
+            "sender": {
+              "companyName": "TechPro Solutions",
+              "address": "789 Silicon Valley, San Jose, CA, USA",
+              "country": "USA",
+              "phone": "+14085551234",
+              "email": "accounts@techprosolutions.com",
+              "taxIdentificationNumber": "US987654321",
+              "bankName": "Wells Fargo",
+              "bankAccount": "246813579",
+              "iban": "US98765432101234567890",
+              "swift": "WFBIUS6S"
+            },
+            "receiver": {
+              "companyName": "Innovatech Ltd.",
+              "address": "321 Tech Park, London, UK",
+              "country": "UK",
+              "phone": "+44 20 79461234",
+              "email": "billing@innovatech.co.uk",
+              "taxIdentificationNumber": "GB987654321",
+              "bankName": "Barclays",
+              "bankAccount": "1122334455",
+              "iban": "GB29BARC20201530093459",
+              "swift": "BARCGB22"
+            },
+            "issueDate": 1744057580,
+            "dueDate": 1756306486593,
+            "repeating": true,
+            "currency": "GBP",
+            "notes": "Thank you for your business. Please ensure timely payment.",
+            "items": [
+              {
+                "itemSku": "SKU4521",
+                "itemName": "Product Alpha",
+                "description": "Premium quality Product Alpha with all features.",
+                "quantity": 15,
+                "unitPrice": 499.99,
+                "discountAmount": 75,
+                "taxAmount": 60,
+                "taxRate": 12,
+                "totalAmount": 7499.85
+              },
+              {
+                "itemSku": "SKU6732",
+                "itemName": "Product Gamma",
+                "description": "Product Gamma with enhanced performance and specifications.",
+                "quantity": 7,
+                "unitPrice": 849,
+                "discountAmount": 60,
+                "taxAmount": 95.88,
+                "taxRate": 15,
+                "totalAmount": 5581.88
+              }
+            ],
+            "terms": "Net 45 days, 5% discount if paid within 15 days. Late fee of 2% per month after due date."
+          }
+        }
+      ]
+    },
+    {
+      "companyId": "cfb3f2bf-803f-45ae-808c-70198b2f36c2",
+      "name": "Company Two",
+      "abn": "12345678900",
+      "headquarters": {
+        "address": "123 Tech Street",
+        "city": "San Francisco",
+        "state": "CA",
+        "postcode": "94105",
+        "country": "USA"
+      },
+      "phone": "1234567892",
+      "email": "company2@example.com",
+      "owner": "4cdb5dac-d3e5-49fe-853f-df9da7a80033",
+      "admins": [
+        "4cdb5dac-d3e5-49fe-853f-df9da7a80033"
+      ],
+      "members": [
+        "4cdb5dac-d3e5-49fe-853f-df9da7a80033"
       ],
       "invoices": []
     }
   ],
   "users": [
     {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMjJiZmEzNC0yZjAxLTRmMmQtOTQ3ZC03MzIzZDM4NjJkZWIiLCJpYXQiOjE3NDIxMTEyMzUsImV4cCI6MTc0MjcxNjAzNX0.Qp9qlSld0Cxp6wwCVsGmXy_B2wJtGwgtj0H8744cvPU",
-      "userId": "c22bfa34-2f01-4f2d-947d-7323d3862deb",
-      "companyId": "334b7cb0-20a1-4e0d-ba4a-c7b63c14ad96",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiZjQ2MGEzYy0wZmQ2LTRhN2UtYjQ5My04YzM0ODM2M2U1MGQiLCJpYXQiOjE3NDIxMTI1MjEsImV4cCI6MTc0MjcxNzMyMX0.01P9RT9ZZqSR5lOkreJF2aHvaeTtb5Qm080-R6VEhLU",
+      "userId": "bf460a3c-0fd6-4a7e-b493-8c348363e50d",
+      "companyId": "5171d6ad-4ff9-4216-8379-cf961185c67a",
       "email": "adminOfCompanyEmail@gmail.com",
-      "password": "92f00536223d27418e088059586f02bdc028a697faf7b983b27bf9455ecfdf11",
+      "password": "be04921dcd41288d9c5e13b68ec2e50b1e089bf0f1a75577cfbfce204f9ea051",
       "nameFirst": "Firstname",
-      "nameLast": "Lastname",
+      "nameLast": "Lastnane",
       "numSuccessfulLogins": 0,
       "numFailedPasswordsSinceLastLogin": 0,
       "gender": "OTHER",
-      "timeCreated": "2025-03-16T07:47:15.940Z",
+      "timeCreated": "2025-03-16T08:08:41.027Z",
+      "previousPasswords": [],
+      "invoices": [
+        {
+          "invoiceId": "8446cb64-1294-414b-9441-5aa5cc643b40",
+          "userId": "bf460a3c-0fd6-4a7e-b493-8c348363e50d",
+          "companyId": "5171d6ad-4ff9-4216-8379-cf961185c67a",
+          "details": {
+            "sender": {
+              "companyName": "ABC Corp",
+              "address": "123 Business St, City, Country",
+              "country": "USA",
+              "phone": "+123456789",
+              "email": "billing@abccorp.com",
+              "taxIdentificationNumber": "AB123456",
+              "bankName": "Bank XYZ",
+              "bankAccount": "987654321",
+              "iban": "US12345678901234567890",
+              "swift": "XYZBANK123"
+            },
+            "receiver": {
+              "companyName": "GlobalTech GmbH",
+              "address": "456 Innovation Blvd, Berlin, Germany",
+              "country": "Germany",
+              "phone": "+49 30 1234567",
+              "email": "billing@globaltech.com",
+              "taxIdentificationNumber": "DE123456789",
+              "bankName": "Deutsche Bank",
+              "bankAccount": "1234567890",
+              "iban": "DE89370400440532013000",
+              "swift": "DEUTDEFF"
+            },
+            "issueDate": 1741394440,
+            "dueDate": 1753490385089,
+            "repeating": false,
+            "currency": "USD",
+            "notes": "Random note for testing pruposes",
+            "items": [
+              {
+                "itemSku": "SKU7984",
+                "itemName": "Product Beta",
+                "description": "Description for Product Beta",
+                "quantity": 9,
+                "unitPrice": 324.38,
+                "discountAmount": 43.9,
+                "taxAmount": 42.07,
+                "taxRate": 15,
+                "totalAmount": 2902.95
+              }
+            ],
+            "terms": "Net 30 days, 2% discount if paid within 10 days. Late fee of 1.5% per month after due date."
+          }
+        },
+        {
+          "invoiceId": "54ea8db8-933f-4851-b3bc-5f56f5dbc3e7",
+          "userId": "bf460a3c-0fd6-4a7e-b493-8c348363e50d",
+          "companyId": "5171d6ad-4ff9-4216-8379-cf961185c67a",
+          "details": {
+            "sender": {
+              "companyName": "TechPro Solutions",
+              "address": "789 Silicon Valley, San Jose, CA, USA",
+              "country": "USA",
+              "phone": "+14085551234",
+              "email": "accounts@techprosolutions.com",
+              "taxIdentificationNumber": "US987654321",
+              "bankName": "Wells Fargo",
+              "bankAccount": "246813579",
+              "iban": "US98765432101234567890",
+              "swift": "WFBIUS6S"
+            },
+            "receiver": {
+              "companyName": "Innovatech Ltd.",
+              "address": "321 Tech Park, London, UK",
+              "country": "UK",
+              "phone": "+44 20 79461234",
+              "email": "billing@innovatech.co.uk",
+              "taxIdentificationNumber": "GB987654321",
+              "bankName": "Barclays",
+              "bankAccount": "1122334455",
+              "iban": "GB29BARC20201530093459",
+              "swift": "BARCGB22"
+            },
+            "issueDate": 1744057580,
+            "dueDate": 1756306486593,
+            "repeating": true,
+            "currency": "GBP",
+            "notes": "Thank you for your business. Please ensure timely payment.",
+            "items": [
+              {
+                "itemSku": "SKU4521",
+                "itemName": "Product Alpha",
+                "description": "Premium quality Product Alpha with all features.",
+                "quantity": 15,
+                "unitPrice": 499.99,
+                "discountAmount": 75,
+                "taxAmount": 60,
+                "taxRate": 12,
+                "totalAmount": 7499.85
+              },
+              {
+                "itemSku": "SKU6732",
+                "itemName": "Product Gamma",
+                "description": "Product Gamma with enhanced performance and specifications.",
+                "quantity": 7,
+                "unitPrice": 849,
+                "discountAmount": 60,
+                "taxAmount": 95.88,
+                "taxRate": 15,
+                "totalAmount": 5581.88
+              }
+            ],
+            "terms": "Net 45 days, 5% discount if paid within 15 days. Late fee of 2% per month after due date."
+          }
+        }
+      ]
+    },
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0Y2RiNWRhYy1kM2U1LTQ5ZmUtODUzZi1kZjlkYTdhODAwMzMiLCJpYXQiOjE3NDIxMTI1MjEsImV4cCI6MTc0MjcxNzMyMX0.Gns9FPJ2wcUtbG-j6890SlB0kvTAE-NAGtQjZETHTlE",
+      "userId": "4cdb5dac-d3e5-49fe-853f-df9da7a80033",
+      "companyId": "cfb3f2bf-803f-45ae-808c-70198b2f36c2",
+      "email": "company2@example.com",
+      "password": "be04921dcd41288d9c5e13b68ec2e50b1e089bf0f1a75577cfbfce204f9ea051",
+      "nameFirst": "Firstname",
+      "nameLast": "Lastasanane",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-16T08:08:41.038Z",
       "previousPasswords": [],
       "invoices": []
     }
   ],
-  "invoices": []
+  "invoices": [
+    {
+      "invoiceId": "8446cb64-1294-414b-9441-5aa5cc643b40",
+      "userId": "bf460a3c-0fd6-4a7e-b493-8c348363e50d",
+      "companyId": "5171d6ad-4ff9-4216-8379-cf961185c67a",
+      "details": {
+        "sender": {
+          "companyName": "ABC Corp",
+          "address": "123 Business St, City, Country",
+          "country": "USA",
+          "phone": "+123456789",
+          "email": "billing@abccorp.com",
+          "taxIdentificationNumber": "AB123456",
+          "bankName": "Bank XYZ",
+          "bankAccount": "987654321",
+          "iban": "US12345678901234567890",
+          "swift": "XYZBANK123"
+        },
+        "receiver": {
+          "companyName": "GlobalTech GmbH",
+          "address": "456 Innovation Blvd, Berlin, Germany",
+          "country": "Germany",
+          "phone": "+49 30 1234567",
+          "email": "billing@globaltech.com",
+          "taxIdentificationNumber": "DE123456789",
+          "bankName": "Deutsche Bank",
+          "bankAccount": "1234567890",
+          "iban": "DE89370400440532013000",
+          "swift": "DEUTDEFF"
+        },
+        "issueDate": 1741394440,
+        "dueDate": 1753490385089,
+        "repeating": false,
+        "currency": "USD",
+        "notes": "Random note for testing pruposes",
+        "items": [
+          {
+            "itemSku": "SKU7984",
+            "itemName": "Product Beta",
+            "description": "Description for Product Beta",
+            "quantity": 9,
+            "unitPrice": 324.38,
+            "discountAmount": 43.9,
+            "taxAmount": 42.07,
+            "taxRate": 15,
+            "totalAmount": 2902.95
+          }
+        ],
+        "terms": "Net 30 days, 2% discount if paid within 10 days. Late fee of 1.5% per month after due date."
+      }
+    },
+    {
+      "invoiceId": "54ea8db8-933f-4851-b3bc-5f56f5dbc3e7",
+      "userId": "bf460a3c-0fd6-4a7e-b493-8c348363e50d",
+      "companyId": "5171d6ad-4ff9-4216-8379-cf961185c67a",
+      "details": {
+        "sender": {
+          "companyName": "TechPro Solutions",
+          "address": "789 Silicon Valley, San Jose, CA, USA",
+          "country": "USA",
+          "phone": "+14085551234",
+          "email": "accounts@techprosolutions.com",
+          "taxIdentificationNumber": "US987654321",
+          "bankName": "Wells Fargo",
+          "bankAccount": "246813579",
+          "iban": "US98765432101234567890",
+          "swift": "WFBIUS6S"
+        },
+        "receiver": {
+          "companyName": "Innovatech Ltd.",
+          "address": "321 Tech Park, London, UK",
+          "country": "UK",
+          "phone": "+44 20 79461234",
+          "email": "billing@innovatech.co.uk",
+          "taxIdentificationNumber": "GB987654321",
+          "bankName": "Barclays",
+          "bankAccount": "1122334455",
+          "iban": "GB29BARC20201530093459",
+          "swift": "BARCGB22"
+        },
+        "issueDate": 1744057580,
+        "dueDate": 1756306486593,
+        "repeating": true,
+        "currency": "GBP",
+        "notes": "Thank you for your business. Please ensure timely payment.",
+        "items": [
+          {
+            "itemSku": "SKU4521",
+            "itemName": "Product Alpha",
+            "description": "Premium quality Product Alpha with all features.",
+            "quantity": 15,
+            "unitPrice": 499.99,
+            "discountAmount": 75,
+            "taxAmount": 60,
+            "taxRate": 12,
+            "totalAmount": 7499.85
+          },
+          {
+            "itemSku": "SKU6732",
+            "itemName": "Product Gamma",
+            "description": "Product Gamma with enhanced performance and specifications.",
+            "quantity": 7,
+            "unitPrice": 849,
+            "discountAmount": 60,
+            "taxAmount": 95.88,
+            "taxRate": 15,
+            "totalAmount": 5581.88
+          }
+        ],
+        "terms": "Net 45 days, 5% discount if paid within 15 days. Late fee of 2% per month after due date."
+      }
+    }
+  ]
 }

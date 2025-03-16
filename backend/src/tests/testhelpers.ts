@@ -99,4 +99,8 @@ export const requestListCompanyInvoice = async (app: Express, token: string, com
 export const requestDeleteInvoice = async (app: Express, token: string, invoiceId: string) => {
   return await requestHelper(app, HTTPMethod.DELETE, `/v1/invoice/${invoiceId}`, {}, token);
 }
+
+export const requestEditInvoice = async (app: Express, token: string, invoiceId: string, edits: any) => {
+  return await requestHelper(app, HTTPMethod.PUT, `/v1/invoice/${invoiceId}/edit`, { invoiceId, edits }, token);
+}
   
