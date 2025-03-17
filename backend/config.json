@@ -1,6 +1,5 @@
-
 {
     "url": "http://localhost",
-    "port": "50505",
+    "port": "8080",
     "expandDocs": false
 }

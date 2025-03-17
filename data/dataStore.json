@@ -1,0 +1,36 @@
+{
+  "companies": [],
+  "users": [
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4Nzg3ZjFjNy0yNmYxLTQ4OTktYjI0Ny0xYWM1ZjZlOGM2ODkiLCJpYXQiOjE3NDIxODk4NDUsImV4cCI6MTc0Mjc5NDY0NX0.7LeJGLRVJaTzkplH0k6bb3akUHvCJy5n6iKULA773Oo",
+      "userId": "8787f1c7-26f1-4899-b247-1ac5f6e8c689",
+      "companyId": null,
+      "email": "test@gmail.com",
+      "password": "9854b63110f6cc6cd5431af52e9a84661e8f5fa38139fc0dfc37a0be48cd271a",
+      "nameFirst": "Jane",
+      "nameLast": "Doe",
+      "numSuccessfulLogins": 1,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-17T05:37:25.904Z",
+      "previousPasswords": [],
+      "invoices": []
+    },
+    {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwZTgzZDYwOS05MDJjLTQxYzUtYjU3ZC02OTI1ODQ1OTkyNGUiLCJpYXQiOjE3NDIxODk4NDUsImV4cCI6MTc0Mjc5NDY0NX0._G289t_l4myAFFSNe7FRdvGK_CeisH191oi5yedHpu0",
+      "userId": "0e83d609-902c-41c5-b57d-69258459924e",
+      "companyId": null,
+      "email": "test2@gmail.com",
+      "password": "1b8db1ff2cd446d7ed9a9281980bc1a981620e3a7c0514da0c83cfe9a8abf0ef",
+      "nameFirst": "John",
+      "nameLast": "Smith",
+      "numSuccessfulLogins": 1,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "gender": "OTHER",
+      "timeCreated": "2025-03-17T05:37:25.906Z",
+      "previousPasswords": [],
+      "invoices": []
+    }
+  ],
+  "invoices": []
+}
