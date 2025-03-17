@@ -1,0 +1,43 @@
+name: T11A_Cookies_CICD
+
+on:
+  pull_request:
+    branches:
+    - main
+jobs:
+  test:
+    name: run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm i
+      - run: npm test
+
+
+  eslint:
+    name: Lint codebase
+    runs-on: ubuntu-latest         
+    
+    steps:
+      - name: Checkout code         
+        uses: actions/checkout@v3  
+
+      - name: Install Npm           
+        run: npm i
+      
+      - name: Run ESlint           
+        run: npm run lint    
+
+  coverage:
+    name: Tests the coverage
+    runs-on: ubuntu-latest          
+    
+    steps:
+      - name: Checkout code         
+        uses: actions/checkout@v3  
+
+      - name: Install Npm           
+        run: npm i
+      
+      - name: Run coverage          
+        run: npm run coverage
