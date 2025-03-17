@@ -16,7 +16,7 @@ cd T11A_Cookies_SENG2021
 
 ### 3. Install Dependencies
 
-Run the followwing command to install the required dependencies and modules:
+Run the following command to install the required dependencies and modules:
 
 ```sh
 npm i
