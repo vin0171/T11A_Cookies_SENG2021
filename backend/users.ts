@@ -19,7 +19,7 @@ import { authenticateUser, validateToken } from './validationHelpers';
  */
 
 // Change age to DOB
-export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): String {
+export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): string {
     const dataStore = getData();
     const newUser: User = createUser(email, password, nameFirst, nameLast, age);
 	dataStore.users.push(newUser);

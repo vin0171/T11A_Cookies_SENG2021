@@ -6,6 +6,7 @@ import { validateLocation } from "./validationHelpers";
 import { Invoice, Location } from "./interface";
 import { saveDataStore, setData } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
+import HTTPError from 'http-errors';
 
 function routes(app: Express) {
 // ========================================================================= //
@@ -13,12 +14,16 @@ function routes(app: Express) {
 // ========================================================================= //
 
   app.delete('/v1/clear', async (req: Request, res: Response, next: NextFunction) => {
-    setData({
-      companies: [],
-      users: [],
-      invoices: []});
-    res.status(200).json({})
-  })
+    try {
+      setData({
+        companies: [],
+        users: [],
+        invoices: []});
+      res.status(200).json({});
+    } catch(err) {
+      next(err);
+    }
+  });
 
   app.post('/v1/user/register', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -117,12 +122,11 @@ function routes(app: Express) {
       const invoiceId = req.params.invoiceId;
       const token = req.headers['authorization'].split(' ')[1];
       const response: Invoice = invoices.retrieveInvoice(token, invoiceId, contentType);
-      // XML IS FOR SPRINT 3
-      // if (contentType.includes('application/xml'))  {
-      //   const invoiceUBL = new InvoiceConverter(response).parseToUBL();
-      //   res.status(200).send(invoiceUBL);
-      //   return;
-      // } 
+      if (contentType.includes('application/xml'))  {
+        const invoiceUBL = new InvoiceConverter(response).parseToUBL();
+        res.status(200).send(invoiceUBL);
+        return;
+      } 
       res.status(200).json(response);
     } catch(err) {
       next(err);
@@ -151,7 +155,9 @@ function routes(app: Express) {
     }
   });
 
-  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  // We indirectly use next but not directly which causes linting errors
+  // eslint-disable-next-line 
+  app.use((err: HTTPError.HttpError, req: Request, res: Response, next: NextFunction) => {
     res.status(err.status || 500).json({ error: err.message });
   });
 }

@@ -2,7 +2,7 @@ import {v4 as uuidv4} from 'uuid';
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
-import {Company, Gender, InvoiceDetails, Location, User, UserOptions} from './interface';
+import {Company, Gender, InvoiceDetails, InvoiceItem, Location, User, UserOptions} from './interface';
 import { SECRET } from "./helper";
 import jwt from 'jsonwebtoken';
 
@@ -119,8 +119,8 @@ export function getCompany(companyId: string): Company {
 }
 
 const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
-    invoiceDetails.items.forEach((item: any) => {
-        const fieldsToCheck = [
+    invoiceDetails.items.forEach((item: InvoiceItem) => {
+        const fieldsToCheck: (keyof InvoiceItem)[] = [
             'quantity',
             'unitPrice',
             'discountAmount',
@@ -129,7 +129,11 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
             'totalAmount'
         ];
 
-        fieldsToCheck.forEach(field => {
+        fieldsToCheck.forEach((field: keyof InvoiceItem) => {
+            if (typeof item[field] !== 'number') {
+                throw helpers.errorReturn(400, `Invalid value for ${field}: ${item[field]} is not a number.`);
+            }
+
             if (item[field] < 0) {
                 throw helpers.errorReturn(400, `Invalid value for ${field}: ${item[field]} cannot be negative.`);
             }

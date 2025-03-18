@@ -65,7 +65,7 @@ export function retrieveInvoice(token: string, invoiceId: string, contentType: s
  */
 export function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>): Invoice {
     const user: User  = validators.validateToken(token);
-	let invoice: Invoice = validators.validateAdminPerms(user, invoiceId);
+	const invoice: Invoice = validators.validateAdminPerms(user, invoiceId);
     Object.assign(invoice.details, edits);
     return invoice;
 }
