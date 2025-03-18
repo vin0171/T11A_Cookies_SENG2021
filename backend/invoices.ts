@@ -27,9 +27,9 @@ export function createInvoice(token: string, invoiceDetails: InvoiceDetails) : s
     if (user.companyId !== null) {
         const company = data.companies.find((c) => c.companyId === user.companyId);
         // This should not be possible
-        // if (company === null) {
-        //     throw helpers.errorReturn(400, 'Error: Company does not exist'); 
-        // } 
+        if (company === undefined) {
+            throw helpers.errorReturn(400, 'Error: Company does not exist'); 
+        } 
         company.invoices.push(invoiceInfo);
     }
     return invoiceInfo.invoiceId;
@@ -88,9 +88,9 @@ export function deleteInvoice(token: string, invoiceId: string) : EmptyObject {
     if (userInfo.companyId !== null) {
         const company = data.companies.find((c) => c.companyId === userInfo.companyId);
         // This should be impossible
-        // if (company === null) {
-        //     throw helpers.errorReturn(400, 'Error: Company does not exist'); 
-        // } 
+        if (company === undefined) {
+            throw helpers.errorReturn(400, 'Error: Company does not exist'); 
+        } 
         company.invoices.splice(company.invoices.indexOf(invoice), 1)
     }
     return {};

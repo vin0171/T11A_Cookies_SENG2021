@@ -1,9 +1,10 @@
 {
     "scripts": {
-        "start": "ts-node backend/src/app.ts",
+        "start": "ts-node backend/app.ts",
         "test": "jest",
-        "lint": "eslint backend/src --ext .ts",
-        "coverage": "jest --coverage"
+        "lint": "eslint backend/ --ext .ts",
+        "coverage": "jest --coverage",
+        "build-for-deployment": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --outdir=dist"
     },
     "dependencies": {
         "cors": "^2.8.5",
@@ -34,6 +35,7 @@
         "@types/xmldom": "^0.1.34",
         "@typescript-eslint/eslint-plugin": "^8.26.0",
         "@typescript-eslint/parser": "^8.26.0",
+        "esbuild": "^0.25.1",
         "eslint": "^9.21.0",
         "eslint-plugin-jest": "^28.11.0",
         "eslint-plugin-react": "^7.37.4",
