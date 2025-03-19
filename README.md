@@ -21,6 +21,10 @@ Run the following command to install the required dependencies and modules:
 ```sh
 npm i
 ```
+Run the following shell script
+```sh
+./setupDynamoDbLocal.sh
+```
 
 ### 4. Start the Server
 
