@@ -1,10 +1,7 @@
-import { PutItemCommand, QueryCommandOutput } from '@aws-sdk/client-dynamodb';
 import { getData } from './dataStore';
-import * as helpers from './helper'
-import { User,  EmptyObject } from './interface';
+import { User } from './interface';
 import { createToken, createUser } from './interfaceHelpers';
-import { authenticateUser, validateToken } from './validationHelpers';
-import { PutCommand } from '@aws-sdk/lib-dynamodb';
+import { authenticateUser } from './validationHelpers';
 
 
 /** 

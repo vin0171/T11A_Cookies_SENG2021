@@ -133,10 +133,5 @@ export interface UserSessionInfo {
   company: Company,
 }
 
-// Basically means that there is must be at least a userId or an email present, but not both.
-export type UserOptions = 
-  | { userId: string; email?: never }  
-  | { email: string; userId?: never };
-
 export { Session };
 

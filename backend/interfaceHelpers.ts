@@ -2,10 +2,9 @@ import {v4 as uuidv4} from 'uuid';
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
-import {Company, Gender, InvoiceDetails, InvoiceItem, Location, User, UserOptions} from './interface';
+import {Company, Gender, InvoiceDetails, InvoiceItem, Location, User } from './interface';
 import { SECRET } from "./helper";
 import jwt from 'jsonwebtoken';
-import { GetCommand, QueryCommandOutput } from '@aws-sdk/lib-dynamodb';
 import HTTPError from 'http-errors';
 
 export async function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : Promise<User> {
@@ -60,31 +59,6 @@ export async function getUserByEmail(email: string) {
     return response.Items.length === 0 ? undefined : response.Items[0];
 }
 
-// this is degenerate (tree) 
-// export function getUser({userId, email}: UserOptions) : User {
-//     const dataStore = getData();
-//     if (!userId && !email) {
-//         throw HTTPError(400, 'Error: Provide either a user ID or an email')
-//     }
-
-//     if (email !== undefined) {
-//         if (!validators.isValidEmail(email)) {
-//             throw HTTPError(400, 'Error: Invalid Email');
-//         }
-//         const user = dataStore.users.find((object) => object.email === email);
-//         if (user === undefined) {
-//             throw HTTPError(400, 'Error: Email does not exist');
-//         }
-//         return user;
-//     }
-
-//     const user = dataStore.users.find((object) => object.userId === userId);
-//     if (user === undefined) {
-//         throw HTTPError(400, 'Error: User does not exist');
-//     }
-//     return user;
-// }
-
 export function createToken(userId: string) : string {
     // the time created is called (iat), and its automatically included in the creation
     const data = { userId: userId }
@@ -130,40 +104,48 @@ export async function getCompany(companyId: string) {
     return response.Item;
 }
 
-// const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
-//     invoiceDetails.items.forEach((item: InvoiceItem) => {
-//         const fieldsToCheck: (keyof InvoiceItem)[] = [
-//             'quantity',
-//             'unitPrice',
-//             'discountAmount',
-//             'taxAmount',
-//             'taxRate',
-//             'totalAmount'
-//         ];
+const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
+    invoiceDetails.items.forEach((item: InvoiceItem) => {
+        const fieldsToCheck: (keyof InvoiceItem)[] = [
+            'quantity',
+            'unitPrice',
+            'discountAmount',
+            'taxAmount',
+            'taxRate',
+            'totalAmount'
+        ];
 
-//         fieldsToCheck.forEach((field: keyof InvoiceItem) => {
-//             if (typeof item[field] !== 'number') {
-//                 throw HTTPError(400, `Invalid value for ${field}: ${item[field]} is not a number.`);
-//             }
+        fieldsToCheck.forEach((field: keyof InvoiceItem) => {
+            if (typeof item[field] !== 'number') {
+                throw HTTPError(400, `Invalid value for ${field}: ${item[field]} is not a number.`);
+            }
 
-//             if (item[field] < 0) {
-//                 throw HTTPError(400, `Invalid value for ${field}: ${item[field]} cannot be negative.`);
-//             }
-//         });
-//     });
-// };
+            if (item[field] < 0) {
+                throw HTTPError(400, `Invalid value for ${field}: ${item[field]} cannot be negative.`);
+            }
+        });
+    });
+};
     
 
-// export function generateInvoice(invoiceId: string, userId: string, companyId: string, invoiceDetails: InvoiceDetails) {
-//     validateInvoiceDetails(invoiceDetails);
+export function generateInvoice(invoiceId: string, userId: string, companyId: string, invoiceDetails: InvoiceDetails) {
+    validateInvoiceDetails(invoiceDetails);
 
-//     const invoice = {
-//         invoiceId: invoiceId, 
-//         userId: userId,
-//         // I believe this should be either null or a string
-//         companyId: companyId,
-//         details: invoiceDetails
-//     }
+    const invoice = {
+        invoiceId: invoiceId, 
+        userId: userId,
+        companyId: companyId,
+        details: invoiceDetails
+    }
 
-//     return invoice;
-// }
+    return invoice;
+}
+
+export async function getInvoice(invoiceId: string) {
+    const data = getData();
+    const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoiceId }});
+    if (response.Item === undefined) {
+        throw HTTPError(400, 'Error: Invoice does not exist');
+    }
+    return response.Item;
+}

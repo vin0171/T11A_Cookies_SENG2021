@@ -11,9 +11,9 @@ const XML_NAMESPACES = {
 
 export class InvoiceConverter {
     private root: XMLBuilder;
-    private invoice: Invoice;
+    private invoice: Record<string, any>;
 
-    constructor(invoice: Invoice) {
+    constructor(invoice: Record<string, any>) {
       this.invoice = invoice;
       this.root = create({ version: '1.0' })
           .ele('Invoice', XML_NAMESPACES);
