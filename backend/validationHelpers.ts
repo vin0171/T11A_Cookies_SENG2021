@@ -3,16 +3,15 @@ import * as helpers from "./helper";
 import { Invoice, Location, User } from "./interface";
 import { getData } from "./dataStore";
 import jwt, { JwtPayload } from 'jsonwebtoken'
-import { GetCommandOutput } from "@aws-sdk/lib-dynamodb";
-import { QueryCommandOutput } from "@aws-sdk/client-dynamodb";
 import HTTPError from 'http-errors';
-import { getUserByEmail } from "./interfaceHelpers";
+import { getInvoice, getUserByEmail } from "./interfaceHelpers";
 
 export const validateToken = async (token: string) => {
     try {
         const data = getData();
         const currentToken = jwt.verify(token, helpers.SECRET) as JwtPayload;
-        const response = await data.get({TableName: "Users", Key: {userId: currentToken.userId}});
+        const response = await data.get({TableName: "Users", Key: { userId: currentToken.userId }});
+        // TODO: handle case where undefined throw error of response?
         const user = response.Item;
         return user;
     } catch(err) {
@@ -139,23 +138,19 @@ export function validateLocation(address: string, city: string, state: string, p
 }
 
 
-// // This function is for people who are members of a company but not an admin,
-// // they can only create and read invoices.
-// export function validateUsersPerms(user: User, invoiceId: string): Invoice {
-//     const dataStore = getData();
-//     const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
-//     if (invoice === undefined) {
-//         throw HTTPError(400, 'Error: Invoice does not exist');
-//     }
+// This function is for people who are members of a company but not an admin,
+// they can only create and read invoices.
+export async function validateUsersPerms(userId: string, userCompanyId: string, invoiceId: string) {
+    const invoice = await getInvoice(invoiceId);
+    
+    // Check if the invoice is not a company invoice and it wasn't made by the current user
+    // or check if the invoice is a company invoice and if the current user belongs to that company.
+    if ((!invoice.companyId && invoice.userId != userId) || (invoice.companyId && invoice.companyId != userCompanyId)) {
+        throw HTTPError(403, 'Error: User does not have access to this invoice');
+    }
 
-//     // Check if the invoice is not a company invoice and it wasn't made by the current user
-//     // or check if the invoice is a company invoice and if the current user belongs to that company.
-//     if ((!invoice.companyId && invoice.userId != user.userId) || (invoice.companyId && invoice.companyId != user.companyId)) {
-//         throw HTTPError(403, 'Error: User does not have access to this invoice');
-//     }
-
-//     return invoice;
-// }
+    return invoice;
+}
 
 // export function validateAdminPerms(user: User, invoiceId: string): Invoice {
 //     const data = getData()

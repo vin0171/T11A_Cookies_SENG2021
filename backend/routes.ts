@@ -7,6 +7,7 @@ import { Invoice, Location } from "./interface";
 // import { InvoiceConverter } from "./InvoiceConverter";
 import HTTPError from 'http-errors';
 import { resetDataStore } from "./dataStore";
+import { InvoiceConverter } from "./InvoiceConverter";
 
 function routes(app: Express) {
 // ========================================================================= //
@@ -108,22 +109,22 @@ function routes(app: Express) {
     }
   });
   
-  // app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     const contentType = req.headers['accept'].split(' ')[0];
-  //     const invoiceId = req.params.invoiceId;
-  //     const token = req.headers['authorization']?.split(' ')[1] || undefined;
-  //     const response: Invoice = await invoices.retrieveInvoice(token, invoiceId, contentType);
-  //     if (contentType.includes('application/xml'))  {
-  //       const invoiceUBL = new InvoiceConverter(response).parseToUBL();
-  //       res.status(200).send(invoiceUBL);
-  //       return;
-  //     } 
-  //     res.status(200).json(response);
-  //   } catch(err) {
-  //     next(err);
-  //   }
-  // });
+  app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const contentType = req.headers['accept'].split(' ')[0] || "application/JSON";
+      const invoiceId = req.params.invoiceId;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.retrieveInvoice(token, invoiceId);
+      if (contentType.includes('application/xml'))  {
+        const invoiceUBL = new InvoiceConverter(response).parseToUBL();
+        res.status(200).send(invoiceUBL);
+        return;
+      } 
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
 
   // app.put('/v1/invoice/:invoiceId/edit', async (req: Request, res: Response, next: NextFunction) => {
   //     try {
