@@ -1,6 +1,6 @@
 import isEmail from "validator/lib/isEmail";
 import * as helpers from "./helper";
-import { Invoice, Location, User } from "./interface";
+import { Location } from "./interface";
 import { getData } from "./dataStore";
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import HTTPError from 'http-errors';

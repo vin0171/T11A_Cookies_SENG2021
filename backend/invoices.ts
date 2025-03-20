@@ -1,8 +1,9 @@
 import * as validators from "./validationHelpers"
 import { Invoice, InvoiceDetails } from "./interface";
-import { generateInvoice,  } from "./interfaceHelpers";
+import { generateInvoice, getCompany,  } from "./interfaceHelpers";
 import { getData } from "./dataStore";
 import {v4 as uuidv4} from 'uuid';
+import HTTPError from 'http-errors';
 
 /**
  * Stub for the createInvoice function.
@@ -83,50 +84,71 @@ export async function editInvoiceDetails(token: string, invoiceId: string, edits
     return invoice;
 }
 
-// /** Stub for the deleteInvoice function
-//  * 
-//  * Delete an invoice with the given invoice id
-//  * 
-//  * @param {string} token - token of the user     
-//  * @param {number} invoiceId - id of the invoice
-//  * @returns {null}
-//  */
-// export function deleteInvoice(token: string, invoiceId: string) : EmptyObject {
-//     const data = getData();
-//     const userInfo: User  = validators.validateToken(token);
-// 	const invoice: Invoice = validators.validateAdminPerms(userInfo, invoiceId);
-//     data.invoices.splice(data.invoices.indexOf(invoice), 1)
-//     // i also need to delete the invoice from the user and the company if they are in one.
-//     userInfo.invoices.splice(userInfo.invoices.indexOf(invoice), 1)
-//     if (userInfo.companyId !== null) {
-//         const company = data.companies.find((c) => c.companyId === userInfo.companyId);
-//         company.invoices.splice(company.invoices.indexOf(invoice), 1)
-//     }
-//     return {};
-// }
+// TODO: This function is very simialr to the insert just so yk
+// DO NOT USE THIS FUNCTION WITH TABLENAME: INVOICES
+async function removeInvoiceIdFromTable(tableName: string, primaryKeyIdentifer: string, invoiceIdToRemove: string, invoiceList: string[]) {
+    const newInvoiceList = invoiceList.filter((invId: string) => invId !== invoiceIdToRemove);
+    const data = getData();
+    await data.update({
+        TableName: tableName,
+        Key: keyIdentifer(tableName, primaryKeyIdentifer),
+        UpdateExpression: 'SET invoices = :newInvoiceList',
+        ExpressionAttributeValues: { ':newInvoiceList': newInvoiceList}
+    });
+}
+
+/** Stub for the deleteInvoice function
+ * 
+ * Delete an invoice with the given invoice id
+ * 
+ * @param {string} token - token of the user     
+ * @param {number} invoiceId - id of the invoice
+ */
+export async function deleteInvoice(token: string, invoiceId: string) {
+    const data = getData();
+    const user = await validators.validateToken(token);
+	const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+    const company = await getCompany(user.companyId);
+    const invoiceIdToRemove = invoice.invoiceId;
+
+    await data.delete({ TableName: "Invoices", Key: { invoiceId: invoiceIdToRemove } });
+    await removeInvoiceIdFromTable("Users", user.userId, invoiceIdToRemove, user.invoices);
+
+    if (user.companyId !== null) {
+        await removeInvoiceIdFromTable("Companies", user.companyId, invoiceIdToRemove, company.invoices);
+    }
+    return {};
+}
+
+async function getInvoiceList(invoiceList: number[]) {
+    const invoiceMap = invoiceList.map((inv: number) => ({ invoiceId: inv }));
+    if (invoiceList.length === 0) return invoiceList;
+    const data = getData();
+    const response = await data.batchGet({
+        RequestItems: { Invoices: { Keys: invoiceMap } }
+    });
+    return response.Responses.Invoices;
+}
 
 
-// /** Stub for the listCompanyInvoices function 
-//  * 
-//  * Returns a list of every invoice in a given company.
-//  * 
-//  * @param {string} token - token of the user    
-//  * @param {string} companyId - the id of the company
-//  * @returns {Invoice[]}
-//  * 
-// */
-// export function listCompanyInvoices(token: string, companyId: string): Invoice[] {
-//     const data = getData();
-//     const user = validators.validateToken(token);
-//     const company = data.companies.find((c) => c.companyId === companyId);
-//     if (company === undefined) {
-//         throw helpers.errorReturn(400, 'Error: Company does not exist'); 
-//     } 
-//     if (user.companyId != company.companyId) {
-//         throw helpers.errorReturn(403, 'Error: User is not authorised')
-//     }
-//     return company.invoices;
-// }
+/** Stub for the listCompanyInvoices function 
+ * 
+ * Returns a list of every invoice in a given company.
+ * 
+ * @param {string} token - token of the user    
+ * @param {string} companyId - the id of the company
+ * 
+*/
+export async function listCompanyInvoices(token: string, companyId: string) {
+    const data = getData();
+    const user = await validators.validateToken(token);
+    const company = await getCompany(companyId);
+  
+    if (user.companyId != company.companyId) {
+        throw HTTPError(403, 'Error: User is not authorised')
+    }
+    return getInvoiceList(company.invoices);
+}
 
 // /** Stub for the listUsersInvoices function 
 //  * 
@@ -136,9 +158,8 @@ export async function editInvoiceDetails(token: string, invoiceId: string, edits
 //  * @returns {Invoice[]}
 //  * 
 // */
-// export function listUserInvoices(token: string): Invoice[] {
-//     const user = validators.validateToken(token);
-//     if (user === null) throw helpers.errorReturn(401, 'User does not exist');
-//     return user.invoices;
-// }
+export async function listUserInvoices(token: string) {
+    const user = await validators.validateToken(token);
+    return getInvoiceList(user.invoices);
+}
 

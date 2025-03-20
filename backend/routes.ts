@@ -53,15 +53,15 @@ function routes(app: Express) {
   //   }
   // });
 
-  // app.get('/v1/user/invoices', async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     const token = req.headers['authorization'].split(' ')[1];
-  //     const response = invoices.listUserInvoices(token);
-  //     res.status(200).json(response);
-  //   } catch(err) {
-  //     next(err)
-  //   }
-  // });
+  app.get('/v1/user/invoices', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.listUserInvoices(token);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
 
   app.post('/v1/company/register', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -87,16 +87,16 @@ function routes(app: Express) {
     }
   });
 
-  // app.get('/v1/company/:companyId/invoices', async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     const token = req.headers['authorization'].split(' ')[1];
-  //     const companyId = req.params.companyId;
-  //     const response = await invoices.listCompanyInvoices(token, companyId);
-  //     res.status(200).json(response);
-  //   } catch(err) {
-  //     next(err)
-  //   }
-  // });
+  app.get('/v1/company/:companyId/invoices', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization'].split(' ')[1];
+      const companyId = req.params.companyId;
+      const response = await invoices.listCompanyInvoices(token, companyId);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
 
   app.post('/v1/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -137,16 +137,16 @@ function routes(app: Express) {
       }
     });
     
-  // app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     const token = req.headers['authorization']?.split(' ')[1] || undefined;
-  //     const invoiceId  = req.params.invoiceId;
-  //     const response = await invoices.deleteInvoice(token, invoiceId);
-  //     res.status(200).json(response);
-  //   } catch(err) {
-  //     next(err)
-  //   }
-  // });
+  app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const invoiceId  = req.params.invoiceId;
+      const response = await invoices.deleteInvoice(token, invoiceId);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
 
   // We indirectly use next but not directly which causes linting errors
   // eslint-disable-next-line 
