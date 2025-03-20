@@ -3,20 +3,23 @@ import * as helpers from "./helper";
 import { Invoice, Location, User } from "./interface";
 import { getData } from "./dataStore";
 import jwt, { JwtPayload } from 'jsonwebtoken'
+import { GetCommandOutput } from "@aws-sdk/lib-dynamodb";
+import { QueryCommandOutput } from "@aws-sdk/client-dynamodb";
+import HTTPError from 'http-errors';
 
-export const validateToken = (token: string) : User => {
+export const validateToken = async (token: string) : Promise<void> => {
     try {
         const dataStore = getData();
         const currentToken = jwt.verify(token, helpers.SECRET) as JwtPayload;
-        const user = dataStore.users.find((user) => user.userId === currentToken.userId);
-        return user
+        const user: GetCommandOutput = await dataStore.get({TableName: "Users", Key: currentToken.userId})
+        console.log(user);
     } catch(err) {
         if (err.name === 'TokenExpiredError') {
-            throw helpers.errorReturn(401, 'Error: Token has expired - Please log in again');
+            throw HTTPError(401, 'Error: Token has expired - Please log in again');
         } else if (err.name === 'NotBeforeError') {
-            throw helpers.errorReturn(401, 'Error: Token is not active');
+            throw HTTPError(401, 'Error: Token is not active');
         } else {
-            throw helpers.errorReturn(401, 'Error: Invalid Token');
+            throw HTTPError(401, 'Error: Invalid Token');
         }
     }
 }
@@ -62,100 +65,110 @@ export function isValidPass(password: string): boolean {
     return true;
 };
 
-export function authenticateUser(email: string, password: string) : User {
+export async function authenticateUser(email: string, password: string) {
     const dataStore = getData();
     if (!isValidEmail(email)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Email');
+        throw HTTPError(400, 'Error: Invalid Email');
     }
 
-    const user = dataStore.users.find((object) => object.email === email);
-    if (user === undefined) {
-        throw helpers.errorReturn(400, 'Error: Email does not exist');
+    // TODO: Maybe make a function called findUserByEmail instead of thre usroptions
+    const response = await dataStore.query({
+        TableName: "Users", 
+        IndexName: "EmailIndex",
+        KeyConditionExpression: 'email = :email', 
+        ExpressionAttributeValues: {
+            ':email': email
+        }
+    });
+    const user = response.Items[0];
+
+    if (response.Items.length === 0) {
+        throw HTTPError(400, 'Error: Email does not exist');
     }
 
-    if (user.password !== helpers.getPasswordHash(password)) {
-        user.numFailedPasswordsSinceLastLogin++;
-        throw helpers.errorReturn(400, 'Error: Incorrect Password');
+    if (user.password && user.password !== helpers.getPasswordHash(password)) {
+        //user.numFailedPasswordsSinceLastLogin++;
+        throw HTTPError(400, 'Error: Incorrect Password');
     }
 
     return user;
 }
 
-export function isValidABN(abn: string): boolean {
-    const ABN_REGEX = /^\d{11}$/;
-    if (!ABN_REGEX.test(abn)) {
-        return false;
-    }
+// export function isValidABN(abn: string): boolean {
+//     const ABN_REGEX = /^\d{11}$/;
+//     if (!ABN_REGEX.test(abn)) {
+//         return false;
+//     }
 
-    return true;
-}
+//     return true;
+// }
 
-export function isValidPhone(phone: string): boolean {
-    // TODO: This needs a lot of work
-    const PHONE_REGEX = /^\d{10}$/;
-    if (!PHONE_REGEX.test(phone)) {
-        return false;
-    }
+// export function isValidPhone(phone: string): boolean {
+//     // TODO: This needs a lot of work
+//     const PHONE_REGEX = /^\d{10}$/;
+//     if (!PHONE_REGEX.test(phone)) {
+//         return false;
+//     }
 
-    return true;
-}
+//     return true;
+// }
 
-export function validateLocation(address: string, city: string, state: string, postcode: string, country: string): Location {
+// export function validateLocation(address: string, city: string, state: string, postcode: string, country: string): Location {
     
-    // ???? 
-    // if (!isValidName(address)) {
-    //     throw helpers.errorReturn(400, 'Error: Invalid Address');
-    // }
-    if (!isValidName(city)) {
-        throw helpers.errorReturn(400, 'Error: Invalid City');
-    }
-    if (!isValidName(state)) {
-        throw helpers.errorReturn(400, 'Error: Invalid State');
-    }
-    // if (!isValidName(postcode)) {
-    //     throw helpers.errorReturn(400, 'Error: Invalid Postcode');
-    // }
-    if (!isValidName(country)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Country');
-    }
+//     // ???? 
+//     // if (!isValidName(address)) {
+//     //     throw HTTPError(400, 'Error: Invalid Address');
+//     // }
+//     if (!isValidName(city)) {
+//         throw HTTPError(400, 'Error: Invalid City');
+//     }
+//     if (!isValidName(state)) {
+//         throw HTTPError(400, 'Error: Invalid State');
+//     }
+//     // if (!isValidName(postcode)) {
+//     //     throw HTTPError(400, 'Error: Invalid Postcode');
+//     // }
+//     if (!isValidName(country)) {
+//         throw HTTPError(400, 'Error: Invalid Country');
+//     }
 
-    return {
-        address: address,
-        city: city,
-        state: state,
-        postcode: postcode,
-        country: country,
-    }   
-}
+//     return {
+//         address: address,
+//         city: city,
+//         state: state,
+//         postcode: postcode,
+//         country: country,
+//     }   
+// }
 
 
-// This function is for people who are members of a company but not an admin,
-// they can only create and read invoices.
-export function validateUsersPerms(user: User, invoiceId: string): Invoice {
-    const dataStore = getData();
-    const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
-    if (invoice === undefined) {
-        throw helpers.errorReturn(400, 'Error: Invoice does not exist');
-    }
+// // This function is for people who are members of a company but not an admin,
+// // they can only create and read invoices.
+// export function validateUsersPerms(user: User, invoiceId: string): Invoice {
+//     const dataStore = getData();
+//     const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
+//     if (invoice === undefined) {
+//         throw HTTPError(400, 'Error: Invoice does not exist');
+//     }
 
-    // Check if the invoice is not a company invoice and it wasn't made by the current user
-    // or check if the invoice is a company invoice and if the current user belongs to that company.
-    if ((!invoice.companyId && invoice.userId != user.userId) || (invoice.companyId && invoice.companyId != user.companyId)) {
-        throw helpers.errorReturn(403, 'Error: User does not have access to this invoice');
-    }
+//     // Check if the invoice is not a company invoice and it wasn't made by the current user
+//     // or check if the invoice is a company invoice and if the current user belongs to that company.
+//     if ((!invoice.companyId && invoice.userId != user.userId) || (invoice.companyId && invoice.companyId != user.companyId)) {
+//         throw HTTPError(403, 'Error: User does not have access to this invoice');
+//     }
 
-    return invoice;
-}
+//     return invoice;
+// }
 
-export function validateAdminPerms(user: User, invoiceId: string): Invoice {
-    const data = getData()
-    const invoice = validateUsersPerms(user, invoiceId)
-    const company = data.companies.find((c) => c.companyId === invoice.companyId)
-    if (company === undefined) {
-        throw helpers.errorReturn(400, 'Error: Company does not exist');
-    }
-    if (!company.admins.includes(user.userId)) {
-        throw helpers.errorReturn(403, 'Error: User is not an admin');
-    }
-    return invoice
-}
+// export function validateAdminPerms(user: User, invoiceId: string): Invoice {
+//     const data = getData()
+//     const invoice = validateUsersPerms(user, invoiceId)
+//     const company = data.companies.find((c) => c.companyId === invoice.companyId)
+//     if (company === undefined) {
+//         throw HTTPError(400, 'Error: Company does not exist');
+//     }
+//     if (!company.admins.includes(user.userId)) {
+//         throw HTTPError(403, 'Error: User is not an admin');
+//     }
+//     return invoice
+// }
