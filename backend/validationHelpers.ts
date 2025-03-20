@@ -4,7 +4,7 @@ import { Invoice, Location, User } from "./interface";
 import { getData } from "./dataStore";
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import HTTPError from 'http-errors';
-import { getInvoice, getUserByEmail } from "./interfaceHelpers";
+import { getCompany, getInvoice, getUserByEmail } from "./interfaceHelpers";
 
 export const validateToken = async (token: string) => {
     try {
@@ -142,7 +142,7 @@ export function validateLocation(address: string, city: string, state: string, p
 // they can only create and read invoices.
 export async function validateUsersPerms(userId: string, userCompanyId: string, invoiceId: string) {
     const invoice = await getInvoice(invoiceId);
-    
+
     // Check if the invoice is not a company invoice and it wasn't made by the current user
     // or check if the invoice is a company invoice and if the current user belongs to that company.
     if ((!invoice.companyId && invoice.userId != userId) || (invoice.companyId && invoice.companyId != userCompanyId)) {
@@ -152,15 +152,12 @@ export async function validateUsersPerms(userId: string, userCompanyId: string, 
     return invoice;
 }
 
-// export function validateAdminPerms(user: User, invoiceId: string): Invoice {
-//     const data = getData()
-//     const invoice = validateUsersPerms(user, invoiceId)
-//     const company = data.companies.find((c) => c.companyId === invoice.companyId)
-//     if (company === undefined) {
-//         throw HTTPError(400, 'Error: Company does not exist');
-//     }
-//     if (!company.admins.includes(user.userId)) {
-//         throw HTTPError(403, 'Error: User is not an admin');
-//     }
-//     return invoice
-// }
+export async function validateAdminPerms(userId: string, userCompanyId: string, invoiceId: string) {
+    const invoice = await validateUsersPerms(userId, userCompanyId, invoiceId)
+    const company = await getCompany(userCompanyId);
+
+    if (!company.admins.includes(userId)) {
+        throw HTTPError(403, 'Error: User is not an admin');
+    }
+    return invoice
+}

@@ -126,16 +126,16 @@ function routes(app: Express) {
     }
   });
 
-  // app.put('/v1/invoice/:invoiceId/edit', async (req: Request, res: Response, next: NextFunction) => {
-  //     try {
-  //       const token = req.headers['authorization']?.split(' ')[1] || undefined;
-  //       const { invoiceId, edits } = req.body;
-  //       const response = await invoices.editInvoiceDetails(token, invoiceId, edits);
-  //       res.status(200).json(response);
-  //     } catch(err) {
-  //       next(err)
-  //     }
-  //   });
+  app.put('/v1/invoice/:invoiceId/edit', async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const token = req.headers['authorization']?.split(' ')[1] || undefined;
+        const { invoiceId, edits } = req.body;
+        const response = await invoices.editInvoiceDetails(token, invoiceId, edits);
+        res.status(200).json(response);
+      } catch(err) {
+        next(err);
+      }
+    });
     
   // app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
   //   try {

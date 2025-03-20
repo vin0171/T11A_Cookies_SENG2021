@@ -3,7 +3,6 @@ import { Invoice, InvoiceDetails } from "./interface";
 import { generateInvoice,  } from "./interfaceHelpers";
 import { getData } from "./dataStore";
 import {v4 as uuidv4} from 'uuid';
-import { InvoiceConverter } from "./InvoiceConverter";
 
 /**
  * Stub for the createInvoice function.
@@ -29,9 +28,11 @@ export async function createInvoice(token: string, invoiceDetails: InvoiceDetail
     return invoiceInfo.invoiceId;
 }
 
-// TODO: fix the two functions below
+// TODO: fix the two functions below if you want (Hashmap of name to object? idk)
+// and also i dont use this in other functions so um 
 function keyIdentifer(tableName: string, primaryKeyIdentifer: string) {
     if (tableName === "Companies") return { companyId: primaryKeyIdentifer }
+    if (tableName === "Invoices") return { invoiceId: primaryKeyIdentifer }
     return { userId: primaryKeyIdentifer }
 }
 
@@ -52,8 +53,6 @@ async function addInvoiceIdToTable(tableName: string, primaryKeyIdentifer: strin
  * Return an invoice with the given invoice id and content type.
  * @param {string} token - the token of the current user
  * @param {string} invoiceId -  the id of the invoice we want to retrieve
- * @param {string} contentType - the type we want the invoice to be returned as (json or xml), xml for sprint 3
- * @returns {Invoice}
  */
 export async function retrieveInvoice(token: string, invoiceId: string) {
     const user = await validators.validateToken(token);
@@ -61,22 +60,28 @@ export async function retrieveInvoice(token: string, invoiceId: string) {
     return invoiceInfo;
 }
 
-// /**
-//  * Stub for the editInvoiceDetails function.
-//  * 
-//  * Edit the details of an invoice with the given parameters and return the invoice.
-//  * 
-//  * @param {string} token - the token of the current user
-//  * @param {Invoice} invoiceId - the id of the invoice to be edited
-//  * @param {InvoiceDetails} edits - the updated details of the invoice
-//  * @returns {Invoice}
-//  */
-// export function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>): Invoice {
-//     const user: User  = validators.validateToken(token);
-// 	const invoice: Invoice = validators.validateAdminPerms(user, invoiceId);
-//     Object.assign(invoice.details, edits);
-//     return invoice;
-// }
+/**
+ * Stub for the editInvoiceDetails function.
+ * 
+ * Edit the details of an invoice with the given parameters and return the invoice.
+ * 
+ * @param {string} token - the token of the current user
+ * @param {Invoice} invoiceId - the id of the invoice to be edited
+ * @param {InvoiceDetails} edits - the updated details of the invoice
+ */
+export async function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>) {
+    const user = await validators.validateToken(token);
+	const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+    Object.assign(invoice.details, edits);
+    const data = getData();
+    await data.update({
+        TableName: "Invoices",
+        Key: keyIdentifer("Invoices", invoiceId),
+        UpdateExpression: 'SET details = :invoiceDetailsNew',
+        ExpressionAttributeValues: { ':invoiceDetailsNew': invoice.details }
+    });
+    return invoice;
+}
 
 // /** Stub for the deleteInvoice function
 //  * 
@@ -95,10 +100,6 @@ export async function retrieveInvoice(token: string, invoiceId: string) {
 //     userInfo.invoices.splice(userInfo.invoices.indexOf(invoice), 1)
 //     if (userInfo.companyId !== null) {
 //         const company = data.companies.find((c) => c.companyId === userInfo.companyId);
-//         // This should be impossible
-//         // if (company === null) {
-//         //     throw helpers.errorReturn(400, 'Error: Company does not exist'); 
-//         // } 
 //         company.invoices.splice(company.invoices.indexOf(invoice), 1)
 //     }
 //     return {};
