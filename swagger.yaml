@@ -34,7 +34,7 @@ components:
       example: "realEmail@gmail.com"
     Password:
       type: string
-      example: "hashedPassword"
+      example: "hashedPassword@123"
     NameFirst:
       type: string
       example: "John" 
@@ -73,16 +73,16 @@ components:
       example: "John Doe"
     Abn: 
       type: string
-      example: "51 824 753 556"
+      example: "51824753556"
     Owner:
       type: string
       example: "Admin One"
     Phone:
       type: string
-      example: "+31 23123 323"
+      example: "3123123323"
     CompanyName:
       type: string
-      example: "Turples Industry Inc."
+      example: "Turples Industry Inc"
     TaxIdentificationNumber:
       type: string
       example: "2313123213123"
