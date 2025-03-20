@@ -9,26 +9,13 @@ import { GetCommand, QueryCommandOutput } from '@aws-sdk/lib-dynamodb';
 import HTTPError from 'http-errors';
 
 export async function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : Promise<User> {
-    const dataStore = getData();
 
     if (!validators.isValidName(nameFirst) || !validators.isValidName(nameLast)) {
 		throw HTTPError(400, 'Error: Invalid Name');
 	}
 
-	if (!validators.isValidEmail(email)) {
-		throw HTTPError(400, 'Error: Invalid Email');
-	}
-
-    const user: QueryCommandOutput = await dataStore.query({
-        TableName: "Users", 
-        IndexName: "EmailIndex",
-        KeyConditionExpression: 'email = :email', 
-        ExpressionAttributeValues: {
-            ':email': email
-        }
-    });
-
-    if (user.Items && user.Items.length == 1) {
+    const userExistsAlready = await getUserByEmail(email);
+    if (userExistsAlready !== undefined) {
         throw HTTPError(400, 'Error: Email already used by another User');
     }
 
@@ -53,7 +40,27 @@ export async function createUser(email: string, password: string, nameFirst: str
     }
 }
 
-// this is degenerate (tree)
+// Acts as a .find function returning undefined if none found 
+// else returns the user Object
+export async function getUserByEmail(email: string) {
+    if (!validators.isValidEmail(email)) {
+		throw HTTPError(400, 'Error: Invalid Email');
+	}
+
+    const data = getData();
+    const response = await data.query({
+        TableName: "Users", 
+        IndexName: "EmailIndex",
+        KeyConditionExpression: 'email = :email', 
+        ExpressionAttributeValues: {
+            ':email': email
+        }
+    });
+
+    return response.Items.length === 0 ? undefined : response.Items[0];
+}
+
+// this is degenerate (tree) 
 // export function getUser({userId, email}: UserOptions) : User {
 //     const dataStore = getData();
 //     if (!userId && !email) {
@@ -78,56 +85,50 @@ export async function createUser(email: string, password: string, nameFirst: str
 //     return user;
 // }
 
-// // TODO: why?
-// export function validateUser() : boolean {
-//     return true
-// }
-
 export function createToken(userId: string) : string {
     // the time created is called (iat), and its automatically included in the creation
     const data = { userId: userId }
     return jwt.sign(data, SECRET, {expiresIn: '7d'})
 }
 
-// export function createCompany(companyName: string, companyAbn: string, headquarters: Location, companyEmail: string, contactNumber: string,
-//     user: User): Company {
+export function createCompany(companyName: string, companyAbn: string, headquarters: Location, companyEmail: string, contactNumber: string,
+    userId: string): Company {
 
-//     if (!validators.isValidName(companyName)) {
-//         throw HTTPError(400, 'Error: Invalid Company Name');
-//     }
-//     if (!validators.isValidABN(companyAbn)) {
-//         throw HTTPError(400, 'Error: Invalid Company ABN');
-//     }
-//     if (!validators.isValidEmail(companyEmail)) {
-//         throw HTTPError(400, 'Error: Invalid Email');
-//     }
-//     if (!validators.isValidPhone(contactNumber)) {
-//         throw HTTPError(400, 'Error: Invalid Phone Number');
-//     }
+    if (!validators.isValidName(companyName)) {
+        throw HTTPError(400, 'Error: Invalid Company Name');
+    }
+    if (!validators.isValidABN(companyAbn)) {
+        throw HTTPError(400, 'Error: Invalid Company ABN');
+    }
+    if (!validators.isValidEmail(companyEmail)) {
+        throw HTTPError(400, 'Error: Invalid Email');
+    }
+    if (!validators.isValidPhone(contactNumber)) {
+        throw HTTPError(400, 'Error: Invalid Phone Number');
+    }
     
-//     return {
-//         companyId: uuidv4(),
-//         name: companyName,
-//         abn: companyAbn,
-//         headquarters: headquarters,
-//         phone: contactNumber,
-//         email: companyEmail,
-//         owner: user.userId,
-//         admins: [user.userId],
-//         members: [user.userId],
-//         invoices: []
-//     }
-//     }
+    return {
+        companyId: uuidv4(),
+        name: companyName,
+        abn: companyAbn,
+        headquarters: headquarters,
+        phone: contactNumber,
+        email: companyEmail,
+        owner: userId,
+        admins: [userId],
+        members: [userId],
+        invoices: []
+    }
+    }
     
-// export async function getCompany(companyId: string): Promise<Company> {
-//     const dataStore = await getData();
-//     //ataStore.send(new GetItemCommand())
-//     // const company = dataStore.companies.find((object) => object.companyId === companyId);
-//     // if (company === undefined) {
-//     //     throw HTTPError(400, 'Error: Company does not exist');
-//     // }
-//     // return company;
-// }
+export async function getCompany(companyId: string) {
+    const data = getData();
+    const response = await data.get({ TableName: "Companies", Key: { companyId: companyId }});
+    if (response.Item === undefined) {
+        throw HTTPError(400, 'Error: Company does not exist');
+    }
+    return response.Item;
+}
 
 // const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
 //     invoiceDetails.items.forEach((item: InvoiceItem) => {

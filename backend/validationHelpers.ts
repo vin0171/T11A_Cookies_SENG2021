@@ -6,13 +6,15 @@ import jwt, { JwtPayload } from 'jsonwebtoken'
 import { GetCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { QueryCommandOutput } from "@aws-sdk/client-dynamodb";
 import HTTPError from 'http-errors';
+import { getUserByEmail } from "./interfaceHelpers";
 
-export const validateToken = async (token: string) : Promise<void> => {
+export const validateToken = async (token: string) => {
     try {
-        const dataStore = getData();
+        const data = getData();
         const currentToken = jwt.verify(token, helpers.SECRET) as JwtPayload;
-        const user: GetCommandOutput = await dataStore.get({TableName: "Users", Key: currentToken.userId})
-        console.log(user);
+        const response = await data.get({TableName: "Users", Key: {userId: currentToken.userId}});
+        const user = response.Item;
+        return user;
     } catch(err) {
         if (err.name === 'TokenExpiredError') {
             throw HTTPError(401, 'Error: Token has expired - Please log in again');
@@ -66,80 +68,75 @@ export function isValidPass(password: string): boolean {
 };
 
 export async function authenticateUser(email: string, password: string) {
-    const dataStore = getData();
-    if (!isValidEmail(email)) {
-        throw HTTPError(400, 'Error: Invalid Email');
+    const data = getData();
+
+    const user = await getUserByEmail(email);
+
+    if (user === undefined) {
+        throw HTTPError(400, 'Error: User with this email does not exist');
     }
 
-    // TODO: Maybe make a function called findUserByEmail instead of thre usroptions
-    const response = await dataStore.query({
-        TableName: "Users", 
-        IndexName: "EmailIndex",
-        KeyConditionExpression: 'email = :email', 
-        ExpressionAttributeValues: {
-            ':email': email
-        }
-    });
-    const user = response.Items[0];
-
-    if (response.Items.length === 0) {
-        throw HTTPError(400, 'Error: Email does not exist');
-    }
-
+    // TODO: Maybe chuck it in another function the update
     if (user.password && user.password !== helpers.getPasswordHash(password)) {
-        //user.numFailedPasswordsSinceLastLogin++;
+        const userFails = user.numFailedPasswordsSinceLastLogin + 1;
+        const updateExpression = 'SET numFailedPasswordsSinceLastLogin = :fails'
+        await data.update({
+            TableName: "Users", 
+            Key: { userId: user.userId },
+            UpdateExpression: updateExpression,
+            ExpressionAttributeValues: { ':fails': userFails },
+        });
         throw HTTPError(400, 'Error: Incorrect Password');
     }
 
     return user;
 }
 
-// export function isValidABN(abn: string): boolean {
-//     const ABN_REGEX = /^\d{11}$/;
-//     if (!ABN_REGEX.test(abn)) {
-//         return false;
-//     }
+export function isValidABN(abn: string): boolean {
+    const ABN_REGEX = /^\d{11}$/;
+    if (!ABN_REGEX.test(abn)) {
+        return false;
+    }
 
-//     return true;
-// }
+    return true;
+}
 
-// export function isValidPhone(phone: string): boolean {
-//     // TODO: This needs a lot of work
-//     const PHONE_REGEX = /^\d{10}$/;
-//     if (!PHONE_REGEX.test(phone)) {
-//         return false;
-//     }
+export function isValidPhone(phone: string): boolean {
+    // TODO: This needs a lot of work
+    const PHONE_REGEX = /^\d{10}$/;
+    if (!PHONE_REGEX.test(phone)) {
+        return false;
+    }
 
-//     return true;
-// }
+    return true;
+}
 
-// export function validateLocation(address: string, city: string, state: string, postcode: string, country: string): Location {
+export function validateLocation(address: string, city: string, state: string, postcode: string, country: string): Location {
     
-//     // ???? 
-//     // if (!isValidName(address)) {
-//     //     throw HTTPError(400, 'Error: Invalid Address');
-//     // }
-//     if (!isValidName(city)) {
-//         throw HTTPError(400, 'Error: Invalid City');
-//     }
-//     if (!isValidName(state)) {
-//         throw HTTPError(400, 'Error: Invalid State');
-//     }
-//     // if (!isValidName(postcode)) {
-//     //     throw HTTPError(400, 'Error: Invalid Postcode');
-//     // }
-//     if (!isValidName(country)) {
-//         throw HTTPError(400, 'Error: Invalid Country');
-//     }
+    // if (!isValidName(address)) {
+    //     throw HTTPError(400, 'Error: Invalid Address');
+    // }
+    if (!isValidName(city)) {
+        throw HTTPError(400, 'Error: Invalid City');
+    }
+    if (!isValidName(state)) {
+        throw HTTPError(400, 'Error: Invalid State');
+    }
+    // if (!isValidName(postcode)) {
+    //     throw HTTPError(400, 'Error: Invalid Postcode');
+    // }
+    if (!isValidName(country)) {
+        throw HTTPError(400, 'Error: Invalid Country');
+    }
 
-//     return {
-//         address: address,
-//         city: city,
-//         state: state,
-//         postcode: postcode,
-//         country: country,
-//     }   
-// }
+    return {
+        address: address,
+        city: city,
+        state: state,
+        postcode: postcode,
+        country: country,
+    }   
+}
 
 
 // // This function is for people who are members of a company but not an admin,

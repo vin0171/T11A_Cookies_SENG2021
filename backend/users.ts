@@ -54,7 +54,7 @@ export async function userLogin(email: string, password: string): Promise<string
 		UpdateExpression: updateExpression,
 		ExpressionAttributeValues: { ':increment': newSuccessLogins, ':zero': 0 },
 		ReturnValues: 'ALL_NEW',
-	})
+	});
 	return createToken(user.userId);
 }
 
