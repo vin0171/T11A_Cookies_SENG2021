@@ -1,9 +1,20 @@
 import { getData } from "./dataStore";
-import * as helpers from "./helper";
-import { Company, EmptyObject, Location, User } from "./interface";
-import { createCompany, getCompany, getUser } from "./interfaceHelpers";
+import { Company, EmptyObject, Location } from "./interface";
+import { createCompany, getCompany, getUserByEmail } from "./interfaceHelpers";
 import * as validators from './validationHelpers';
+import HTTPError from 'http-errors';
 
+
+async function updateUserCompany(userId: string, companyId: string) {
+    const data = getData();
+    const updateExpression = 'SET companyId = :companyId'
+	await data.update({
+		TableName: "Users", 
+		Key: { userId: userId },
+		UpdateExpression: updateExpression,
+		ExpressionAttributeValues: { ':companyId': companyId },
+	});
+}
 
 /**
  * Stub for the registerCompany function.
@@ -17,19 +28,18 @@ import * as validators from './validationHelpers';
  * @param {string} companyAbn - ABN of the company
  * @param {string} contactNumber - contact number of the company
  */
-export function registerCompany(token: string, companyName: string, companyAbn: string, headquarters: Location, 
-    companyEmail: string, contactNumber: string): string {
+export async function registerCompany(token: string, companyName: string, companyAbn: string, headquarters: Location, 
+    companyEmail: string, contactNumber: string): Promise<string> {
 
-    const user: User = validators.validateToken(token);
+    const user = await validators.validateToken(token);
     
-    if (user.companyId !== null) {
-        throw helpers.errorReturn(400, 'Error: User already works at a company');
-    }
+    if (user.companyId !== null) throw HTTPError(400, 'Error: User already works at a company');
     
-    const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user);
-    const dataStore = getData();
-    dataStore.companies.push(newCompany);
-    user.companyId = newCompany.companyId;
+    const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user.userId);
+    const data = getData();
+    await data.put({ TableName: "Companies", Item: newCompany});
+    await updateUserCompany(user.userId, newCompany.companyId);
+
     return newCompany.companyId;
 }
 
@@ -44,26 +54,37 @@ export function registerCompany(token: string, companyName: string, companyAbn: 
  * @returns {object}
  */
 
-export function addCompanyUser(token: string, companyId: string, email: string): EmptyObject {
-    const user: User = validators.validateToken(token);
-    const company: Company = getCompany(companyId);
+export async function addCompanyUser(token: string, companyId: string, email: string): Promise<EmptyObject> {
+    const user = await validators.validateToken(token);
+    const company = await getCompany(companyId);
     if (!company.members.includes(user.userId)) {
-        throw helpers.errorReturn(403, 'Error: User is not apart of this company')
+        throw HTTPError(403, 'Error: User is not apart of this company')
     }
 
     if (!company.admins.includes(user.userId)) {
-        throw helpers.errorReturn(403, 'Error: User is not authorised to add users')
+        throw HTTPError(403, 'Error: User is not authorised to add users')
     }
 
-    // Check if email is valid
-    const newUser: User = getUser({email: email});
+    const userToAdd = await getUserByEmail(email);
+    if (userToAdd === undefined) {
+        throw HTTPError(400, 'Error: User with this email does not exist');
+    }
 
-    if (newUser.companyId !== null) {
-        throw helpers.errorReturn(400, 'Error: User already works at a company');
+    if (userToAdd.companyId !== null) {
+        throw HTTPError(400, 'Error: User already works at a company');
     }
     
-    company.members.push(newUser.userId);
-    newUser.companyId = companyId;
+    const data = getData();
+    await data.update({        
+        TableName: "Companies",
+        Key: { companyId: companyId }, 
+        UpdateExpression: "SET members = list_append(members, :newItem)",
+        ExpressionAttributeValues: {
+            ":newItem": [ userToAdd.userId ], 
+        },
+    });
+
+    await updateUserCompany(userToAdd.userId, companyId);
     return {};
 }
 

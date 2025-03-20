@@ -73,7 +73,6 @@ export interface Invoice {
 }
 
 export interface User {
-  token: string,
   userId: string,
   companyId: string,
   email: string,
@@ -84,9 +83,9 @@ export interface User {
   numFailedPasswordsSinceLastLogin: number,
   age: number,
   gender: Gender,
-  timeCreated: Date,
+  timeCreated: string,
   previousPasswords: string[],
-  invoices: Invoice[]
+  invoices: number[]
 }
 
 export interface Location {

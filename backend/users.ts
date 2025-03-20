@@ -23,10 +23,10 @@ import { PutCommand } from '@aws-sdk/lib-dynamodb';
 
 // Change age to DOB
 export async function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): Promise<string> {
-    const dataStore = getData();
+    const data = getData();
     const newUser: User = await createUser(email, password, nameFirst, nameLast, age);
 
-	await dataStore.put({TableName: "Users", Item: newUser});
+	await data.put({TableName: "Users", Item: newUser});
 
 	const token: string = createToken(newUser.userId);
 	return token;

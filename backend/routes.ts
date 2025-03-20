@@ -1,9 +1,9 @@
 import { Express, NextFunction, Request, Response } from "express";
 import * as users from './users';
-// import * as companies from './companies';
+import * as companies from './companies';
 // import * as invoices from './invoices';
-// import { validateLocation } from "./validationHelpers";
-// import { Invoice, Location } from "./interface";
+import { validateLocation } from "./validationHelpers";
+import { Invoice, Location } from "./interface";
 // import { InvoiceConverter } from "./InvoiceConverter";
 import HTTPError from 'http-errors';
 import { resetDataStore } from "./dataStore";
@@ -52,39 +52,39 @@ function routes(app: Express) {
   //   }
   // });
 
-  // // app.get('/v1/user/invoices', async (req: Request, res: Response, next: NextFunction) => {
-  // //   try {
-  // //     const token = req.headers['authorization'].split(' ')[1];
-  // //     const response = invoices.listUserInvoices(token);
-  // //     res.status(200).json(response);
-  // //   } catch(err) {
-  // //     next(err)
-  // //   }
-  // // });
-
-  // app.post('/v1/company/register', async (req: Request, res: Response, next: NextFunction) => {
+  // app.get('/v1/user/invoices', async (req: Request, res: Response, next: NextFunction) => {
   //   try {
   //     const token = req.headers['authorization'].split(' ')[1];
-  //     const {companyName, companyAbn, companyEmail, contactNumber} = req.body;
-  //     const {address, city, state, postcode, country} = req.body;
-  //     const headquarters: Location = validateLocation(address, city, state, postcode, country);
-  //     const response = companies.registerCompany(token, companyName, companyAbn, headquarters, companyEmail, contactNumber);
+  //     const response = invoices.listUserInvoices(token);
   //     res.status(200).json(response);
   //   } catch(err) {
-  //     next(err);
+  //     next(err)
   //   }
   // });
 
-  // app.post('/v1/company/userAdd', async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     const { companyId, userEmailToAdd } = req.body;
-  //     const token = req.headers['authorization'].split(' ')[1];
-  //     const response = companies.addCompanyUser(token, companyId, userEmailToAdd);
-  //     res.status(200).json(response);
-  //   } catch(err) {
-  //     next(err);
-  //   }
-  // });
+  app.post('/v1/company/register', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization'].split(' ')[1];
+      const {companyName, companyAbn, companyEmail, contactNumber} = req.body;
+      const {address, city, state, postcode, country} = req.body;
+      const headquarters: Location = validateLocation(address, city, state, postcode, country);
+      const response = await companies.registerCompany(token, companyName, companyAbn, headquarters, companyEmail, contactNumber);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+
+  app.post('/v1/company/userAdd', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { companyId, userEmailToAdd } = req.body;
+      const token = req.headers['authorization'].split(' ')[1];
+      const response = await companies.addCompanyUser(token, companyId, userEmailToAdd);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
 
   // app.get('/v1/company/:companyId/invoices', async (req: Request, res: Response, next: NextFunction) => {
   //   try {
