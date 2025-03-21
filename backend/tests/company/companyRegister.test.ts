@@ -40,7 +40,7 @@ describe('companyRegister', () => {
     });
 
     test('Sucesfully registers multple company', async () => {
-        let companyData: companyRequestBody = {
+        const companyData: companyRequestBody = {
           companyName: 'Tech Corp',
           companyAbn: '12345678901',  
           companyEmail: 'adminOfCompanyEmail@gmail.com',
@@ -73,7 +73,7 @@ describe('companyRegister', () => {
         const companyId2 = response2.body;
         const companyId3 = response3.body;
         
-        let companyIds = new Set<string>();  
+        const companyIds = new Set<string>();  
         
         companyIds.add(companyId1);  
         companyIds.add(companyId2); 

@@ -1,22 +1,26 @@
 import isEmail from "validator/lib/isEmail";
 import * as helpers from "./helper";
-import { Invoice, Location, User } from "./interface";
+import { Location } from "./interface";
 import { getData } from "./dataStore";
-import jwt, {JwtPayload} from 'jsonwebtoken'
+import jwt, { JwtPayload } from 'jsonwebtoken'
+import HTTPError from 'http-errors';
+import { getCompany, getInvoice, getUserByEmail } from "./interfaceHelpers";
 
-export const validateToken = (token: string) : User => {
+export const validateToken = async (token: string) => {
     try {
-        const dataStore = getData();
+        const data = getData();
         const currentToken = jwt.verify(token, helpers.SECRET) as JwtPayload;
-        const user = dataStore.users.find((user) => user.userId === currentToken.userId);
-        return user
+        const response = await data.get({TableName: "Users", Key: { userId: currentToken.userId }});
+        // TODO: handle case where undefined throw error of response?
+        const user = response.Item;
+        return user;
     } catch(err) {
         if (err.name === 'TokenExpiredError') {
-            throw helpers.errorReturn(401, 'Error: Token has expired - Please log in again');
+            throw HTTPError(401, 'Error: Token has expired - Please log in again');
         } else if (err.name === 'NotBeforeError') {
-            throw helpers.errorReturn(401, 'Error: Token is not active');
+            throw HTTPError(401, 'Error: Token is not active');
         } else {
-            throw helpers.errorReturn(401, 'Error: Invalid Token');
+            throw HTTPError(401, 'Error: Invalid Token');
         }
     }
 }
@@ -62,20 +66,26 @@ export function isValidPass(password: string): boolean {
     return true;
 };
 
-export function authenticateUser(email: string, password: string) : User {
-    const dataStore = getData();
-    if (!isValidEmail(email)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Email');
-    }
+export async function authenticateUser(email: string, password: string) {
+    const data = getData();
 
-    const user = dataStore.users.find((object) => object.email === email);
+    const user = await getUserByEmail(email);
+
     if (user === undefined) {
-        throw helpers.errorReturn(400, 'Error: Email does not exist');
+        throw HTTPError(400, 'Error: User with this email does not exist');
     }
 
-    if (user.password !== helpers.getPasswordHash(password)) {
-        user.numFailedPasswordsSinceLastLogin++;
-        throw helpers.errorReturn(400, 'Error: Incorrect Password');
+    // TODO: Maybe chuck it in another function the update
+    if (user.password && user.password !== helpers.getPasswordHash(password)) {
+        const userFails = user.numFailedPasswordsSinceLastLogin + 1;
+        const updateExpression = 'SET numFailedPasswordsSinceLastLogin = :fails'
+        await data.update({
+            TableName: "Users", 
+            Key: { userId: user.userId },
+            UpdateExpression: updateExpression,
+            ExpressionAttributeValues: { ':fails': userFails },
+        });
+        throw HTTPError(400, 'Error: Incorrect Password');
     }
 
     return user;
@@ -102,21 +112,20 @@ export function isValidPhone(phone: string): boolean {
 
 export function validateLocation(address: string, city: string, state: string, postcode: string, country: string): Location {
     
-    // ???? 
     // if (!isValidName(address)) {
-    //     throw helpers.errorReturn(400, 'Error: Invalid Address');
+    //     throw HTTPError(400, 'Error: Invalid Address');
     // }
     if (!isValidName(city)) {
-        throw helpers.errorReturn(400, 'Error: Invalid City');
+        throw HTTPError(400, 'Error: Invalid City');
     }
     if (!isValidName(state)) {
-        throw helpers.errorReturn(400, 'Error: Invalid State');
+        throw HTTPError(400, 'Error: Invalid State');
     }
     // if (!isValidName(postcode)) {
-    //     throw helpers.errorReturn(400, 'Error: Invalid Postcode');
+    //     throw HTTPError(400, 'Error: Invalid Postcode');
     // }
     if (!isValidName(country)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Country');
+        throw HTTPError(400, 'Error: Invalid Country');
     }
 
     return {
@@ -131,31 +140,24 @@ export function validateLocation(address: string, city: string, state: string, p
 
 // This function is for people who are members of a company but not an admin,
 // they can only create and read invoices.
-export function validateUsersPerms(user: User, invoiceId: string): Invoice {
-    const dataStore = getData();
-    const invoice = dataStore.invoices.find((object) => object.invoiceId === invoiceId);
-    if (invoice === undefined) {
-        throw helpers.errorReturn(400, 'Error: Invoice does not exist');
-    }
+export async function validateUsersPerms(userId: string, userCompanyId: string, invoiceId: string) {
+    const invoice = await getInvoice(invoiceId);
 
     // Check if the invoice is not a company invoice and it wasn't made by the current user
     // or check if the invoice is a company invoice and if the current user belongs to that company.
-    if ((!invoice.companyId && invoice.userId != user.userId) || (invoice.companyId && invoice.companyId != user.companyId)) {
-        throw helpers.errorReturn(403, 'Error: User does not have access to this invoice');
+    if ((!invoice.companyId && invoice.userId != userId) || (invoice.companyId && invoice.companyId != userCompanyId)) {
+        throw HTTPError(403, 'Error: User does not have access to this invoice');
     }
 
     return invoice;
 }
 
-export function validateAdminPerms(user: User, invoiceId: string): Invoice {
-    const data = getData()
-    const invoice = validateUsersPerms(user, invoiceId)
-    const company = data.companies.find((c) => c.companyId === invoice.companyId)
-    if (company === undefined) {
-        throw helpers.errorReturn(400, 'Error: Company does not exist');
-    }
-    if (!company.admins.includes(user.userId)) {
-        throw helpers.errorReturn(403, 'Error: User is not an admin');
+export async function validateAdminPerms(userId: string, userCompanyId: string, invoiceId: string) {
+    const invoice = await validateUsersPerms(userId, userCompanyId, invoiceId)
+    const company = await getCompany(userCompanyId);
+
+    if (!company.admins.includes(userId)) {
+        throw HTTPError(403, 'Error: User is not an admin');
     }
     return invoice
 }

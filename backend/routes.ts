@@ -4,7 +4,9 @@ import * as companies from './companies';
 import * as invoices from './invoices';
 import { validateLocation } from "./validationHelpers";
 import { Invoice, Location } from "./interface";
-import { saveDataStore, setData } from "./dataStore";
+// import { InvoiceConverter } from "./InvoiceConverter";
+import HTTPError from 'http-errors';
+import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
 
 function routes(app: Express) {
@@ -13,19 +15,19 @@ function routes(app: Express) {
 // ========================================================================= //
 
   app.delete('/v1/clear', async (req: Request, res: Response, next: NextFunction) => {
-    setData({
-      companies: [],
-      users: [],
-      invoices: []});
-    res.status(200).json({})
-  })
+    try {
+      await resetDataStore();
+      res.status(200).json({});
+    } catch(err) {
+      next(err);
+    }
+  });
 
   app.post('/v1/user/register', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password, nameFirst, nameLast, age } = req.body;
-      const response = users.registerUser(email, password, nameFirst, nameLast, age); 
+      const response = await users.registerUser(email, password, nameFirst, nameLast, age); 
       res.status(200).json(response);
-      saveDataStore();
     } catch(err) {    
       next(err);
     }
@@ -34,44 +36,41 @@ function routes(app: Express) {
   app.post('/v1/user/login', async (req: Request, res: Response, next: NextFunction) => {
     try {       
       const { email, password } = req.body;
-      const response = users.userLogin(email, password);
+      const response = await users.userLogin(email, password);
       res.status(200).json(response);
-      saveDataStore();
     } catch(err) {    
       next(err);
     }
   });
 
-  app.post('/v1/user/logout', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const token = req.headers['authorization'].split(' ')[1];
-      const response = users.userLogout(token);
-      res.status(200).json(response);
-      saveDataStore();
-    } catch(err) {
-      next(err);
-    }
-  });
-
-  // app.get('/v1/user/invoices', async (req: Request, res: Response, next: NextFunction) => {
+  // app.post('/v1/user/logout', async (req: Request, res: Response, next: NextFunction) => {
   //   try {
   //     const token = req.headers['authorization'].split(' ')[1];
-  //     const response = invoices.listUserInvoices(token);
+  //     const response = users.userLogout(token);
   //     res.status(200).json(response);
   //   } catch(err) {
-  //     next(err)
+  //     next(err);
   //   }
   // });
 
+  app.get('/v1/user/invoices', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.listUserInvoices(token);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
   app.post('/v1/company/register', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers['authorization'].split(' ')[1];
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const {companyName, companyAbn, companyEmail, contactNumber} = req.body;
       const {address, city, state, postcode, country} = req.body;
       const headquarters: Location = validateLocation(address, city, state, postcode, country);
-      const response = companies.registerCompany(token, companyName, companyAbn, headquarters, companyEmail, contactNumber);
+      const response = await companies.registerCompany(token, companyName, companyAbn, headquarters, companyEmail, contactNumber);
       res.status(200).json(response);
-      saveDataStore();
     } catch(err) {
       next(err);
     }
@@ -80,8 +79,8 @@ function routes(app: Express) {
   app.post('/v1/company/userAdd', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { companyId, userEmailToAdd } = req.body;
-      const token = req.headers['authorization'].split(' ')[1];
-      const response = companies.addCompanyUser(token, companyId, userEmailToAdd);
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await companies.addCompanyUser(token, companyId, userEmailToAdd);
       res.status(200).json(response);
     } catch(err) {
       next(err);
@@ -92,7 +91,7 @@ function routes(app: Express) {
     try {
       const token = req.headers['authorization'].split(' ')[1];
       const companyId = req.params.companyId;
-      const response = invoices.listCompanyInvoices(token, companyId);
+      const response = await invoices.listCompanyInvoices(token, companyId);
       res.status(200).json(response);
     } catch(err) {
       next(err)
@@ -102,10 +101,9 @@ function routes(app: Express) {
   app.post('/v1/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const invoiceDetails = req.body;
-      const token = req.headers['authorization'].split(' ')[1];
-      const response = invoices.createInvoice(token, invoiceDetails); 
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.createInvoice(token, invoiceDetails); 
       res.status(200).json(response);
-      saveDataStore();
     } catch(err) {
       next(err);
     }
@@ -113,16 +111,15 @@ function routes(app: Express) {
   
   app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const contentType = req.headers['accept'].split(' ')[0];
+      const contentType = req.headers['accept'].split(' ')[0] || "application/JSON";
       const invoiceId = req.params.invoiceId;
-      const token = req.headers['authorization'].split(' ')[1];
-      const response: Invoice = invoices.retrieveInvoice(token, invoiceId, contentType);
-      // XML IS FOR SPRINT 3
-      // if (contentType.includes('application/xml'))  {
-      //   const invoiceUBL = new InvoiceConverter(response).parseToUBL();
-      //   res.status(200).send(invoiceUBL);
-      //   return;
-      // } 
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.retrieveInvoice(token, invoiceId);
+      if (contentType.includes('application/xml'))  {
+        const invoiceUBL = new InvoiceConverter(response).parseToUBL();
+        res.status(200).send(invoiceUBL);
+        return;
+      } 
       res.status(200).json(response);
     } catch(err) {
       next(err);
@@ -131,27 +128,29 @@ function routes(app: Express) {
 
   app.put('/v1/invoice/:invoiceId/edit', async (req: Request, res: Response, next: NextFunction) => {
       try {
-        const token = req.headers['authorization'].split(' ')[1];
+        const token = req.headers['authorization']?.split(' ')[1] || undefined;
         const { invoiceId, edits } = req.body;
-        const response = invoices.editInvoiceDetails(token, invoiceId, edits);
+        const response = await invoices.editInvoiceDetails(token, invoiceId, edits);
         res.status(200).json(response);
       } catch(err) {
-        next(err)
+        next(err);
       }
     });
     
   app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers['authorization'].split(' ')[1];
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const invoiceId  = req.params.invoiceId;
-      const response = invoices.deleteInvoice(token, invoiceId);
+      const response = await invoices.deleteInvoice(token, invoiceId);
       res.status(200).json(response);
     } catch(err) {
       next(err)
     }
   });
 
-  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  // We indirectly use next but not directly which causes linting errors
+  // eslint-disable-next-line 
+  app.use((err: HTTPError.HttpError, req: Request, res: Response, next: NextFunction) => {
     res.status(err.status || 500).json({ error: err.message });
   });
 }

@@ -1,17 +1,25 @@
 {
     "scripts": {
-        "start": "ts-node backend/src/app.ts",
-        "test": "jest",
-        "lint": "eslint backend/src --ext .ts",
+        "start": "npm-run-all --parallel start-dynamodb wait-for-dynamodb",
+        "start-dynamodb": "java -Djava.library.path=./.dynamodb/DynamoDBLocal_lib -jar ./.dynamodb/DynamoDBLocal.jar -sharedDb",
+        "wait-for-dynamodb": "wait-port -t 5000- localhost:8000 && ts-node backend/app.ts",
+        "stop-dynamodb": "ps aux | grep 'DynamoDBLocal' | grep -v grep | awk '{print $2}' | xargs kill",
+        "test": "npm-run-all --parallel start-dynamodb test-jest",
+        "test-jest": "wait-port -t 5000- localhost:8000 && jest && npm run stop-dynamodb",
+        "lint": "eslint backend --ext .ts",
         "coverage": "jest --coverage"
     },
     "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.767.0",
+        "@aws-sdk/lib-dynamodb": "^3.767.0",
+        "@aws-sdk/util-dynamodb": "^3.767.0",
         "cors": "^2.8.5",
         "express": "^4.21.2",
         "fast-xml-parser": "^5.0.9",
         "jsonwebtoken": "^9.0.2",
         "middleware-http-errors": "^0.1.2",
         "morgan": "^1.10.0",
+        "npm-run-all": "^4.1.5",
         "swagger-ui-express": "^5.0.1",
         "uuid": "^11.1.0",
         "validator": "^13.12.0",
@@ -43,6 +51,7 @@
         "ts-jest": "^29.2.6",
         "ts-node": "^10.9.2",
         "typescript": "^5.8.2",
-        "typescript-eslint": "^8.26.0"
+        "typescript-eslint": "^8.26.0",
+        "wait-port": "^1.1.0"
     }
 }

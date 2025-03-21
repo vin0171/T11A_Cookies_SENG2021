@@ -1,11 +1,11 @@
 import { getData } from './dataStore';
-import * as helpers from './helper'
-import { User,  EmptyObject } from './interface';
+import { User } from './interface';
 import { createToken, createUser } from './interfaceHelpers';
-import { authenticateUser, validateToken } from './validationHelpers';
+import { authenticateUser } from './validationHelpers';
+
 
 /** 
- * Stub for the userRegister function.
+ * UserRegister function.
  *
  * Register a user with an email, password, and names,
  * then returns a Token.
@@ -19,12 +19,13 @@ import { authenticateUser, validateToken } from './validationHelpers';
  */
 
 // Change age to DOB
-export function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): String {
-    const dataStore = getData();
-    const newUser: User = createUser(email, password, nameFirst, nameLast, age);
-	dataStore.users.push(newUser);
-	const token: string = createToken(newUser);
-	newUser.token = token;
+export async function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): Promise<string> {
+    const data = getData();
+    const newUser: User = await createUser(email, password, nameFirst, nameLast, age);
+
+	await data.put({TableName: "Users", Item: newUser});
+
+	const token: string = createToken(newUser.userId);
 	return token;
 }
 
@@ -39,12 +40,19 @@ export function registerUser(email: string, password: string, nameFirst: string,
  * @param {string} password - password the user wants to use
 
  */
-export function userLogin(email: string, password: string): string {
-	const user: User = authenticateUser(email, password);
-	user.numSuccessfulLogins++;
-	user.numFailedPasswordsSinceLastLogin = 0;
-	user.token = createToken(user);
-	return user.token;
+export async function userLogin(email: string, password: string): Promise<string> {
+	const data = getData();
+	const user = await authenticateUser(email, password);
+	const newSuccessLogins = user.numSuccessfulLogins + 1;
+	const updateExpression = 'SET numSuccessfulLogins = :increment, numFailedPasswordsSinceLastLogin = :zero';
+	data.update({
+		TableName: "Users", 
+		Key: { userId: user.userId },
+		UpdateExpression: updateExpression,
+		ExpressionAttributeValues: { ':increment': newSuccessLogins, ':zero': 0 },
+		ReturnValues: 'ALL_NEW',
+	});
+	return createToken(user.userId);
 }
 
 /**
@@ -56,9 +64,9 @@ export function userLogin(email: string, password: string): string {
  * @param {string} token - token of the user
  * @returns {}
  */
-export function userLogout(token: string): EmptyObject {
-	const user: User = validateToken(token);
-	if (user.token == null) throw helpers.errorReturn(401, 'User has already logged out');
-	user.token = null;
-	return {};
-}
+// export function userLogout(token: string): EmptyObject {
+// 	const user: User = validateToken(token);
+// 	if (user.token == null) throw helpers.errorReturn(401, 'User has already logged out');
+// 	user.token = null;
+// 	return {};
+// }

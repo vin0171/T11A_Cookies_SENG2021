@@ -73,7 +73,6 @@ export interface Invoice {
 }
 
 export interface User {
-  token: string,
   userId: string,
   companyId: string,
   email: string,
@@ -84,9 +83,9 @@ export interface User {
   numFailedPasswordsSinceLastLogin: number,
   age: number,
   gender: Gender,
-  timeCreated: Date,
+  timeCreated: string,
   previousPasswords: string[],
-  invoices: Invoice[]
+  invoices: number[]
 }
 
 export interface Location {
@@ -133,11 +132,6 @@ export interface UserSessionInfo {
   user: User,
   company: Company,
 }
-
-// Basically means that there is must be at least a userId or an email present, but not both.
-export type UserOptions = 
-  | { userId: string; email?: never }  
-  | { email: string; userId?: never };
 
 export { Session };
 

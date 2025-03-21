@@ -1,5 +1,5 @@
 import createServer from '../../server';
-import { requestClear, requestCompanyRegister, requestCreateInvoice, requestUserLogin, requestUserRegister } from '../testhelpers';
+import { requestClear, requestCompanyRegister, requestCreateInvoice, requestUserRegister } from '../testhelpers';
 import { companyData, sampleInvoiceDetails, sampleInvoiceDetails1, sampleInvoiceDetails2 } from '../sampleTestData';
 
 const app = createServer();
@@ -54,7 +54,7 @@ describe('createInvoice tests', () => {
 
     test('Multiple companies and multiple invoices', async () => {
         const adminToken = (await requestUserRegister(app, companyData.companyEmail, globalPassword , "Firstname", "Lastnane")).body;
-        const companyId = (await requestCompanyRegister(app, adminToken, companyData)).body;
+        (await requestCompanyRegister(app, adminToken, companyData));
         // Add the companyId that owns the invoice
         const invoiceDetails = {...sampleInvoiceDetails};
         const invoiceDetails1 = {...sampleInvoiceDetails1};
@@ -67,7 +67,7 @@ describe('createInvoice tests', () => {
         companyClone.companyEmail = 'adminOfCompanyEmail2@gmail.com'
         companyClone.companyName = 'Turple Industried. Inc'
         const adminToken1 = (await requestUserRegister(app, companyClone.companyEmail, globalPassword , "Firstname", "Lastnane")).body;
-        const companyId1 = (await requestCompanyRegister(app, adminToken1, companyClone)).body;
+        (await requestCompanyRegister(app, adminToken1, companyClone));
 
         const invoiceDetails2 = {...sampleInvoiceDetails}
         const invoiceDetails3 = {...sampleInvoiceDetails1}
@@ -81,7 +81,7 @@ describe('createInvoice tests', () => {
     test('Check for unique invoice IDs returned', async () => {
         const invoiceArray = [];
         const adminToken = (await requestUserRegister(app, companyData.companyEmail, globalPassword , "Firstname", "Lastnane")).body;
-        const companyId = (await requestCompanyRegister(app, adminToken, companyData)).body;
+        (await requestCompanyRegister(app, adminToken, companyData));
         // Add the companyId that owns the invoice
         const invoiceDetails = {...sampleInvoiceDetails}
         const invoiceDetails1 = {...sampleInvoiceDetails1}
@@ -103,7 +103,7 @@ describe('createInvoice tests', () => {
         ['totalAmount', -2902.95]
       ])('Negative amount for %s should return an error', async (field, invalidValue) => {
         const adminToken = (await requestUserRegister(app, companyData.companyEmail, globalPassword , "Firstname", "Lastnane")).body;
-        const companyId = (await requestCompanyRegister(app, adminToken, companyData)).body;
+        (await requestCompanyRegister(app, adminToken, companyData));
           const invalidInvoiceDetails = {
               sender: sampleInvoiceDetails.sender,
               receiver: sampleInvoiceDetails.receiver,

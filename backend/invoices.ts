@@ -1,9 +1,9 @@
 import * as validators from "./validationHelpers"
-import { EmptyObject, Invoice, InvoiceDetails, User } from "./interface";
-import { generateInvoice } from "./interfaceHelpers";
+import { Invoice, InvoiceDetails } from "./interface";
+import { generateInvoice, getCompany,  } from "./interfaceHelpers";
 import { getData } from "./dataStore";
 import {v4 as uuidv4} from 'uuid';
-import * as helpers from './helper';
+import HTTPError from 'http-errors';
 
 /**
  * Stub for the createInvoice function.
@@ -14,25 +14,38 @@ import * as helpers from './helper';
  * @param {InvoiceDetails} invoiceDetails - contains all invoice details
  * @returns {string}
  */
-export function createInvoice(token: string, invoiceDetails: InvoiceDetails) : string {
-    const user = validators.validateToken(token)
+export async function createInvoice(token: string, invoiceDetails: InvoiceDetails) : Promise<string> {
+    const user = await validators.validateToken(token);
     const data = getData();
     const invoiceId = uuidv4();
     const invoiceInfo : Invoice = generateInvoice(invoiceId, user.userId, user.companyId, invoiceDetails);
 
-    data.invoices.push(invoiceInfo)
-    user.invoices.push(invoiceInfo)
+    await data.put({ TableName: "Invoices", Item: invoiceInfo });
+    await addInvoiceIdToTable("Users", user.userId, invoiceId);
 
-    // You could definitely make this into a function but i dont WANT to
     if (user.companyId !== null) {
-        const company = data.companies.find((c) => c.companyId === user.companyId);
-        // This should not be possible
-        // if (company === null) {
-        //     throw helpers.errorReturn(400, 'Error: Company does not exist'); 
-        // } 
-        company.invoices.push(invoiceInfo);
+        await addInvoiceIdToTable("Companies", user.companyId, invoiceId)
     }
     return invoiceInfo.invoiceId;
+}
+
+// TODO: fix the two functions below if you want (Hashmap of name to object? idk)
+// and also i dont use this in other functions so um 
+function keyIdentifer(tableName: string, primaryKeyIdentifer: string) {
+    if (tableName === "Companies") return { companyId: primaryKeyIdentifer }
+    if (tableName === "Invoices") return { invoiceId: primaryKeyIdentifer }
+    return { userId: primaryKeyIdentifer }
+}
+
+async function addInvoiceIdToTable(tableName: string, primaryKeyIdentifer: string, invoiceId: string) {
+    const data = getData();
+    await data.update({
+        TableName: tableName,
+        Key: keyIdentifer(tableName, primaryKeyIdentifer),
+        UpdateExpression: 'SET invoices = list_append(invoices, :invoiceId)',
+        ExpressionAttributeValues: { ':invoiceId': [invoiceId] }
+    });
+
 }
 
 /**
@@ -41,15 +54,10 @@ export function createInvoice(token: string, invoiceDetails: InvoiceDetails) : s
  * Return an invoice with the given invoice id and content type.
  * @param {string} token - the token of the current user
  * @param {string} invoiceId -  the id of the invoice we want to retrieve
- * @param {string} contentType - the type we want the invoice to be returned as (json or xml), xml for sprint 3
- * @returns {Invoice}
  */
-export function retrieveInvoice(token: string, invoiceId: string, contentType: string): Invoice {
-    const userInfo: User  = validators.validateToken(token);
-	const invoiceInfo: Invoice = validators.validateUsersPerms(userInfo, invoiceId);
-    if (contentType === 'xml') {
-        // to do for sprint 3
-    }
+export async function retrieveInvoice(token: string, invoiceId: string) {
+    const user = await validators.validateToken(token);
+	const invoiceInfo = await validators.validateUsersPerms(user.userId, user.companyId, invoiceId);
     return invoiceInfo;
 }
 
@@ -61,13 +69,32 @@ export function retrieveInvoice(token: string, invoiceId: string, contentType: s
  * @param {string} token - the token of the current user
  * @param {Invoice} invoiceId - the id of the invoice to be edited
  * @param {InvoiceDetails} edits - the updated details of the invoice
- * @returns {Invoice}
  */
-export function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>): Invoice {
-    const user: User  = validators.validateToken(token);
-	let invoice: Invoice = validators.validateAdminPerms(user, invoiceId);
+export async function editInvoiceDetails(token: string, invoiceId: string, edits: Partial<InvoiceDetails>) {
+    const user = await validators.validateToken(token);
+	const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
     Object.assign(invoice.details, edits);
+    const data = getData();
+    await data.update({
+        TableName: "Invoices",
+        Key: keyIdentifer("Invoices", invoiceId),
+        UpdateExpression: 'SET details = :invoiceDetailsNew',
+        ExpressionAttributeValues: { ':invoiceDetailsNew': invoice.details }
+    });
     return invoice;
+}
+
+// TODO: This function is very simialr to the insert just so yk
+// DO NOT USE THIS FUNCTION WITH TABLENAME: INVOICES
+async function removeInvoiceIdFromTable(tableName: string, primaryKeyIdentifer: string, invoiceIdToRemove: string, invoiceList: string[]) {
+    const newInvoiceList = invoiceList.filter((invId: string) => invId !== invoiceIdToRemove);
+    const data = getData();
+    await data.update({
+        TableName: tableName,
+        Key: keyIdentifer(tableName, primaryKeyIdentifer),
+        UpdateExpression: 'SET invoices = :newInvoiceList',
+        ExpressionAttributeValues: { ':newInvoiceList': newInvoiceList}
+    });
 }
 
 /** Stub for the deleteInvoice function
@@ -76,24 +103,31 @@ export function editInvoiceDetails(token: string, invoiceId: string, edits: Part
  * 
  * @param {string} token - token of the user     
  * @param {number} invoiceId - id of the invoice
- * @returns {null}
  */
-export function deleteInvoice(token: string, invoiceId: string) : EmptyObject {
+export async function deleteInvoice(token: string, invoiceId: string) {
     const data = getData();
-    const userInfo: User  = validators.validateToken(token);
-	const invoice: Invoice = validators.validateAdminPerms(userInfo, invoiceId);
-    data.invoices.splice(data.invoices.indexOf(invoice), 1)
-    // i also need to delete the invoice from the user and the company if they are in one.
-    userInfo.invoices.splice(userInfo.invoices.indexOf(invoice), 1)
-    if (userInfo.companyId !== null) {
-        const company = data.companies.find((c) => c.companyId === userInfo.companyId);
-        // This should be impossible
-        // if (company === null) {
-        //     throw helpers.errorReturn(400, 'Error: Company does not exist'); 
-        // } 
-        company.invoices.splice(company.invoices.indexOf(invoice), 1)
+    const user = await validators.validateToken(token);
+	const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+    const company = await getCompany(user.companyId);
+    const invoiceIdToRemove = invoice.invoiceId;
+
+    await data.delete({ TableName: "Invoices", Key: { invoiceId: invoiceIdToRemove } });
+    await removeInvoiceIdFromTable("Users", user.userId, invoiceIdToRemove, user.invoices);
+
+    if (user.companyId !== null) {
+        await removeInvoiceIdFromTable("Companies", user.companyId, invoiceIdToRemove, company.invoices);
     }
     return {};
+}
+
+async function getInvoiceList(invoiceList: number[]) {
+    const invoiceMap = invoiceList.map((inv: number) => ({ invoiceId: inv }));
+    if (invoiceList.length === 0) return invoiceList;
+    const data = getData();
+    const response = await data.batchGet({
+        RequestItems: { Invoices: { Keys: invoiceMap } }
+    });
+    return response.Responses.Invoices;
 }
 
 
@@ -103,33 +137,29 @@ export function deleteInvoice(token: string, invoiceId: string) : EmptyObject {
  * 
  * @param {string} token - token of the user    
  * @param {string} companyId - the id of the company
- * @returns {Invoice[]}
  * 
 */
-export function listCompanyInvoices(token: string, companyId: string): Invoice[] {
+export async function listCompanyInvoices(token: string, companyId: string) {
     const data = getData();
-    const user = validators.validateToken(token);
-    const company = data.companies.find((c) => c.companyId === companyId);
-    if (company === undefined) {
-        throw helpers.errorReturn(400, 'Error: Company does not exist'); 
-    } 
+    const user = await validators.validateToken(token);
+    const company = await getCompany(companyId);
+  
     if (user.companyId != company.companyId) {
-        throw helpers.errorReturn(403, 'Error: User is not authorised')
+        throw HTTPError(403, 'Error: User is not authorised')
     }
-    return company.invoices;
+    return getInvoiceList(company.invoices);
 }
 
-/** Stub for the listUsersInvoices function 
- * 
- * Returns a list of every invoice for a given user.
- * 
- * @param {string} token - token of the user 
- * @returns {Invoice[]}
- * 
-*/
-export function listUserInvoices(token: string): Invoice[] {
-    const user = validators.validateToken(token);
-    if (user === null) throw helpers.errorReturn(401, 'User does not exist');
-    return user.invoices;
+// /** Stub for the listUsersInvoices function 
+//  * 
+//  * Returns a list of every invoice for a given user.
+//  * 
+//  * @param {string} token - token of the user 
+//  * @returns {Invoice[]}
+//  * 
+// */
+export async function listUserInvoices(token: string) {
+    const user = await validators.validateToken(token);
+    return getInvoiceList(user.invoices);
 }
 

@@ -21,6 +21,10 @@ Run the following command to install the required dependencies and modules:
 ```sh
 npm i
 ```
+Run the following shell script
+```sh
+./setupDynamoDbLocal.sh
+```
 
 ### 4. Start the Server
 
@@ -47,3 +51,4 @@ To execute unit tests, use:
 ```sh
 npm run test
 ```
+Note: DynamoDB Local is a tool provided by AWS for local development and testing. Please review the DynamoDB Local License Agreement https://aws.amazon.com/dynamodb/dynamodblocallicense/ to ensure compliance with the terms before using it. This setup is intended for local development use only, and DynamoDB Local should not be redistributed or used in a commercial service.

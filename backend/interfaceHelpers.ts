@@ -2,31 +2,27 @@ import {v4 as uuidv4} from 'uuid';
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
-import {Company, Gender, InvoiceDetails, Location, User, UserOptions} from './interface';
+import {Company, Gender, InvoiceDetails, InvoiceItem, Location, User } from './interface';
 import { SECRET } from "./helper";
 import jwt from 'jsonwebtoken';
+import HTTPError from 'http-errors';
 
-export function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : User {
-    const dataStore = getData();
+export async function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : Promise<User> {
 
     if (!validators.isValidName(nameFirst) || !validators.isValidName(nameLast)) {
-		throw helpers.errorReturn(400, 'Error: Invalid Name');
+		throw HTTPError(400, 'Error: Invalid Name');
 	}
 
-	if (!validators.isValidEmail(email)) {
-		throw helpers.errorReturn(400, 'Error: Invalid Email');
-	}
-	
-	if (dataStore.users.find((object) => object.email === email) !== undefined) {
-		throw helpers.errorReturn(400, 'Error: Email already used by another User');
-	}
+    const userExistsAlready = await getUserByEmail(email);
+    if (userExistsAlready !== undefined) {
+        throw HTTPError(400, 'Error: Email already used by another User');
+    }
 
 	if (!validators.isValidPass(password)) {
-		throw helpers.errorReturn(400, 'Error: Invalid Password');
+		throw HTTPError(400, 'Error: Invalid Password');
 	}
     
     return {
-        token: null,
         userId: uuidv4(),
         companyId: null,
         email: email,
@@ -37,62 +33,52 @@ export function createUser(email: string, password: string, nameFirst: string, n
         numFailedPasswordsSinceLastLogin: 0,
         age: age,
         gender: Gender.OTHER,
-        timeCreated: new Date(),
+        timeCreated: new Date().toISOString(),
         previousPasswords: [],
         invoices: []
     }
 }
 
-export function getUser({userId, email}: UserOptions) : User {
-    const dataStore = getData();
-    if (!userId && !email) {
-        throw helpers.errorReturn(400, 'Error: Provide either a user ID or an email')
-    }
+// Acts as a .find function returning undefined if none found 
+// else returns the user Object
+export async function getUserByEmail(email: string) {
+    if (!validators.isValidEmail(email)) {
+		throw HTTPError(400, 'Error: Invalid Email');
+	}
 
-    if (email !== undefined) {
-        if (!validators.isValidEmail(email)) {
-            throw helpers.errorReturn(400, 'Error: Invalid Email');
+    const data = getData();
+    const response = await data.query({
+        TableName: "Users", 
+        IndexName: "EmailIndex",
+        KeyConditionExpression: 'email = :email', 
+        ExpressionAttributeValues: {
+            ':email': email
         }
-        const user = dataStore.users.find((object) => object.email === email);
-        if (user === undefined) {
-            throw helpers.errorReturn(400, 'Error: Email does not exist');
-        }
-        return user;
-    }
+    });
 
-    const user = dataStore.users.find((object) => object.userId === userId);
-    if (user === undefined) {
-        throw helpers.errorReturn(400, 'Error: User does not exist');
-    }
-    return user;
+    return response.Items.length === 0 ? undefined : response.Items[0];
 }
 
-export function validateUser() : boolean {
-    return true
-}
-
-export function createToken(user: User) : string {
+export function createToken(userId: string) : string {
     // the time created is called (iat), and its automatically included in the creation
-    const data = {
-        userId: user.userId,
-    }
+    const data = { userId: userId }
     return jwt.sign(data, SECRET, {expiresIn: '7d'})
 }
 
 export function createCompany(companyName: string, companyAbn: string, headquarters: Location, companyEmail: string, contactNumber: string,
-    user: User): Company {
-      // check if the company name is valid
+    userId: string): Company {
+
     if (!validators.isValidName(companyName)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Company Name');
+        throw HTTPError(400, 'Error: Invalid Company Name');
     }
     if (!validators.isValidABN(companyAbn)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Company ABN');
+        throw HTTPError(400, 'Error: Invalid Company ABN');
     }
     if (!validators.isValidEmail(companyEmail)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Email');
+        throw HTTPError(400, 'Error: Invalid Email');
     }
     if (!validators.isValidPhone(contactNumber)) {
-        throw helpers.errorReturn(400, 'Error: Invalid Phone Number');
+        throw HTTPError(400, 'Error: Invalid Phone Number');
     }
     
     return {
@@ -102,25 +88,25 @@ export function createCompany(companyName: string, companyAbn: string, headquart
         headquarters: headquarters,
         phone: contactNumber,
         email: companyEmail,
-        owner: user.userId,
-        admins: [user.userId],
-        members: [user.userId],
+        owner: userId,
+        admins: [userId],
+        members: [userId],
         invoices: []
     }
     }
     
-export function getCompany(companyId: string): Company {
-    const dataStore = getData();
-    const company = dataStore.companies.find((object) => object.companyId === companyId);
-    if (company === undefined) {
-        throw helpers.errorReturn(400, 'Error: Company does not exist');
+export async function getCompany(companyId: string) {
+    const data = getData();
+    const response = await data.get({ TableName: "Companies", Key: { companyId: companyId }});
+    if (response.Item === undefined) {
+        throw HTTPError(400, 'Error: Company does not exist');
     }
-    return company;
+    return response.Item;
 }
 
 const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
-    invoiceDetails.items.forEach((item: any) => {
-        const fieldsToCheck = [
+    invoiceDetails.items.forEach((item: InvoiceItem) => {
+        const fieldsToCheck: (keyof InvoiceItem)[] = [
             'quantity',
             'unitPrice',
             'discountAmount',
@@ -129,9 +115,13 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
             'totalAmount'
         ];
 
-        fieldsToCheck.forEach(field => {
+        fieldsToCheck.forEach((field: keyof InvoiceItem) => {
+            if (typeof item[field] !== 'number') {
+                throw HTTPError(400, `Invalid value for ${field}: ${item[field]} is not a number.`);
+            }
+
             if (item[field] < 0) {
-                throw helpers.errorReturn(400, `Invalid value for ${field}: ${item[field]} cannot be negative.`);
+                throw HTTPError(400, `Invalid value for ${field}: ${item[field]} cannot be negative.`);
             }
         });
     });
@@ -144,10 +134,18 @@ export function generateInvoice(invoiceId: string, userId: string, companyId: st
     const invoice = {
         invoiceId: invoiceId, 
         userId: userId,
-        // I believe this should be either null or a string
         companyId: companyId,
         details: invoiceDetails
     }
 
     return invoice;
+}
+
+export async function getInvoice(invoiceId: string) {
+    const data = getData();
+    const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoiceId }});
+    if (response.Item === undefined) {
+        throw HTTPError(400, 'Error: Invoice does not exist');
+    }
+    return response.Item;
 }
