@@ -515,7 +515,7 @@ paths:
         400:
           $ref: '#/components/responses/RegisterErrorResponse'
 
-  /v1/auth/login:
+  /v1/user/login:
     post:
       summary: Login a user
       description: Takes in information about a user to determine if they can log in
@@ -533,7 +533,7 @@ paths:
         400:
           $ref: '#/components/responses/LoginErrorResponse'
 
-  /v1/auth/logout:
+  /v1/user/logout:
     post:
       summary: Logs out a user who has an active session
       description: Should be called with a token that is returned after either a login or register has been made
@@ -618,7 +618,7 @@ paths:
       
 
   # Invoice Edit 
-  /v1/invoice/{invoiceId}/edit/details:
+  /v1/invoice/{invoiceId}/edit:
     put:
       summary: Edit the details of the given InvoiceId
       description: Updates the Invoice Document with the given ID and the new content
@@ -642,35 +642,11 @@ paths:
         403:
           $ref: '#/components/responses/InvoiceEditError403'
 
-  /v1/invoice/{invoiceId}/edit/status:
-    put:
-      summary: Edit the details of the given InvoiceId
-      description: Updates the Invoice Document to the new status (Active, Archive, Trash)
-      tags:
-        - "Invoice Endpoints (Iteration 1: Sprint 2)"
-      parameters:
-        - $ref: '#/components/parameters/Token'
-        - $ref: '#/components/parameters/InvoiceId'
-      requestBody:
-        content:
-          application/json:
-            schema:
-             $ref: '#/components/schemas/Invoice'
-      responses:
-        200: 
-          $ref: '#/components/responses/InvoiceEditSuccess'
-        400:
-          $ref: '#/components/responses/InvoiceEditError400'
-        401:
-          $ref: '#/components/responses/InvoiceEditError401'
-        403:
-          $ref: '#/components/responses/InvoiceEditError403'
-
   # Invoice List
-  /v1/invoice/list:
+  /v1/user/invoice/list:
     get:
       summary: Returns a list of known invoices
-      description: Fetches a list of invoice that user has access to
+      description: Fetches a list of invoice that the user has access to
       tags:
         - "Invoice Endpoints (Iteration 1: Sprint 2)"
       parameters:
@@ -682,22 +658,21 @@ paths:
           $ref: '#/components/responses/InvoiceListError401'
         
   
-  
-  # Invoice Empty Trash
-  /v1/invoice/trash:
-    delete:
-      summary: Deletes all invoices that are in the trash
-      description: Removes all invoices in trash permanently
+    # Invoice List
+  /v1/company/{companyId}/invoice:
+    get:
+      summary: Returns a list of known invoices
+      description: Fetches a list of invoice that the company has access to
       tags:
-       - "Invoice Endpoints (Iteration 1: Sprint 2)"
+        - "Invoice Endpoints (Iteration 1: Sprint 2)"
       parameters:
         - $ref: '#/components/parameters/Token'
       responses:
-        200: 
-          $ref: '#/components/responses/InvoiceEmptyTrashSuccess'
+        200:
+          $ref: '#/components/responses/InvoiceListSuccess'
         401:
-          $ref: '#/components/responses/InvoiceEmptyTrashError401'
-          
+          $ref: '#/components/responses/InvoiceListError401'
+        
 # ===================================================================
 # Company Endpoints 
 # ===================================================================   
@@ -722,7 +697,7 @@ paths:
           $ref: '#/components/responses/CompanyRegisterError401'
         
         
-  /v1/company/user/add:
+  /v1/company/userAdd:
     put:
       summary: Adds the given user to the company 
       description: Adds the given user to the company providing the user access to selected company invoices

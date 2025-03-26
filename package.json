@@ -1,8 +1,8 @@
 {
     "scripts": {
-        "start": "ts-node backend/src/app.ts",
+        "start": "ts-node backend/app.ts",
         "test": "jest",
-        "lint": "eslint backend/src --ext .ts",
+        "lint": "eslint backend/ --ext .ts",
         "coverage": "jest --coverage"
     },
     "dependencies": {
