@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import PresentationCard from '../components/PresentationCard';
-import CreatePresentationDialog from '../components/CreatePresentationDialog';
+import RegisterCompanyDialog from '../components/RegisterCompanyDialog'
 import axios from 'axios';
 import { API_URL } from '../App';
 import { useEffect, useState } from 'react';
@@ -12,7 +12,7 @@ import LoadingBox from '../components/LoadingBox';
  */
 export default function DashboardPage({token}) {
   const [presentations, setPresentations] = useState([]);
-  const [presentationCreated, setPresentationCreated] = useState(false);
+  const [companyCreated, setCompanyCreated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // useEffect(() => {
@@ -43,7 +43,6 @@ export default function DashboardPage({token}) {
               alignItems: 'center',
               justifyContent: 'center',
               height: '100%',
-              width: '60%',
               gap: '10%',
             }}>
             <Typography 
@@ -54,9 +53,9 @@ export default function DashboardPage({token}) {
                   fontSize: '1.25em',
                 },
               }}>
-              Start a new presentation
+              Register a Company
             </Typography>
-            <CreatePresentationDialog token={token} setPresentationCreated={setPresentationCreated}/>
+            <RegisterCompanyDialog token={token} setCompanyCreated={setCompanyCreated}/>
           </Box>
         </Box>
         <Box 

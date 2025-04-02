@@ -39,7 +39,7 @@ const LoginForm = ({ email, setEmail, password, setPassword, handleSubmit, error
     <Button
       type='submit'
       sx={{
-        bgcolor: '#007BFF', // Blue color
+        bgcolor: '#9ccde1', // Blue color
         height: 55,
         width: 200,
         color: 'white',
@@ -71,13 +71,12 @@ export default function LoginPage({ setToken }) {
       email: formData.get('login-email'),
       password: formData.get('login-password'),
     };
-
-    axios
-      .post(`${API_URL}/admin/auth/login`, postParams)
+    
+    axios.post(`${API_URL}/v1/user/login`, postParams)
       .then((response) => {
         setError({ isError: false, msg: '' });
-        setToken(response.data.token);
-        localStorage.setItem('token', response.data.token);
+        setToken(response.data);
+        localStorage.setItem('token', response.data);
         navigate('/dashboard', { replace: true });
       })
       .catch((error) => {

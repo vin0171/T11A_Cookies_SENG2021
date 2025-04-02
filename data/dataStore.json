@@ -32,14 +32,14 @@
       "invoices": []
     },
     {
-      "token": null,
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NTA1ODA5Mi0yMDI1LTQwYTAtYjU0YS04ZjcyMTljOTExMTIiLCJpYXQiOjE3NDM1OTQ4OTksImV4cCI6MTc0NDE5OTY5OX0.UkTJ_2U6OAFl00C8vgRO2gSdzRbn8F3by2e_dcsByJE",
       "userId": "85058092-2025-40a0-b54a-8f7219c91112",
       "companyId": null,
       "email": "ajl@gmail.com",
       "password": "ead6237e5bfc5d247a9ea67f970d73c5502daf28c3284a5a8b3e0f281e313ca5",
       "nameFirst": "ajl",
       "nameLast": "ajl",
-      "numSuccessfulLogins": 0,
+      "numSuccessfulLogins": 2,
       "numFailedPasswordsSinceLastLogin": 0,
       "age": "2004-11-08T13:00:00.000Z",
       "gender": "OTHER",

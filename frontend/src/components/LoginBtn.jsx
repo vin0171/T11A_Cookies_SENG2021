@@ -12,14 +12,10 @@ export default function LoginBtn() {
   const handleUserClick = () => {
     navigate('/user/login');
   }
-  const handleCompanyClick = () => {
-    navigate('/company/login');
-  }
 
   return (
     <Box sx={{display: 'flex', gap: '20px'}}>
-      <NavbarBtnTemplate onClick={handleUserClick} title={'Company'}></NavbarBtnTemplate>
-      <NavbarBtnTemplate onClick={handleCompanyClick} title={'Personal'}></NavbarBtnTemplate>
+      <NavbarBtnTemplate onClick={handleUserClick} title={'Login'}></NavbarBtnTemplate>
     </Box>
   )
 }

@@ -32,7 +32,7 @@ export default function Navbar({children}) {
                 cursor: 'pointer'
               },
             }}
-            handleClick={() => {navigate('/'), console.log('hello')}}
+            handleClick={() => {navigate('/')}}
           />
           {children}
         </Toolbar>

@@ -15,8 +15,8 @@ export default function Router () {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token && ['/login', '/register'].includes(location.pathname)) navigate('/dashboard', {replace: true});
-    if (!token && !['/login', '/register'].includes(location.pathname)) navigate('/', {replace: true});
+    if (token && location.pathname.includes('login') && location.pathname.includes('register')) navigate('/dashboard', {replace: true});
+    if (!token && !location.pathname.includes('login') && !location.pathname.includes('register')) navigate('/', {replace: true});
   }, [token, location.pathname])
 
   // if the user has a token and is on the dashboard, then the navbar should display
@@ -27,13 +27,12 @@ export default function Router () {
   return (
     <>
       {(
-        location.pathname !== '/login' &&
-      location.pathname !== '/register'
+        !location.pathname.includes('login') && !location.pathname.includes('register')
       ) && <Navbar>{navbarButton}</Navbar>}
       <Routes>
         <Route path='/' element={<HomePage token={token}/>}/>
-        <Route path='/login' element={<LoginPage setToken={setToken}/>}/>
-        <Route path='/register' element={<RegisterPage setToken={setToken}/>}/>
+        <Route path='user/login' element={<LoginPage setToken={setToken} type='user'/>}/>
+        <Route path='user/register' element={<RegisterPage setToken={setToken}/>}/>
         <Route path='/dashboard' element={<DashboardPage token={token}/>}/>
       </Routes>
     </>

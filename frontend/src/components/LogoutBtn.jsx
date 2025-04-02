@@ -9,7 +9,6 @@ import { API_URL } from '../App';
  * appears in the navbar for an authorised user.
  */
 export default function LogoutBtn({token, setToken}) {
-  console.log('hello')
   const navigate = useNavigate();
   const handleClick = () => {
     axios.post(`${API_URL}/v1/user/logout`, {}, {

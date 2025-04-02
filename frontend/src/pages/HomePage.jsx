@@ -70,7 +70,8 @@ export default function HomePage ({token}) {
             flex: 1,
             display: 'flex', 
             justifyContent: 'center', 
-            alignItems: 'center'
+            alignItems: 'center',
+            bgcolor: '#e2dacd'
           }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4}}>
             <Typography 
@@ -83,7 +84,7 @@ export default function HomePage ({token}) {
               Not Registered with Us?
             </Typography>
             <Button
-              onClick={() => navigate('/register')}
+              onClick={() => navigate('user/register')}
               variant='contained'
               sx={{ 
                 ...commonBtnStyles,

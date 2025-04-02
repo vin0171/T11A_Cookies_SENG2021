@@ -115,7 +115,7 @@ const RegisterForm = ({
     <Button
       type='submit'
       sx={{
-        bgcolor: '#007BFF', // Blue color
+        bgcolor: '#9ccde1', // Blue color
         height: 55,
         width: 200,
         color: 'white',
@@ -123,6 +123,7 @@ const RegisterForm = ({
         fontWeight: 'bold',
         fontSize: '1.25em',
         borderRadius: 2,
+        
       }}
     >
       Register
@@ -134,7 +135,6 @@ const RegisterForm = ({
  * This page sets up the register page.
  */
 export default function RegisterPage({ setToken }) {
-  console.log('hello?')
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
@@ -176,7 +176,6 @@ export default function RegisterPage({ setToken }) {
 
     axios.post(`${API_URL}/v1/user/register`, postParams)
       .then((response) => {
-        console.log(response)
         setError({ isError: false, msg: '' });
         setToken(response.data);
         localStorage.setItem('token', response.data);
