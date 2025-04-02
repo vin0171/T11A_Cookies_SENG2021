@@ -15,7 +15,7 @@ export default function AuthPageTemplate({ authType, styles, children, handleLog
         component='div' 
         sx={{ 
           width: '100%', 
-          background: 'linear-gradient(to right bottom, #3a3c43, #6f4e7d)',
+          background: '#9ccde1',
           display: 'flex',
           alignItems: 'center',
           flexDirection: 'column'

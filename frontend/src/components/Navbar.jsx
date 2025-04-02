@@ -17,7 +17,7 @@ export default function Navbar({children}) {
           disableGutters
           variant ='dense' 
           sx={{
-            bgcolor: '#6f4e7d',
+            bgcolor: '#27548A',
             justifyContent: 'space-between', 
             alignItems: 'center',
             pl: 1.3, 

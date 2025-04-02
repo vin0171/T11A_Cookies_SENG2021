@@ -20,16 +20,16 @@ const RegisterForm = ({
   confirmPassword,
   setConfirmPassword,
   handleSubmit,
-  error
+  error,
 }) => (
   <Form onSubmit={handleSubmit}>
-    <TextField 
-      id='register-email' 
+    <TextField
+      id='register-email'
       name='register-email'
-      label='Email' 
+      label='Email'
       value={email}
-      variant='outlined' 
-      type='email' 
+      variant='outlined'
+      type='email'
       autoComplete='on'
       required
       sx={{ width: '100%' }}
@@ -38,7 +38,7 @@ const RegisterForm = ({
     <TextField
       id='register-name'
       name='register-name'
-      label='Name'
+      label='Company Name (Cookie)'
       value={name}
       required
       sx={{ width: '100%' }}
@@ -65,11 +65,11 @@ const RegisterForm = ({
       sx={{ width: '100%' }}
       onChange={(e) => setConfirmPassword(e.target.value)}
     />
-    {error.isError && <ErrorMessage error={error.msg} styles={{fontSize: '1.4em'}}></ErrorMessage>}
-    <Button 
+    {error.isError && <ErrorMessage error={error.msg} styles={{ fontSize: '1.4em' }} />}
+    <Button
       type='submit'
       sx={{
-        bgcolor: '#6f4e7d',
+        bgcolor: '#007BFF', // Blue color
         height: 55,
         width: 200,
         color: 'white',
@@ -77,7 +77,8 @@ const RegisterForm = ({
         fontWeight: 'bold',
         fontSize: '1.25em',
         borderRadius: 2,
-      }}>
+      }}
+    >
       Register
     </Button>
   </Form>
@@ -86,23 +87,23 @@ const RegisterForm = ({
 /**
  * This page sets up the register page.
  */
-export default function RegisterPage({setToken}) {
+export default function RegisterPage({ setToken }) {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState({isError: false, msg: ''});
+  const [error, setError] = useState({ isError: false, msg: '' });
 
   useEffect(() => {
     if (password !== confirmPassword) {
-      setError({isError: true, msg: 'Passwords do not match'});
+      setError({ isError: true, msg: 'Passwords do not match' });
     } else {
-      setError({isError: false, msg: ''});
+      setError({ isError: false, msg: '' });
     }
   }, [password, confirmPassword]);
-  
+
   const handleSubmit = (event) => {
     event.preventDefault();
     if (password !== confirmPassword) return;
@@ -110,34 +111,37 @@ export default function RegisterPage({setToken}) {
     const postParams = {
       email: email,
       password: password,
-      name: name
+      name: name,
     };
 
-    axios.post(`${API_URL}/admin/auth/register`, postParams)
+    axios
+      .post(`${API_URL}/admin/auth/register`, postParams)
       .then((response) => {
-        setError({isError: false, msg: ''});
+        setError({ isError: false, msg: '' });
         setToken(response.data.token);
         localStorage.setItem('token', response.data.token);
-      
+
         const defaultStore = {
           store: {
-            presentations: []
-          }
-        }
-        return axios.put(`${API_URL}/store`, defaultStore, {headers: {Authorization: `Bearer ${response.data.token}`}})
+            presentations: [],
+          },
+        };
+        return axios.put(`${API_URL}/store`, defaultStore, { headers: { Authorization: `Bearer ${response.data.token}` } });
       })
-      .then(() => {navigate('/dashboard', {replace: true})})
+      .then(() => {
+        navigate('/dashboard', { replace: true });
+      })
       .catch((error) => {
-        setError({isError: true, msg: error.response.data.error});
+        setError({ isError: true, msg: error.response.data.error });
       });
   };
 
   return (
     <AuthPageTemplate
-      authType={'Register'} 
+      authType={'Register'}
       styles={{ justifyContent: 'space-around', boxHeight: '100%', titleHeight: 'unset', gap: '35px' }}
     >
-      <RegisterForm 
+      <RegisterForm
         email={email}
         setEmail={setEmail}
         name={name}

@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components'; 
 import { BrowserRouter } from 'react-router-dom';
-import Router from './Router'
+import Router from './Router';
 
 export const API_URL = 'http://localhost:5005';
 
@@ -16,16 +16,24 @@ const GlobalStyle = createGlobalStyle`
     flex-direction: column;
     height: 100%;
   }
+
+  .MuiButton-root {
+    background-color: #007BFF !important;
+    color: white !important;
+    &:hover {
+      background-color: #0056b3 !important;
+    }
+  }
 `
 function App() {
   return (
     <>
-      <GlobalStyle/>
+      <GlobalStyle />
       <BrowserRouter>
-        <Router/>
+        <Router />
       </BrowserRouter>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

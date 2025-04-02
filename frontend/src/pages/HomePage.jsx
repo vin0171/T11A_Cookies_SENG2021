@@ -21,12 +21,12 @@ export default function HomePage ({token}) {
         <Box
           component='section' 
           sx={{ 
-            bgcolor: '#41444d',
+            bgcolor: '#9ccde1',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
           }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', color: '#e2dacd', alignItems: 'center', textAlign: 'center'}}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', color: '3a3c43', alignItems: 'center', textAlign: 'center'}}>
             <Typography 
               variant='h3' 
               sx={{
@@ -35,7 +35,7 @@ export default function HomePage ({token}) {
                   width: '80%'
                 },
               }}>
-              Minimal Effort, Maximum Style
+              Streamline your invoicing process
             </Typography>
             <br/>
             <Typography 
@@ -43,8 +43,9 @@ export default function HomePage ({token}) {
               sx={{
                 '@media (max-width: 675px)' : {
                   width: 400
-                }}}>
-                Start Making Flashy Presentations with the Click of a Button
+                }
+              }}>
+              Start generating, validating, and managing invoices with just a few clicks.
             </Typography>
             {token && 
             <Button
@@ -65,7 +66,7 @@ export default function HomePage ({token}) {
         <Box
           component='section' 
           sx={{ 
-            bgcolor: '#e2dacd' ,
+            bgcolor: '#white' ,
             flex: 1,
             display: 'flex', 
             justifyContent: 'center', 

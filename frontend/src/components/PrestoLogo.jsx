@@ -11,7 +11,7 @@ export default function PrestoLogo({styles = {}, handleClick={}}) {
       component='h3'
       onClick={handleClick}
       sx={{	
-        bgcolor: '#553b5f',
+        bgcolor: '#DDA853',
         textAlign: 'center',
         p: 1,
         pl: 1.5,
@@ -24,7 +24,7 @@ export default function PrestoLogo({styles = {}, handleClick={}}) {
         },
         ...styles
       }}>
-    Presto	
+    Cookie	
     </Typography>
   )
 }
