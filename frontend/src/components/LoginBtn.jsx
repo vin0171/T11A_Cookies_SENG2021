@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import NavbarBtnTemplate from './NavbarBtnTemplate';
+import { Fragment } from 'react';
+import { Box } from '@mui/material';
 
 /**
  * This component formats and sets thes functionality for the login button which
@@ -7,11 +9,17 @@ import NavbarBtnTemplate from './NavbarBtnTemplate';
  */
 export default function LoginBtn() {
   const navigate = useNavigate();
-  const handleClick = () => {
-    navigate('/login');
+  const handleUserClick = () => {
+    navigate('/user/login');
+  }
+  const handleCompanyClick = () => {
+    navigate('/company/login');
   }
 
   return (
-    <NavbarBtnTemplate onClick={handleClick} title={'Login'}></NavbarBtnTemplate>
+    <Box sx={{display: 'flex', gap: '20px'}}>
+      <NavbarBtnTemplate onClick={handleUserClick} title={'Company'}></NavbarBtnTemplate>
+      <NavbarBtnTemplate onClick={handleCompanyClick} title={'Personal'}></NavbarBtnTemplate>
+    </Box>
   )
 }

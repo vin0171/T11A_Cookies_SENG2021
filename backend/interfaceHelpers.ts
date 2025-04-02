@@ -10,19 +10,19 @@ export function createUser(email: string, password: string, nameFirst: string, n
     const dataStore = getData();
 
     if (!validators.isValidName(nameFirst) || !validators.isValidName(nameLast)) {
-		throw helpers.errorReturn(400, 'Error: Invalid Name');
+		throw helpers.errorReturn(400, 'Invalid Name');
 	}
 
 	if (!validators.isValidEmail(email)) {
-		throw helpers.errorReturn(400, 'Error: Invalid Email');
+		throw helpers.errorReturn(400, 'Invalid Email');
 	}
 	
 	if (dataStore.users.find((object) => object.email === email) !== undefined) {
-		throw helpers.errorReturn(400, 'Error: Email already used by another User');
+		throw helpers.errorReturn(400, 'Email already used by another user');
 	}
 
 	if (!validators.isValidPass(password)) {
-		throw helpers.errorReturn(400, 'Error: Invalid Password');
+		throw helpers.errorReturn(400, 'Invalid Password');
 	}
     
     return {

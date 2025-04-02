@@ -28,8 +28,7 @@ export default function Router () {
     <>
       {(
         location.pathname !== '/login' &&
-      location.pathname !== '/register' &&
-      !location.pathname.includes('slideshow')
+      location.pathname !== '/register'
       ) && <Navbar>{navbarButton}</Navbar>}
       <Routes>
         <Route path='/' element={<HomePage token={token}/>}/>

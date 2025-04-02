@@ -88,7 +88,7 @@ export default function HomePage ({token}) {
               sx={{ 
                 ...commonBtnStyles,
                 width: 200,
-                bgcolor: '#6f4e7d'
+                bgcolor: '#9ccde1'
               }}>
               Register Now
             </Button>

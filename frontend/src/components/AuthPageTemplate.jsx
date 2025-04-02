@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import PrestoLogo from './PrestoLogo';
+import '../assets/style.css';
 
 /**
  * This component is a template for the box that appears on the login or register page
@@ -7,7 +8,14 @@ import PrestoLogo from './PrestoLogo';
  * and 'styles' is any css styles passed in which modify the template and 
  * 'children' is the form that is used on the auth page.
  */
-export default function AuthPageTemplate({ authType, styles, children, handleLogoClick = () => {}}) {
+export default function AuthPageTemplate({ 
+  authType, 
+  styles, 
+  backgroundStyles, 
+  formBackgroundStyles,
+  children, 
+  handleLogoClick = () => {}
+}) {
   const { justifyContent, boxHeight, titleHeight, gap } = styles;
   return (
     <Box component='section' sx={{ height: '100%', display: 'flex'}}>
@@ -18,7 +26,8 @@ export default function AuthPageTemplate({ authType, styles, children, handleLog
           background: '#9ccde1',
           display: 'flex',
           alignItems: 'center',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          ...backgroundStyles
         }}>
         <Box 
           component='section' 
@@ -35,6 +44,7 @@ export default function AuthPageTemplate({ authType, styles, children, handleLog
             '@media (max-width: 555px)': {
               width: '80%'
             },
+            ...formBackgroundStyles
           }}>
           <Box 
             sx={{

@@ -15,17 +15,17 @@ export default function DashboardPage({token}) {
   const [presentationCreated, setPresentationCreated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setLoading(true);
-    axios.get(`${API_URL}/store`, {headers: {Authorization: `Bearer ${token}`}})
-      .then((response) => {
-        const presentations = response.data.store.presentations;
-        setPresentations(presentations);
-        setPresentationCreated(false)
-        setLoading(false);
-      })
-      .catch(error => console.log(error));
-  }, [presentationCreated])
+  // useEffect(() => {
+  //   setLoading(true);
+  //   axios.get(`${API_URL}/store`, {headers: {Authorization: `Bearer ${token}`}})
+  //     .then((response) => {
+  //       const presentations = response.data.store.presentations;
+  //       setPresentations(presentations);
+  //       setPresentationCreated(false)
+  //       setLoading(false);
+  //     })
+  //     .catch(error => console.log(error));
+  // }, [presentationCreated])
 
   return (
     <>

@@ -2,8 +2,8 @@
   "companies": [],
   "users": [
     {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4Nzg3ZjFjNy0yNmYxLTQ4OTktYjI0Ny0xYWM1ZjZlOGM2ODkiLCJpYXQiOjE3NDIxODk4NDUsImV4cCI6MTc0Mjc5NDY0NX0.7LeJGLRVJaTzkplH0k6bb3akUHvCJy5n6iKULA773Oo",
-      "userId": "8787f1c7-26f1-4899-b247-1ac5f6e8c689",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0MmY4NTE1OC03ODNkLTRiNTctYTdkMC04MDdiNmY2MGE3NTEiLCJpYXQiOjE3NDM1NzY4OTksImV4cCI6MTc0NDE4MTY5OX0.frYePd6VeF8RLS0Nfbio0o5ErJ7EGXpXQXr1DofD1m8",
+      "userId": "42f85158-783d-4b57-a7d0-807b6f60a751",
       "companyId": null,
       "email": "test@gmail.com",
       "password": "9854b63110f6cc6cd5431af52e9a84661e8f5fa38139fc0dfc37a0be48cd271a",
@@ -12,13 +12,13 @@
       "numSuccessfulLogins": 1,
       "numFailedPasswordsSinceLastLogin": 0,
       "gender": "OTHER",
-      "timeCreated": "2025-03-17T05:37:25.904Z",
+      "timeCreated": "2025-04-02T06:54:59.276Z",
       "previousPasswords": [],
       "invoices": []
     },
     {
-      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwZTgzZDYwOS05MDJjLTQxYzUtYjU3ZC02OTI1ODQ1OTkyNGUiLCJpYXQiOjE3NDIxODk4NDUsImV4cCI6MTc0Mjc5NDY0NX0._G289t_l4myAFFSNe7FRdvGK_CeisH191oi5yedHpu0",
-      "userId": "0e83d609-902c-41c5-b57d-69258459924e",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkYzFkYmQyMi1jOGRmLTRlOTItOWVmYi1hZGUzNDg1MDczYzQiLCJpYXQiOjE3NDM1NzY4OTksImV4cCI6MTc0NDE4MTY5OX0.vrTdVkOTwAi-hlRbX964FzTT2FQ-UpLQAXF2ZXgbJZs",
+      "userId": "dc1dbd22-c8df-4e92-9efb-ade3485073c4",
       "companyId": null,
       "email": "test2@gmail.com",
       "password": "1b8db1ff2cd446d7ed9a9281980bc1a981620e3a7c0514da0c83cfe9a8abf0ef",
@@ -27,7 +27,23 @@
       "numSuccessfulLogins": 1,
       "numFailedPasswordsSinceLastLogin": 0,
       "gender": "OTHER",
-      "timeCreated": "2025-03-17T05:37:25.906Z",
+      "timeCreated": "2025-04-02T06:54:59.277Z",
+      "previousPasswords": [],
+      "invoices": []
+    },
+    {
+      "token": null,
+      "userId": "85058092-2025-40a0-b54a-8f7219c91112",
+      "companyId": null,
+      "email": "ajl@gmail.com",
+      "password": "ead6237e5bfc5d247a9ea67f970d73c5502daf28c3284a5a8b3e0f281e313ca5",
+      "nameFirst": "ajl",
+      "nameLast": "ajl",
+      "numSuccessfulLogins": 0,
+      "numFailedPasswordsSinceLastLogin": 0,
+      "age": "2004-11-08T13:00:00.000Z",
+      "gender": "OTHER",
+      "timeCreated": "2025-04-02T09:50:14.296Z",
       "previousPasswords": [],
       "invoices": []
     }

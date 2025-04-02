@@ -65,6 +65,7 @@ function routes(app: Express) {
 
   app.post('/v1/company/register', async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log(req.body)
       const token = req.headers['authorization'].split(' ')[1];
       const {companyName, companyAbn, companyEmail, contactNumber} = req.body;
       const {address, city, state, postcode, country} = req.body;

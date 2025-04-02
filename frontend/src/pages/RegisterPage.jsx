@@ -1,8 +1,12 @@
 import { API_URL } from '../App';
 import { useNavigate } from 'react-router-dom';
-import { Button, TextField } from '@mui/material';
+import { Box, Button, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { loginRegisterFormStyle } from '../helper';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DateField } from '@mui/x-date-pickers/DateField';
 import axios from 'axios';
 import AuthPageTemplate from '../components/AuthPageTemplate';
 import ErrorMessage from '../components/ErrorMessage';
@@ -13,8 +17,12 @@ const Form = loginRegisterFormStyle;
 const RegisterForm = ({
   email,
   setEmail,
-  name,
-  setName,
+  firstName,
+  lastName,
+  setFirstName,
+  setLastName,
+  age,
+  setAge,
   password,
   setPassword,
   confirmPassword,
@@ -36,36 +44,74 @@ const RegisterForm = ({
       onChange={(e) => setEmail(e.target.value)}
     />
     <TextField
-      id='register-name'
-      name='register-name'
-      label='Company Name (Cookie)'
-      value={name}
+      id='first-name'
+      name='first-name'
+      label='First Name'
+      value={firstName}
       required
       sx={{ width: '100%' }}
-      onChange={(e) => setName(e.target.value)}
+      onChange={(e) => setFirstName(e.target.value)}
     />
     <TextField
-      id='register-password'
-      name='register-password'
-      label='Password'
-      type='password'
-      value={password}
-      autoComplete='current-password'
+      id='last-name'
+      name='last-name'
+      label='Last Name'
+      value={lastName}
       required
       sx={{ width: '100%' }}
-      onChange={(e) => setPassword(e.target.value)}
+      onChange={(e) => setLastName(e.target.value)}
     />
-    <TextField
-      id='register-confirm-password'
-      name='register-confirm-password'
-      label='Confirm Password'
-      type='password'
-      value={confirmPassword}
-      required
-      sx={{ width: '100%' }}
-      onChange={(e) => setConfirmPassword(e.target.value)}
-    />
-    {error.isError && <ErrorMessage error={error.msg} styles={{ fontSize: '1.4em' }} />}
+    <Box sx={{width: '100%'}}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <DemoContainer components={['DateField']}>
+          <DateField
+            id='age'
+            name='age'
+            label='Age'
+            required
+            fullWidth
+            sx = {{
+              width: '100%',
+            }}
+            value={age}
+            onChange={(age) => setAge(age)}
+          />
+        </DemoContainer>
+      </LocalizationProvider>
+    </Box>
+    <Box>
+      <TextField
+        id='register-password'
+        name='register-password'
+        label='Password'
+        type='password'
+        value={password}
+        autoComplete='current-password'
+        helperText='Password must be at least 8 characters, with both uppercase and lowercase letters.'
+        required
+        sx={{ 
+          width: '100%',
+          '& .MuiFormHelperText-root': {
+            margin: 0,
+            mt: 1,
+            mb: 1,
+            fontSize: '0.85em'
+          }
+        }}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <TextField
+        id='register-confirm-password'
+        name='register-confirm-password'
+        label='Confirm Password'
+        type='password'
+        value={confirmPassword}
+        required
+        sx={{ width: '100%' }}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+      />
+    </Box>
+    {error.isError && <ErrorMessage error={error.msg} styles={{ textAlign: 'center', fontSize: '1.4em' }} />}
     <Button
       type='submit'
       sx={{
@@ -88,45 +134,52 @@ const RegisterForm = ({
  * This page sets up the register page.
  */
 export default function RegisterPage({ setToken }) {
+  console.log('hello?')
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [age, setAge] = useState(null);
   const [error, setError] = useState({ isError: false, msg: '' });
+  const [pageScale, setPageScale] = useState('scale(0.85)')
 
   useEffect(() => {
-    if (password !== confirmPassword) {
-      setError({ isError: true, msg: 'Passwords do not match' });
-    } else {
+    if (password === confirmPassword) {
       setError({ isError: false, msg: '' });
-    }
+    } 
   }, [password, confirmPassword]);
 
+  useEffect(() => {
+    if (error.isError) {
+      setPageScale('scale(0.77)')
+    } else {
+      setPageScale('scale(0.85)')
+    }
+  }, [error]);
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (password !== confirmPassword) return;
+    if (password !== confirmPassword) {
+      setError({ isError: true, msg: 'Passwords do not match' });
+      return;
+    } 
 
     const postParams = {
       email: email,
       password: password,
-      name: name,
-    };
+      nameFirst: firstName,
+      nameLast: lastName,
+      age: age
+    };  
 
-    axios
-      .post(`${API_URL}/admin/auth/register`, postParams)
+    axios.post(`${API_URL}/v1/user/register`, postParams)
       .then((response) => {
+        console.log(response)
         setError({ isError: false, msg: '' });
-        setToken(response.data.token);
-        localStorage.setItem('token', response.data.token);
-
-        const defaultStore = {
-          store: {
-            presentations: [],
-          },
-        };
-        return axios.put(`${API_URL}/store`, defaultStore, { headers: { Authorization: `Bearer ${response.data.token}` } });
+        setToken(response.data);
+        localStorage.setItem('token', response.data);
       })
       .then(() => {
         navigate('/dashboard', { replace: true });
@@ -140,12 +193,18 @@ export default function RegisterPage({ setToken }) {
     <AuthPageTemplate
       authType={'Register'}
       styles={{ justifyContent: 'space-around', boxHeight: '100%', titleHeight: 'unset', gap: '35px' }}
+      backgroundStyles={{ justifyContent: 'center' }}
+      formBackgroundStyles={{transform: pageScale}}
     >
       <RegisterForm
         email={email}
         setEmail={setEmail}
-        name={name}
-        setName={setName}
+        firstName={firstName}
+        setFirstName={setFirstName}
+        lastName={lastName}
+        setLastName={setLastName}
+        age={age}
+        setAge={setAge}
         password={password}
         setPassword={setPassword}
         confirmPassword={confirmPassword}
