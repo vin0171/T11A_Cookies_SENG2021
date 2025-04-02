@@ -1,4 +1,3 @@
-import { time } from 'console';
 import createServer from '../../server';
 import { requestClear, requestUserRegister, requestUserLogin } from '../testhelpers';
 const app = createServer();
@@ -50,8 +49,8 @@ describe('adminAuthLogin', () => {
   });
   
   test('Unique token strings that are obscured', async () => {
-    let token1 = (await requestUserLogin(app, 'test@gmail.com', 'def456456')).body;
-    let token2 = (await requestUserLogin(app, 'test2@gmail.com', 'abc123123')).body;
+    const token1 = (await requestUserLogin(app, 'test@gmail.com', 'def456456')).body;
+    const token2 = (await requestUserLogin(app, 'test2@gmail.com', 'abc123123')).body;
     expect(token1).not.toBe(token2);
   });
 });

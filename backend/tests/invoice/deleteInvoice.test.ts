@@ -51,7 +51,7 @@ describe('deleteInvoice tests', () => {
 
   test('Deleting multiple invoices from one company', async () => {
     const adminToken = (await requestUserRegister(app, companyData.companyEmail, globalPassword, "Firstname", "Lastname")).body;
-    const companyId = (await requestCompanyRegister(app, adminToken, companyData)).body;
+    (await requestCompanyRegister(app, adminToken, companyData));
     const invoiceDetails = { ...sampleInvoiceDetails };
 
     // Create and delete multiple invoices

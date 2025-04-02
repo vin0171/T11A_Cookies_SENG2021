@@ -1,6 +1,7 @@
 
 import { create } from 'xmlbuilder2';
 import { Invoice, InvoiceItem } from './interface';
+import { XMLBuilder } from 'xmlbuilder2/lib/interfaces';
 
 const XML_NAMESPACES = {
   xmlns: 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2',
@@ -9,10 +10,10 @@ const XML_NAMESPACES = {
 };
 
 export class InvoiceConverter {
-    private root: any;
-    private invoice: Invoice;
+    private root: XMLBuilder;
+    private invoice: Record<string, any>;
 
-    constructor(invoice: Invoice) {
+    constructor(invoice: Record<string, any>) {
       this.invoice = invoice;
       this.root = create({ version: '1.0' })
           .ele('Invoice', XML_NAMESPACES);
@@ -50,7 +51,7 @@ export class InvoiceConverter {
     addItems(items: InvoiceItem[]): InvoiceConverter {
       items.forEach((item, index) => {
         const itemLines = this.root.ele('cac:InvoiceLine');
-        itemLines.ele('cbc:ID').txt(index + 1);
+        itemLines.ele('cbc:ID').txt((index + 1).toString());
         const cacItem = itemLines.ele('cac:Item');
         Object.entries(item).forEach(([key, value]) => {
           cacItem.ele(`cac:${key}`).txt(value);

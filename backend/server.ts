@@ -11,7 +11,7 @@ function createServer() {
     // for logging errors (print to terminal)
     app.use(morgan('dev'));
     // For establishing routes for this app
-    routes(app)
+    routes(app);
 
     return app
 }

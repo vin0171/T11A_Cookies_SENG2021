@@ -33,12 +33,12 @@ describe('listInvoices tests', () => {
         
       
       const invoiceListRes = await requestListCompanyInvoice(app, adminToken, companyId);
-      expect(invoiceListRes.status).toStrictEqual(200);
       expect(invoiceListRes.body).toEqual(expect.arrayContaining([
         expect.objectContaining(invoiceGet1.body),
         expect.objectContaining(invoiceGet2.body),
         expect.objectContaining(invoiceGet3.body),
       ]));
+      expect(invoiceListRes.status).toStrictEqual(200);
       
     });
   

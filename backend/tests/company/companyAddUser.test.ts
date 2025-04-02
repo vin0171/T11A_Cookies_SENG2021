@@ -1,6 +1,6 @@
 import createServer from "../../server";
 import { companyData } from "../sampleTestData";
-import { requestUserLogin, requestCompanyAddUser, requestCompanyRegister, requestUserRegister, requestClear } from "../testhelpers";
+import { requestCompanyAddUser, requestCompanyRegister, requestUserRegister, requestClear } from "../testhelpers";
 const app = createServer();
 
 beforeEach(async () => {
@@ -11,7 +11,7 @@ afterEach(async () => {
     await requestClear(app);
 });
 
-let globalPassword = "adminOfCompanyPw@gmail.com122";
+const globalPassword = "adminOfCompanyPw@gmail.com122";
 let adminToken: string;
 describe('companyAddUser', () => {
     beforeEach(async () => {
