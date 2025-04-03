@@ -1,8 +1,7 @@
 import { Box, Typography } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import PresentationCard from '../components/PresentationCard';
 import RegisterCompanyDialog from '../components/RegisterCompanyDialog'
-import axios from 'axios';
-import { API_URL } from '../App';
 import { useEffect, useState } from 'react';
 import LoadingBox from '../components/LoadingBox';
 
@@ -13,19 +12,24 @@ import LoadingBox from '../components/LoadingBox';
 export default function DashboardPage({token}) {
   const [presentations, setPresentations] = useState([]);
   const [companyCreated, setCompanyCreated] = useState(false);
+  const [invoiceCreated, setInvoiceCreated] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // useEffect(() => {
   //   setLoading(true);
-  //   axios.get(`${API_URL}/store`, {headers: {Authorization: `Bearer ${token}`}})
+  //   axios.get(`${API_URL}/v1/company/${}/invoices`, {headers: {Authorization: `Bearer ${token}`}})
   //     .then((response) => {
-  //       const presentations = response.data.store.presentations;
-  //       setPresentations(presentations);
-  //       setPresentationCreated(false)
-  //       setLoading(false);
+  //       console.log(response.data)
+  //       // const presentations = response.data.store.presentations;
+  //       // setPresentations(presentations);
+  //       // setPresentationCreated(false)
+  //       // setLoading(false);
   //     })
-  //     .catch(error => console.log(error));
-  // }, [presentationCreated])
+  //     .catch(error => console.log(error.response.data.error));
+  // }, [invoiceCreated])
+
+  // fetch the users details upon first render and on setcompanycreated, if user.company
+  // is not null then change the register a company and register now button.
 
   return (
     <>
@@ -76,7 +80,7 @@ export default function DashboardPage({token}) {
             },
           }}>
           <Box sx={{height: '100%', width: '80%', color: 'white'}}>
-            <Typography variant= 'h5' sx={{m: '35px 0'}}>Recent Presentations</Typography>
+            <Typography variant= 'h5' sx={{m: '35px 0'}}>Recent Invoices</Typography>
             {loading ? (<LoadingBox progressStyles={{color: 'white'}}/>) : (
               <Box 
                 sx={{ 

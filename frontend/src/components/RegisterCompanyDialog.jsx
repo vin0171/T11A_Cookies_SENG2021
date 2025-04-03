@@ -8,7 +8,7 @@ import { API_URL } from '../App';
  * This component sets up the dialog that pops up when the user clicks on the create
  * presentation button on the dashboard.
  */
-export default function RegisterCompanyDialog({token, setPresentationCreated}) {
+export default function RegisterCompanyDialog({token, setCompanyCreated}) {
 const [open, setOpen] = useState(false);
 const handleClickOpen = () => (setOpen(true));
 const handleClose = () => (setOpen(false));
@@ -16,33 +16,23 @@ const handleClose = () => (setOpen(false));
 const handleSubmit = (event) => {
   event.preventDefault();
   const formData = new FormData(event.currentTarget);
-  const name = formData.get('presentation-title');
-  const id = uuid();
+  const postParams = {
+    companyName: formData.get('companyName'),
+    companyAbn: formData.get('companyAbn'),
+    companyEmail: formData.get('companyEmail'),
+    contactNumber: formData.get('contactNumber'),
+    address: formData.get('address'),
+    city: formData.get('city'),
+    state: formData.get('state'),
+    postcode: formData.get('postcode'),
+    country: formData.get('country'),
+  };
 
-  axios.get(`${API_URL}/store`, {headers: {Authorization: `Bearer ${token}`}})
-    .then((response) => {
-      const currentPresentations = response.data.store.presentations;
-      const newPresentation = {
-        id: id,
-        title: name,
-        thumbnail: null,
-        description: '',
-        theme: {},
-        slides:[{'theme' : {}, 'content': []}],
-      }
-      currentPresentations.push(newPresentation);
-      const store = {
-        store: {
-          presentations: currentPresentations
-        }
-      }
-      return axios.put(`${API_URL}/store`, store, {headers: {Authorization: `Bearer ${token}`}})
-    })
-    .then(() => {
-      setPresentationCreated(true);
-      handleClose();
-    })
-    .catch(error => console.log(error));
+  axios.post(`${API_URL}/v1/company/register`, postParams, {headers: {Authorization: `Bearer ${token}`}})
+  .then(() => {
+    setCompanyCreated(true);
+    handleClose();
+  }).catch(error => console.log(error.response.data.error));
 }
 
 return (
@@ -72,7 +62,7 @@ return (
           '& .MuiPaper-root': {
             bgcolor:'#e2dacd',
             width: 550,
-            height: 225,
+            height: 335,
           },
         },
       }}
@@ -84,29 +74,188 @@ return (
         }}>
           Enter Company Details
       </DialogTitle>
-      <DialogContent>
+      <DialogContent
+        sx ={{
+          '&::-webkit-scrollbar': {
+            width: '0.4em'
+          },
+          '&::-webkit-scrollbar-track': {
+            boxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)',
+            webkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.00)'
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(0,0,0,.1)',
+            outline: '1px solid slategrey'
+          }
+        }}
+      >
         <TextField
           required
           fullWidth
           margin='dense'
-          id='presentation-title'
-          name='presentation-title'
-          label='Presentation Title'
+          id='companyName'
+          name='companyName'
+          label='Company Name'
           variant='standard'
           autoComplete='off'
           sx={{
-            '& label.Mui-focused': {
-              color: '#41444d'
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+          }}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='dense'
+          id='companyEmail'
+          name='companyEmail'
+          label='Company Email'
+          variant='standard'
+          type='email'
+          autoComplete='off'
+          sx={{
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+          }}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='dense'
+          id='companyAbn'
+          name='companyAbn'
+          label='Company ABN'
+          type='number'
+          variant='standard'
+          autoComplete='off'
+          sx={{
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+            '& input[type=number]': {
+              MozAppearance: 'textfield',
             },
-            '& .MuiInput-underline:after': {
-              borderBottomColor: '#41444d'
+            '& input[type=number]::-webkit-outer-spin-button': {
+              WebkitAppearance: 'none',
+              margin: 0,
+            },
+            '& input[type=number]::-webkit-inner-spin-button': {
+              WebkitAppearance: 'none',
+              margin: 0,
+            },
+          }}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='dense'
+          id='contactNumber'
+          name='contactNumber'
+          label='Contact Number'
+          type='number'
+          variant='standard'
+          autoComplete='off'
+          sx={{
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+            '& input[type=number]': {
+              MozAppearance: 'textfield',
+            },
+            '& input[type=number]::-webkit-outer-spin-button': {
+              WebkitAppearance: 'none',
+              margin: 0,
+            },
+            '& input[type=number]::-webkit-inner-spin-button': {
+              WebkitAppearance: 'none',
+              margin: 0,
+            },
+          }}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='dense'
+          id='address'
+          name='address'
+          label='Address'
+          variant='standard'
+          autoComplete='off'
+          sx={{
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+          }}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='dense'
+          id='city'
+          name='city'
+          label='City'
+          variant='standard'
+          autoComplete='off'
+          sx={{
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+          }}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='dense'
+          id='state'
+          name='state'
+          label='State'
+          variant='standard'
+          autoComplete='off'
+          sx={{
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+          }}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='dense'
+          id='country'
+          name='country'
+          label='Country'
+          variant='standard'
+          autoComplete='off'
+          sx={{
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+          }}
+        />
+        <TextField
+          required
+          fullWidth
+          margin='dense'
+          id='postcode'
+          name='postcode'
+          label='Postcode'
+          type='number'
+          variant='standard'
+          autoComplete='off'
+          sx={{
+            '& label.Mui-focused': { color: '#41444d' },
+            '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+            '& input[type=number]': {
+              MozAppearance: 'textfield',
+            },
+            '& input[type=number]::-webkit-outer-spin-button': {
+              WebkitAppearance: 'none',
+              margin: 0,
+            },
+            '& input[type=number]::-webkit-inner-spin-button': {
+              WebkitAppearance: 'none',
+              margin: 0,
             },
           }}
         />
       </DialogContent>
       <DialogActions sx={{justifyContent:'space-around'}}>
         <Button onClick={handleClose} sx={{fontSize: '1em', color:'#41444d'}}>Cancel</Button>
-        <Button type='submit' sx={{fontSize: '1em',color:'#6f4e7d'}}>Create</Button>
+        <Button type='submit' sx={{fontSize: '1em',color:'#27548A'}}>Register</Button>
       </DialogActions>
     </Dialog>
   </Fragment>

@@ -15,7 +15,7 @@ export default function Router () {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (token && location.pathname.includes('login') && location.pathname.includes('register')) navigate('/dashboard', {replace: true});
+    if (token && (location.pathname.includes('login') || location.pathname.includes('register'))) navigate('/dashboard', {replace: true});
     if (!token && !location.pathname.includes('login') && !location.pathname.includes('register')) navigate('/', {replace: true});
   }, [token, location.pathname])
 
@@ -26,9 +26,15 @@ export default function Router () {
     : <LoginBtn />;
   return (
     <>
-      {(
-        !location.pathname.includes('login') && !location.pathname.includes('register')
-      ) && <Navbar>{navbarButton}</Navbar>}
+      {
+        (!location.pathname.includes('login') && !location.pathname.includes('register')) ? (
+          location.pathname === '/' ? (
+            <Navbar loggedIn={false}>{navbarButton}</Navbar>
+          ) : (
+            <Navbar loggedIn={true}>{navbarButton}</Navbar>
+          )
+        ) : null
+      }
       <Routes>
         <Route path='/' element={<HomePage token={token}/>}/>
         <Route path='user/login' element={<LoginPage setToken={setToken} type='user'/>}/>

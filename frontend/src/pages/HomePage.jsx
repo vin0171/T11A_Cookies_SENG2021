@@ -66,7 +66,6 @@ export default function HomePage ({token}) {
         <Box
           component='section' 
           sx={{ 
-            bgcolor: '#white' ,
             flex: 1,
             display: 'flex', 
             justifyContent: 'center', 
