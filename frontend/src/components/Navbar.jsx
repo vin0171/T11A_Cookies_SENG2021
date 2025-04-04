@@ -1,19 +1,19 @@
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import { NavigationType, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import PrestoLogo from './PrestoLogo';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {  Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
 /**
  * This component is the navbar that appears when the user is on any page that 
  * is not the login or register page.
  */
-export default function Navbar({loggedIn, children}) {
+export default function Navbar({token, loggedIn, children}) {
   const navigate = useNavigate();
   const [openMenu, setOpenMenu] = useState(false);
 
@@ -21,12 +21,16 @@ export default function Navbar({loggedIn, children}) {
     setOpenMenu(newOpen)
   }
 
+  useEffect(() => {
+    // use the token to grab the users id and then fetch their details
+  }, [token])
+
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleMenu(false)}>
       <List>
         {['Stats'].map((text) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton onClick={() => navigate('/stats')}> {/* i need to update this once that lazy ass mf adds a get function for user details which is like idk super basic literally takse two seconds???*/}
+            <ListItemButton onClick={() => navigate('/')}> {/* i need to update this once that lazy ass mf adds a get function for user details which is like idk super basic literally takse two seconds???*/}
               <ListItemIcon>
                 <QueryStatsIcon fontSize='large' sx={{ color: '#27548A'}}/>
               </ListItemIcon>

@@ -7,6 +7,7 @@ import RegisterPage from './pages/RegisterPage';
 import LoginBtn from './components/LoginBtn';
 import LogoutBtn from './components/LogoutBtn';
 import DashboardPage from './pages/DashboardPage';
+import InvoicePage from './pages/InvoicePage';
 
 
 export default function Router () {
@@ -31,7 +32,7 @@ export default function Router () {
           location.pathname === '/' ? (
             <Navbar loggedIn={false}>{navbarButton}</Navbar>
           ) : (
-            <Navbar loggedIn={true}>{navbarButton}</Navbar>
+            <Navbar token={token} loggedIn={true}>{navbarButton}</Navbar>
           )
         ) : null
       }
@@ -40,6 +41,7 @@ export default function Router () {
         <Route path='user/login' element={<LoginPage setToken={setToken} type='user'/>}/>
         <Route path='user/register' element={<RegisterPage setToken={setToken}/>}/>
         <Route path='/dashboard' element={<DashboardPage token={token}/>}/>
+        <Route path='/:companyid/invoices/create' element={<InvoicePage token={token}/>}/>
       </Routes>
     </>
   )

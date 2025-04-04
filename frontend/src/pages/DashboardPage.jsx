@@ -1,35 +1,100 @@
-import { Box, Typography } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Box, Button, Typography } from '@mui/material';
 import PresentationCard from '../components/PresentationCard';
 import RegisterCompanyDialog from '../components/RegisterCompanyDialog'
 import { useEffect, useState } from 'react';
 import LoadingBox from '../components/LoadingBox';
+import axios from 'axios';
+import { API_URL } from '../App';
+import { useNavigate } from 'react-router-dom';
 
 
 /**
  * This page sets up the dashboard page.
  */
 export default function DashboardPage({token}) {
+  const navigate = useNavigate();
   const [presentations, setPresentations] = useState([]);
   const [companyCreated, setCompanyCreated] = useState(false);
-  const [invoiceCreated, setInvoiceCreated] = useState(false);
+  const [invoices, setInvoices] = useState(null);
   const [loading, setLoading] = useState(true);
+  const registerButton = loading
+  ? null
+  : companyCreated
+    ? <Box 
+      sx= {{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        gap: '10%',
+      }}>
+      <Typography 
+        variant='h5' 
+        sx={{
+          color: '#41444d', 
+          '@media (max-width: 437px)': {
+            fontSize: '1.25em',
+          },
+        }}>
+        Create an Invoice
+      </Typography>
+      <Button 
+        variant='contained' 
+        onClick={() => navigate(`/${companyCreated}/invoices/create`)}
+        sx={{
+          bgcolor: '#9ccde1', 
+          height: 50,
+          width: 200,
+          textTransform: 'none',
+          fontWeight: 'bold',
+          fontSize: '1.5em',
+        }}
+      >
+        Create
+      </Button>
+      </Box>
+    : <Box 
+      sx= {{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        gap: '10%',
+      }}>
+      <Typography 
+        variant='h5' 
+        sx={{
+          color: '#41444d', 
+          '@media (max-width: 437px)': {
+            fontSize: '1.25em',
+          },
+        }}>
+        Register a Company
+      </Typography>
+      <RegisterCompanyDialog token={token} setCompanyCreated={setCompanyCreated}/>
+      </Box>;
 
-  // useEffect(() => {
-  //   setLoading(true);
-  //   axios.get(`${API_URL}/v1/company/${}/invoices`, {headers: {Authorization: `Bearer ${token}`}})
-  //     .then((response) => {
-  //       console.log(response.data)
-  //       // const presentations = response.data.store.presentations;
-  //       // setPresentations(presentations);
-  //       // setPresentationCreated(false)
-  //       // setLoading(false);
-  //     })
-  //     .catch(error => console.log(error.response.data.error));
-  // }, [invoiceCreated])
+  useEffect(() => {
+    setLoading(true)
+    axios.get(`${API_URL}/v1/user/details`, {headers: {Authorization: `Bearer ${token}`}})
+    .then((response) => {
+      setCompanyCreated(response.data.companyId)
+      setLoading(false)
+    }).catch(error => console.log(error.response.data.error));
+  }, [])
 
-  // fetch the users details upon first render and on setcompanycreated, if user.company
-  // is not null then change the register a company and register now button.
+  useEffect(() => {
+    if (companyCreated) {
+      setLoading(true)
+      axios.get(`${API_URL}/v1/company/${companyCreated}/invoices`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((response) => {
+        setInvoices(response.data)
+        setLoading(false)
+      })      
+    }
+  },[companyCreated])
 
   return (
     <>
@@ -40,27 +105,7 @@ export default function DashboardPage({token}) {
             display: 'flex',
             justifyContent: 'center'
           }}>
-          <Box 
-            sx= {{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%',
-              gap: '10%',
-            }}>
-            <Typography 
-              variant='h5' 
-              sx={{
-                color: '#41444d', 
-                '@media (max-width: 437px)': {
-                  fontSize: '1.25em',
-                },
-              }}>
-              Register a Company
-            </Typography>
-            <RegisterCompanyDialog token={token} setCompanyCreated={setCompanyCreated}/>
-          </Box>
+        {registerButton}
         </Box>
         <Box 
           component='section' 

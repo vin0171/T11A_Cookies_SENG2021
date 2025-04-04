@@ -2,7 +2,7 @@ import { Express, NextFunction, Request, Response } from "express";
 import * as users from './users';
 import * as companies from './companies';
 import * as invoices from './invoices';
-import { validateLocation } from "./validationHelpers";
+import { validateLocation, validateToken } from "./validationHelpers";
 import { Invoice, Location } from "./interface";
 // import { InvoiceConverter } from "./InvoiceConverter";
 import HTTPError from 'http-errors';
@@ -57,6 +57,16 @@ function routes(app: Express) {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const response = await invoices.listUserInvoices(token);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
+  app.get('/v1/user/details', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await validateToken(token)
       res.status(200).json(response);
     } catch(err) {
       next(err)
@@ -136,7 +146,8 @@ function routes(app: Express) {
         next(err);
       }
     });
-    
+  
+
   app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
