@@ -1,5 +1,4 @@
 import { Box, Button, Typography } from '@mui/material';
-import PresentationCard from '../components/PresentationCard';
 import RegisterCompanyDialog from '../components/RegisterCompanyDialog'
 import { useEffect, useState } from 'react';
 import LoadingBox from '../components/LoadingBox';
@@ -137,7 +136,7 @@ export default function DashboardPage({token}) {
                     gridTemplateColumns: '1fr',
                   },
                 }}>
-                {invoices.map((i, index) => (
+                {/* {invoices.map((i, index) => (
                   <PresentationCard
                     key={index}
                     id={i.id}
@@ -146,7 +145,7 @@ export default function DashboardPage({token}) {
                     slides={i.slides}
                     description={i.description}
                   />
-                ))}
+                ))} */}
               </Box>
             )}
           </Box>

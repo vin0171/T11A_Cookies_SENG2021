@@ -11,6 +11,7 @@ const [open, setOpen] = useState(false);
 const handleClickOpen = () => (setOpen(true));
 const handleClose = () => (setOpen(false));
 const [discountType, setDiscountType] = useState('Flat');
+const [discountAmount, setDiscountAmount] = useState('');
 
 const discountOptions = [
   {label: 'Flat'},
@@ -24,6 +25,8 @@ const handleSubmit = (event) => {
     discountType: formData.get('wide-discount-type-name'),
     discountAmount: formData.get('wide-discount-amount-name')
   })
+  
+  handleClose();
 }
 
 return (
@@ -39,7 +42,7 @@ return (
         fontWeight: 'bold',
         bgcolor: '#41444d'
       }}>
-        {'Add Discount'}
+        Add Discount
     </Button>
     <Dialog
       open={open}
@@ -78,7 +81,8 @@ return (
           id={'wide-discount-amount'}
           name={'wide-discount-amount-name'}
           margin='dense'
-          required
+          value={discountAmount}
+          onChange={(e) => setDiscountAmount(e.target.value)}
           variant='standard'
           label='Discount Amount'
           type='number'
@@ -89,8 +93,7 @@ return (
                 : {endAdornment: <InputAdornment position='end'>%</InputAdornment>}
             },
             htmlInput : {
-              max: 100,
-              min: 0.1,
+              ...(discountType === 'Percentage' ? { max: 100 } : {}),
               step: .01
             }
           }}

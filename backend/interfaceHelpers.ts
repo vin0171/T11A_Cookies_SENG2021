@@ -110,7 +110,7 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
             'quantity',
             'unitPrice',
             'discountAmount',
-            'taxAmount',
+            // 'taxAmount',
             // 'taxRate',
             'totalAmount'
         ];

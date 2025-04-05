@@ -13,6 +13,7 @@ const handleClose = () => (setOpen(false));
 
 const [taxType, setTaxType] = useState('GST');
 const [customTax, setCustomTax] = useState('Flat');
+const [taxAmount, setTaxAmount] = useState('');
 
 const taxOptions = [
   {label: 'GST'},
@@ -34,11 +35,12 @@ const handleSubmit = (event) => {
     })
   } else {
     setTax({
-      taxType: 'custom',
+      taxType: 'Custom',
       taxOption: formData.get('custom-tax-type-name'),
       taxAmount: formData.get('custom-tax-amount-name')
     })
   }
+  handleClose();
 }
 
 return (
@@ -103,7 +105,8 @@ return (
               id={'custom-tax-amount'}
               name={'custom-tax-amount-name'}
               margin='dense'
-              required
+              value={taxAmount}
+              onChange={(e) => setTaxAmount(e.target.value)}
               variant='standard'
               label='Custom Tax Amount'
               type='number'
@@ -115,7 +118,6 @@ return (
                 },
                 htmlInput : {
                   max: 100,
-                  min: 0.1,
                   step: .01
                 }
               }}

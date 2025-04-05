@@ -25,13 +25,13 @@ export interface Participant {
   companyName: string,
   address: string,
   country: string,
-  phone: string,
+  phone?: string,
   email: string,
-  taxIdentificationNumber: string,
+  // taxIdentificationNumber: string,
   bankName: string,
   bankAccount: string,
-  iban: string,
-  swift: string,
+  iban?: string,
+  swift?: string,
   website?: string,
   logo?: string,
   notes?: string
@@ -44,7 +44,7 @@ export interface InvoiceItem {
   quantity: number,
   unitPrice: number,
   discountAmount: number,
-  taxAmount: number,
+  // taxAmount: number,
   // taxRate: number,
   totalAmount: number
 }

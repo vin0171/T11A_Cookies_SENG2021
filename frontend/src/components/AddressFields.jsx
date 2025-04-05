@@ -25,7 +25,6 @@ export default function AddressFields({
         value={addressLine1}
         variant="outlined"
         autoComplete="on"
-        required
         sx={{ width: '100%' }}
         onChange={(e) => setAddressLine1(e.target.value)}
       />
@@ -36,7 +35,6 @@ export default function AddressFields({
         value={addressLine2}
         variant="outlined"
         autoComplete="on"
-        required
         sx={{ width: '100%' }}
         onChange={(e) => setAddressLine2(e.target.value)}
       />
@@ -47,7 +45,6 @@ export default function AddressFields({
         value={suburb}
         variant="outlined"
         autoComplete="on"
-        required
         sx={{ width: '100%' }}
         onChange={(e) => setSuburb(e.target.value)}
       />
@@ -58,7 +55,6 @@ export default function AddressFields({
         value={state}
         variant="outlined"
         autoComplete="on"
-        required
         sx={{ width: '100%' }}
         onChange={(e) => setState(e.target.value)}
       />
@@ -69,7 +65,6 @@ export default function AddressFields({
         value={postCode}
         variant="outlined"
         autoComplete="on"
-        required
         sx={{ width: '100%' }}
         onChange={(e) => setPostCode(e.target.value)}
       />
@@ -80,7 +75,6 @@ export default function AddressFields({
         value={country}
         variant="outlined"
         autoComplete="on"
-        required
         sx={{ width: '100%' }}
         onChange={(e) => setCountry(e.target.value)}
       />

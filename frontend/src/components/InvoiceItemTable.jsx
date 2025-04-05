@@ -9,9 +9,7 @@ import {
 } from '@mui/x-data-grid';
 import { Button, Typography } from "@mui/material";
 
-export default function InvoiceItemTable({setSubtotal, currency}) {
-  const [rows, setRows] = useState([])
-
+export default function InvoiceItemTable({rows, setRows, setSubtotal, currency}) {
   useEffect(() => {
     const newSubtotal = rows.reduce((acc, row) => {
       const quantity = parseFloat(row.quantity) || 0;
@@ -121,12 +119,11 @@ export default function InvoiceItemTable({setSubtotal, currency}) {
         {
           id,
           quantity: '',
-          'item-sku': '',
-          'item-name': '',
+          itemSku: '',
+          itemName: '',
           description: '',
-          'unit-price': '',
-          'discount-amount': '',
-          'tax-amount': '',
+          unitPrice: '',
+          discountAmount: '',
           isNew: true,
         },
     ]);
@@ -140,8 +137,6 @@ export default function InvoiceItemTable({setSubtotal, currency}) {
     </GridToolbarContainer>
   );
 }
-
-  
   return (
     <Box 
       sx={{ 

@@ -6,18 +6,22 @@ import { SelectField } from '../helper';
  * This component sets up the dialog that pops up when the user clicks on the create
  * company button on the dashboard.
  */
-export default function ShippingDiscountDialog({setShippingCost}) {
+export default function ShippingCostDialog({setShippingCostDetails}) {
 const [open, setOpen] = useState(false);
 const handleClickOpen = () => (setOpen(true));
 const handleClose = () => (setOpen(false));
 
+const [shippingCost, setShippingCost] = useState('');
+const [shippingTax, setShippingTax] = useState('');
+
 const handleSubmit = (event) => {
   event.preventDefault();
   const formData = new FormData(event.currentTarget);
-  setShippingCost({
+  setShippingCostDetails({
     shippingCost: formData.get('shipping-cost-name'),
     shippingTax: formData.get('shipping-tax-name')
   })
+  handleClose();
 }
 
 return (
@@ -33,7 +37,7 @@ return (
         fontWeight: 'bold',
         bgcolor: '#41444d'
       }}>
-        {'Add Shipping Cost'}
+        Add Shipping Cost
     </Button>
     <Dialog
       open={open}
@@ -66,6 +70,8 @@ return (
           margin='dense'
           variant='standard'
           label='Shipping Cost'
+          value={shippingCost}
+          onChange={(e) => setShippingCost(e.target.value)}
           type='number'
           slotProps={{
             input: {
@@ -73,7 +79,6 @@ return (
             },
             htmlInput : {
               max: 100,
-              min: 0.1,
               step: .01
             }
           }}
@@ -84,6 +89,8 @@ return (
           margin='dense'
           variant='standard'
           label='Shipping Tax'
+          value={shippingTax}
+          onChange={(e) => setShippingTax(e.target.value)}
           type='number'
           slotProps={{
             input: {
@@ -91,7 +98,6 @@ return (
             },
             htmlInput : {
               max: 100,
-              min: 0.1,
               step: .01
             }
           }}
