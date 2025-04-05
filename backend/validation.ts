@@ -47,7 +47,15 @@ function validateParty(select: xpath.XPathSelect, party: Node, label: string): v
 }
 
 export function validateUBL(invoiceXML: string): boolean {
-  const parser = new DOMParser();
+  
+  const parser = new DOMParser({
+    errorHandler: {
+      warning: () => {},
+      error: (msg) => console.error('❌ XML Error:', msg),
+      fatalError: (msg) => console.error('💥 Fatal XML Error:', msg),
+    }
+  });
+
   const xmlDoc = parser.parseFromString(invoiceXML, 'application/xml');
 
   // Check if XML is well-formed
@@ -145,8 +153,13 @@ export function validateUBL(invoiceXML: string): boolean {
 
     console.log('✅ Validation successful!');
     return true;
-  } catch (error: any) {
-    console.error('❌ Validation failed:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('❌ Validation failed:', error.message);
+    } else {
+      console.error('❌ Validation failed with unknown error:', error);
+    }
+
     return false;
   }
 }
