@@ -78,7 +78,6 @@ return (
               startAdornment: <InputAdornment position='start'>$</InputAdornment>
             },
             htmlInput : {
-              max: 100,
               step: .01
             }
           }}
@@ -97,7 +96,6 @@ return (
               startAdornment: <InputAdornment position='start'>$</InputAdornment>
             },
             htmlInput : {
-              max: 100,
               step: .01
             }
           }}

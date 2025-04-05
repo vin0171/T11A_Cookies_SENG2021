@@ -1,6 +1,6 @@
 import * as validators from "./validationHelpers"
-import { Invoice, InvoiceDetails } from "./interface";
-import { generateInvoice, getCompany,  } from "./interfaceHelpers";
+import { Invoice, InvoiceDetails, InvoiceDetailsV2, InvoiceV2 } from "./interface";
+import { generateInvoice, generateInvoiceV2, getCompany,  } from "./interfaceHelpers";
 import { getData } from "./dataStore";
 import {v4 as uuidv4} from 'uuid';
 import HTTPError from 'http-errors';
@@ -14,11 +14,11 @@ import HTTPError from 'http-errors';
  * @param {InvoiceDetails} invoiceDetails - contains all invoice details
  * @returns {string}
  */
-export async function createInvoice(token: string, invoiceDetails: InvoiceDetails, isDraft: boolean) : Promise<string> {
+export async function createInvoice(token: string, invoiceDetails: InvoiceDetails) : Promise<string> {
     const user = await validators.validateToken(token);
     const data = getData();
     const invoiceId = uuidv4();
-    const invoiceInfo : Invoice = generateInvoice(invoiceId, user.userId, user.companyId, invoiceDetails, isDraft);
+    const invoiceInfo : Invoice = generateInvoice(invoiceId, user.userId, user.companyId, invoiceDetails);
 
     await data.put({ TableName: "Invoices", Item: invoiceInfo });
     await addInvoiceIdToTable("Users", user.userId, invoiceId);
@@ -28,6 +28,32 @@ export async function createInvoice(token: string, invoiceDetails: InvoiceDetail
     }
     return invoiceInfo.invoiceId;
 }
+
+/**
+ * Stub for the createInvoicev2 function.
+ * 
+ * Create an invoice with a given details and return it (Version 2).
+ * 
+ * @param {string} token - the token of the current user
+ * @param {string} invoiceId - the id for the invoice
+ * @param {InvoiceDetails} invoiceDetails - contains all invoice details
+ * @param {boolean} isDraft - states whether the invoice is a draft or not
+ * @returns {string}
+ */
+export async function createInvoiceV2(token: string, invoiceId: string, invoiceDetails: InvoiceDetailsV2, isDraft: boolean) : Promise<string> {
+    const user = await validators.validateToken(token);
+    const data = getData();
+    const invoiceInfo : InvoiceV2 = generateInvoiceV2(invoiceId, user.userId, user.companyId, invoiceDetails, isDraft);
+    
+    await data.put({ TableName: "Invoices", Item: invoiceInfo });
+    await addInvoiceIdToTable("Users", user.userId, invoiceId);
+
+    if (user.companyId !== null) {
+        await addInvoiceIdToTable("Companies", user.companyId, invoiceId)
+    }
+    return invoiceInfo.invoiceId;
+}
+
 
 // TODO: fix the two functions below if you want (Hashmap of name to object? idk)
 // and also i dont use this in other functions so um 
@@ -142,8 +168,7 @@ async function getInvoiceList(invoiceList: number[]) {
 export async function listCompanyInvoices(token: string, companyId: string) {
     const data = getData();
     const user = await validators.validateToken(token);
-    const company = await getCompany(companyId);
-  
+    const company = await getCompany(companyId); 
     if (user.companyId != company.companyId) {
         throw HTTPError(403, 'Error: User is not authorised')
     }

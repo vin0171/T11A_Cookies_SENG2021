@@ -2,7 +2,7 @@ import {v4 as uuidv4} from 'uuid';
 import { getData } from "./dataStore";
 import * as helpers from './helper';
 import * as validators from './validationHelpers';
-import {Company, Gender, InvoiceDetails, InvoiceItem, Location, User } from './interface';
+import {Company, Gender, InvoiceDetails, InvoiceDetailsV2, InvoiceItem, InvoiceItemV2, Location, User } from './interface';
 import { SECRET } from "./helper";
 import jwt from 'jsonwebtoken';
 import HTTPError from 'http-errors';
@@ -110,8 +110,8 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
             'quantity',
             'unitPrice',
             'discountAmount',
-            // 'taxAmount',
-            // 'taxRate',
+            'taxAmount',
+            'taxRate',
             'totalAmount'
         ];
 
@@ -126,20 +126,50 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
         });
     });
 };
+
+const validateInvoiceDetailsV2 = (invoiceDetails: InvoiceDetailsV2) => {
+    invoiceDetails.items.forEach((item: InvoiceItemV2) => {
+        const fieldsToCheck: (keyof InvoiceItemV2)[] = [
+            'quantity',
+            'unitPrice',
+            'discountAmount',
+            'totalAmount'
+        ];
+
+        fieldsToCheck.forEach((field: keyof InvoiceItemV2) => {
+            if (typeof item[field] !== 'number') {
+                throw HTTPError(400, `Invalid value for ${field}: ${item[field]} is not a number.`);
+            }
+
+            if (item[field] < 0) {
+                throw HTTPError(400, `Invalid value for ${field}: ${item[field]} cannot be negative.`);
+            }
+        });
+    });
+};
     
 
-export function generateInvoice(invoiceId: string, userId: string, companyId: string, invoiceDetails: InvoiceDetails, isDraft: boolean) {
-    if (!isDraft) {
-        validateInvoiceDetails(invoiceDetails);
-    }
-
+export function generateInvoice(invoiceId: string, userId: string, companyId: string, invoiceDetails: InvoiceDetails) {
+    validateInvoiceDetails(invoiceDetails);
     const invoice = {
         invoiceId: invoiceId, 
         userId: userId,
         companyId: companyId,
         details: invoiceDetails
     }
+    return invoice;
+}
 
+export function generateInvoiceV2(invoiceId: string, userId: string, companyId: string, invoiceDetails: InvoiceDetailsV2, isDraft: boolean) {
+    if (!isDraft) {
+        validateInvoiceDetailsV2(invoiceDetails);
+    }
+    const invoice = {
+        invoiceId: invoiceId, 
+        userId: userId,
+        companyId: companyId,
+        details: invoiceDetails
+    }
     return invoice;
 }
 

@@ -9,11 +9,15 @@ import InvoiceDiscountDialog from "../components/InvoiceDiscountDialog";
 import ShippingCostDialog from "../components/ShippingCostDialog";
 import axios from "axios";
 import { API_URL } from "../App";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import TaxDialog from "../components/TaxDialog";
 import AddressFields from "../components/AddressFields";
+import dayjs from "dayjs";
 
 export default function InvoicePage({token}) {
+  const navigate = useNavigate();
+
+  const invoiceId =  useParams().invoiceId;
   const [customer, setCustomer] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
   const [billingAddress1, setBillingAddress1] = useState('');
@@ -28,6 +32,7 @@ export default function InvoicePage({token}) {
   const [shippingState, setShippingState] = useState('');
   const [shippingPostCode, setShippingPostCode] = useState('');
   const [shippingCountry, setShippingCountry] = useState('');
+  const [invoiceNumber, setInvoiceNumber] = useState('');
   const [bankNum, setBankNum] = useState('');
   const [bankName, setBankName] = useState('');
   const [shippingChecked, setShippingChecked] = useState(false);
@@ -41,8 +46,45 @@ export default function InvoicePage({token}) {
   const [subTotal, setSubtotal] = useState(0);
   const [invoiceItems, setInvoiceItems] = useState([]);
   const [format, setFormat] = useState('PDF');
+  const [update, setUpdate] = useState(true);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    axios.get(`${API_URL}/v1/invoice/${invoiceId}`, {headers: {Authorization: `Bearer ${token}`}})
+    .then((res) => {
+      setCustomer(res.data.details.receiver.companyName);
+      setCustomerEmail(res.data.details.receiver.email);
+
+      setBillingAddress1(res.data.details.receiver.billingAddress.addressLine1);
+      setBillingAddress2(res.data.details.receiver.billingAddress.addressLine2);
+      setBillingSuburb(res.data.details.receiver.billingAddress.suburb);
+      setBillingState(res.data.details.receiver.billingAddress.state);
+      setBillingPostCode(res.data.details.receiver.billingAddress.postcode);
+      setBillingCountry(res.data.details.receiver.billingAddress.country);
+
+      setShippingAddress1(res.data.details.receiver.shippingAddress.addressLine1);
+      setShippingAddress2(res.data.details.receiver.shippingAddress.addressLine2);
+      setShippingSuburb(res.data.details.receiver.shippingAddress.suburb);
+      setShippingState(res.data.details.receiver.shippingAddress.state);
+      setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
+      setShippingCountry(res.data.details.receiver.shippingAddress.country);  
+      setShippingChecked(res.data.details.shippingChecked);
+      
+      setInvoiceNumber(res.data.details.invoiceNumber);
+      setBankNum(res.data.details.receiver.bankAccount);
+      setBankName(res.data.details.receiver.bankName);
+      if (res.data.details.issueDate !== null) setIssueDate(dayjs(res.data.details.issueDate));
+      if (res.data.details.dueDate !== null) setDueDate(dayjs(res.data.details.dueDate));
+      setNotes(res.data.details.notes);
+      setCurrency(res.data.details.currency);
+      setWideDiscount(res.data.details.wideDiscount);
+      setTax(res.data.details.tax);
+      setInvoiceItems(res.data.details.items);
+      setFormat(res.data.details.format);
+      setSubtotal(res.data.details.subtotal);
+    }).catch((error) => {
+      if (error.response.data.error === 'Error: Invoice does not exist') setUpdate(false)
+    }) 
+  }, [])
 
   const calculateTotal = () => {
     let total = 0
@@ -81,15 +123,28 @@ export default function InvoicePage({token}) {
     event.preventDefault();
     const button = event.nativeEvent.submitter.name
     const formData = new FormData(event.currentTarget);
-    console.log(formData)
+    const billingAddress = {
+      addressLine1: formData.get('billing-address-line1') || '',
+      addressLine2: formData.get('billing-address-line2') || '',
+      suburb: formData.get('billing-suburb') || '',
+      state: formData.get('billing-state') || '',
+      postcode: formData.get('billing-postcode') || '',
+      country: formData.get('billing-country') || ''
+    }
+
+    const shippingAddress = {
+      addressLine1: formData.get('shipping-address-line1') || '',
+      addressLine2: formData.get('shipping-address-line2') || '',
+      suburb: formData.get('shipping-suburb') || '',
+      state: formData.get('shipping-state') || '',
+      postcode: formData.get('shipping-postcode') || '',
+      country: formData.get('shipping-country') || '',
+    }
+
     const participant = {
       companyName: formData.get('customer-name'),
-      address:  formData.get('billing-address-line1') + 
-                formData.get('billing-address-line2') +
-                formData.get('billing-suburb') + 
-                formData.get('billing-state') +
-                formData.get('billing-postcode'),
-      country: formData.get('billing-country'),
+      billingAddress: billingAddress,
+      shippingAddress: shippingAddress,
       email: formData.get('customer-email'),
       bankName: formData.get('bank-name'),
       bankAccount: formData.get('bank-number'),
@@ -100,6 +155,8 @@ export default function InvoicePage({token}) {
       const discountAmount = parseInt(item.discountAmount || 0);
       const total = itemQuantity * unitPrice
       return {
+        id: item.id,
+        isNew: false,
         itemSku: item.itemSku,
         itemName: item.itemName,
         description: item.description,
@@ -109,26 +166,56 @@ export default function InvoicePage({token}) {
         totalAmount: total * (1 - discountAmount / 100)
       };
     });
-    const postParams = {
+
+    const invoiceDetails = {
+      receiver: participant,
+      issueDate: issueDate,
+      dueDate: dueDate,
+      invoiceNumber: formData.get('invoice-num'),
+      shippingChecked: shippingChecked,
+      status: 'DRAFT',
+      state: 'MAIN',
+      items: items,
+      wideDiscount: wideDiscount,
+      tax: tax,
+      format: formData.get('format'),
+      currency: formData.get('currency'),
+      subtotal: calculateTotal(),
+      notes: formData.get('notes')
+    }
+    const params = {
+      invoiceId: invoiceId,
+      ...(update
+        ? { edits: invoiceDetails }
+        : {
+            isDraft: true,
+            invoiceDetails: invoiceDetails
+          }
+      ),
       invoiceDetails: {
         receiver: participant,
-        issueDate: formData.get('issue-date'),
-        dueDate: formData.get('due-date'),
+        issueDate: issueDate,
+        dueDate: dueDate,
+        invoiceNumber: formData.get('invoice-num'),
+        shippingChecked: shippingChecked,
         status: 'DRAFT',
         state: 'MAIN',
         items: items,
+        wideDiscount: wideDiscount,
+        tax: tax,
+        format: formData.get('format'),
         currency: formData.get('currency'),
-        total: calculateTotal(),
+        subtotal: calculateTotal(),
         notes: formData.get('notes')
       },
-      isDraft: true
+
     }
     if (button === 'save') {
-      console.log(postParams)
-      axios.post(`${API_URL}/v1/invoice`, postParams, {
+      const url = update ? `${API_URL}/v1/invoice/${invoiceId}/edit` : `${API_URL}/v2/invoice`
+      axios.put(url, params, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      .then(() => navigate('/dashboard'))
+      .then((res) => {console.log(res.data); navigate('/dashboard')})
       .catch(error => console.log(error.response.data.error))
     }  
   }
@@ -266,6 +353,8 @@ export default function InvoicePage({token}) {
             id='invoice-num'
             name='invoice-num'
             label='Invoice Number'
+            value={invoiceNumber}
+            onChange={(e) => setInvoiceNumber(e.target.value)}
             type='number'
             variant='standard'
             autoComplete='off'
@@ -342,7 +431,7 @@ export default function InvoicePage({token}) {
             total = {currency}{calculateTotal()}
           </Typography>
           <SelectField
-            id={'format-type'}
+            id={'format-id'}
             name={'format'}
             label={'Format'}
             value={format}

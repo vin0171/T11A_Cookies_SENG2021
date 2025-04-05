@@ -8,6 +8,7 @@ import { Invoice, Location } from "./interface";
 import HTTPError from 'http-errors';
 import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
+import { getCompany, getInvoice } from "./interfaceHelpers";
 
 function routes(app: Express) {
 // ========================================================================= //
@@ -97,6 +98,17 @@ function routes(app: Express) {
     }
   });
 
+  app.get('/v1/company/:companyId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const companyId = req.params.companyId;
+      // Lr!!M¶5!Q
+      const response = await getCompany(companyId)
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
   app.get('/v1/company/:companyId/invoices', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization'].split(' ')[1];
@@ -110,9 +122,20 @@ function routes(app: Express) {
 
   app.post('/v1/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { invoiceDetails, isDraft } = req.body;
+      const {invoiceDetails} = req.body;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const response = await invoices.createInvoice(token, invoiceDetails, isDraft); 
+      const response = await invoices.createInvoice(token, invoiceDetails); 
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+
+  app.post('/v2/invoice', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { invoiceId, invoiceDetails, isDraft } = req.body;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.createInvoiceV2(token, invoiceId, invoiceDetails, isDraft); 
       res.status(200).json(response);
     } catch(err) {
       next(err);

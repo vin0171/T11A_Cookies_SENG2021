@@ -1,5 +1,5 @@
 import { Session } from "inspector/promises";
-
+import { Dayjs } from 'dayjs';
 export type EmptyObject = Record<string, never>;
 
 export enum InvoiceStatus {
@@ -27,7 +27,7 @@ export interface Participant {
   country: string,
   phone?: string,
   email: string,
-  // taxIdentificationNumber: string,
+  taxIdentificationNumber: string,
   bankName: string,
   bankAccount: string,
   iban?: string,
@@ -44,32 +44,86 @@ export interface InvoiceItem {
   quantity: number,
   unitPrice: number,
   discountAmount: number,
-  // taxAmount: number,
-  // taxRate: number,
+  taxAmount: number,
+  taxRate: number,
+  totalAmount: number
+}
+
+export interface InvoiceItemV2 {
+  id: number,
+  isNew: boolean,
+  itemSku: string,
+  itemName: string,
+  description: string,
+  quantity: number,
+  unitPrice: number,
+  discountAmount: number,
   totalAmount: number
 }
 
 export interface InvoiceDetails {
-  // sender: Participant,
+  sender: Participant,
   receiver: Participant,
   issueDate: number,
   dueDate: number,
-  // repeating: boolean,
+  invoiceNumber: number,
+  repeating: boolean,
   status: InvoiceStatus,
   state: InvoiceState,
   items: InvoiceItem[],
   currency: string,
   total: number,
   notes: string,
-  // terms: string,
+  terms: string,
 }
-
 
 export interface Invoice {
   invoiceId: string,
   userId: string,
   companyId: string,
   details: InvoiceDetails
+}
+
+export interface Address {
+  addressLine1: string,
+  addressLine2: string,
+  suburb: string,
+  state: string,
+  postcode: string,
+  country: string
+}
+
+export interface ParticipantV2 {
+  companyName: string,
+  billingAddress: Address,
+  shippingAddress: Address,
+  email: string,
+  bankName: string,
+  bankAccount: string,
+}
+
+export interface InvoiceDetailsV2 {
+  receiver: ParticipantV2,
+  issueDate: Dayjs,
+  dueDate: Dayjs,
+  invoiceNumber: number,
+  status: InvoiceStatus,
+  shippingChecked: boolean,
+  state: InvoiceState,
+  items: InvoiceItemV2[],
+  wideDiscount: number,
+  tax: number,
+  format: string,
+  currency: string,
+  subtotal: number,
+  notes: string,
+}
+
+export interface InvoiceV2 {
+  invoiceId: string,
+  userId: string,
+  companyId: string,
+  details: InvoiceDetailsV2
 }
 
 export interface User {

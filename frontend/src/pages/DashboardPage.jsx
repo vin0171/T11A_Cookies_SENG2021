@@ -1,11 +1,12 @@
 import { Box, Button, Typography } from '@mui/material';
 import RegisterCompanyDialog from '../components/RegisterCompanyDialog'
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import LoadingBox from '../components/LoadingBox';
 import axios from 'axios';
 import { API_URL } from '../App';
 import { useNavigate } from 'react-router-dom';
-
+import {v4 as uuidv4} from 'uuid';
+import InvoiceCard from '../components/InvoiceCard';
 
 /**
  * This page sets up the dashboard page.
@@ -13,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 export default function DashboardPage({token}) {
   const navigate = useNavigate();
   const [companyDialog, setCompanyDialog] = useState(false);
-  const [company, setCompany] = useState(false);
+  const [company, setCompany] = useState('');
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const registerButton = loading
@@ -40,7 +41,7 @@ export default function DashboardPage({token}) {
       </Typography>
       <Button 
         variant='contained' 
-        onClick={() => navigate(`/${company}/invoices/create`)}
+        onClick={() => navigate(`/${company.name}/invoices/${uuidv4()}/create`)}
         sx={{
           bgcolor: '#9ccde1', 
           height: 50,
@@ -79,24 +80,31 @@ export default function DashboardPage({token}) {
     setLoading(true)
     axios.get(`${API_URL}/v1/user/details`, {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => {
-      setCompany(response.data.companyId)
-      setLoading(false)
+      if (response.data.companyId) {
+        axios.get(`${API_URL}/v1/company/${response.data.companyId}`)
+        .then((res) => {
+          setCompany(res.data)
+          setLoading(false)
+        }).catch(error => console.log(error.response.data.error));
+      } else {
+        setLoading(false)
+      }
     }).catch(error => console.log(error.response.data.error));
   }, [companyDialog])
 
   useEffect(() => {
     if (company) {
       setLoading(true)
-      axios.get(`${API_URL}/v1/company/${company}/invoices`, {headers: {Authorization: `Bearer ${token}`}})
+      axios.get(`${API_URL}/v1/company/${company.companyId}/invoices`, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         setInvoices(response.data)
         setLoading(false)
-      })      
+      }).catch((error) => console.log(error.response.data.error))    
     }
   },[company])
 
   return (
-    <>
+    <Fragment>
       <Box component='section' sx={{display: 'grid', gridTemplateRows: '3fr 7fr', height: '100%', overflow:'hidden'}}>
         <Box component='section' 
           sx={{
@@ -136,21 +144,19 @@ export default function DashboardPage({token}) {
                     gridTemplateColumns: '1fr',
                   },
                 }}>
-                {/* {invoices.map((i, index) => (
-                  <PresentationCard
+                {invoices.map((i, index) => (
+                  <InvoiceCard
                     key={index}
-                    id={i.id}
-                    title={i.title}
-                    thumbnail={i.thumbnail}
-                    slides={i.slides}
-                    description={i.description}
+                    company={company.name}
+                    invoiceId={i.invoiceId}
+                    title={'Invoice #' + i.details.invoiceNumber}
                   />
-                ))} */}
+                ))}
               </Box>
             )}
           </Box>
         </Box>
       </Box>
-    </>
+    </Fragment>
   )
 }

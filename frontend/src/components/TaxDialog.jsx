@@ -117,7 +117,6 @@ return (
                     : {endAdornment: <InputAdornment position='end'>%</InputAdornment>}
                 },
                 htmlInput : {
-                  max: 100,
                   step: .01
                 }
               }}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Box from '@mui/material/Box';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
@@ -7,7 +7,7 @@ import {
   GridActionsCellItem,
   GridToolbarContainer,
 } from '@mui/x-data-grid';
-import { Button, Typography } from "@mui/material";
+import { Button } from "@mui/material";
 
 export default function InvoiceItemTable({rows, setRows, setSubtotal, currency}) {
   useEffect(() => {
