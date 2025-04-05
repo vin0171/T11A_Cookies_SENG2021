@@ -14,11 +14,11 @@ import HTTPError from 'http-errors';
  * @param {InvoiceDetails} invoiceDetails - contains all invoice details
  * @returns {string}
  */
-export async function createInvoice(token: string, invoiceDetails: InvoiceDetails) : Promise<string> {
+export async function createInvoice(token: string, invoiceDetails: InvoiceDetails, isDraft: boolean) : Promise<string> {
     const user = await validators.validateToken(token);
     const data = getData();
     const invoiceId = uuidv4();
-    const invoiceInfo : Invoice = generateInvoice(invoiceId, user.userId, user.companyId, invoiceDetails);
+    const invoiceInfo : Invoice = generateInvoice(invoiceId, user.userId, user.companyId, invoiceDetails, isDraft);
 
     await data.put({ TableName: "Invoices", Item: invoiceInfo });
     await addInvoiceIdToTable("Users", user.userId, invoiceId);

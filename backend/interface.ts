@@ -45,23 +45,23 @@ export interface InvoiceItem {
   unitPrice: number,
   discountAmount: number,
   taxAmount: number,
-  taxRate: number,
+  // taxRate: number,
   totalAmount: number
 }
 
 export interface InvoiceDetails {
-  sender: Participant,
+  // sender: Participant,
   receiver: Participant,
   issueDate: number,
   dueDate: number,
-  repeating: boolean,
+  // repeating: boolean,
   status: InvoiceStatus,
   state: InvoiceState,
   items: InvoiceItem[],
   currency: string,
   total: number,
   notes: string,
-  terms: string,
+  // terms: string,
 }
 
 

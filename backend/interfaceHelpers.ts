@@ -111,7 +111,7 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
             'unitPrice',
             'discountAmount',
             'taxAmount',
-            'taxRate',
+            // 'taxRate',
             'totalAmount'
         ];
 
@@ -128,8 +128,10 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
 };
     
 
-export function generateInvoice(invoiceId: string, userId: string, companyId: string, invoiceDetails: InvoiceDetails) {
-    validateInvoiceDetails(invoiceDetails);
+export function generateInvoice(invoiceId: string, userId: string, companyId: string, invoiceDetails: InvoiceDetails, isDraft: boolean) {
+    if (!isDraft) {
+        validateInvoiceDetails(invoiceDetails);
+    }
 
     const invoice = {
         invoiceId: invoiceId, 

@@ -110,9 +110,9 @@ function routes(app: Express) {
 
   app.post('/v1/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const invoiceDetails = req.body;
+      const { invoiceDetails, isDraft } = req.body;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const response = await invoices.createInvoice(token, invoiceDetails); 
+      const response = await invoices.createInvoice(token, invoiceDetails, isDraft); 
       res.status(200).json(response);
     } catch(err) {
       next(err);
