@@ -4,6 +4,7 @@ import javascript from 'highlight.js/lib/languages/javascript';
 import python from 'highlight.js/lib/languages/python';
 import c from 'highlight.js/lib/languages/cpp'
 import styled from "styled-components";
+import { MenuItem, TextField } from '@mui/material';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('python', python);
@@ -31,4 +32,39 @@ export const loginRegisterFormStyle = (
     }
   `
 )
+
+export function SelectField({
+  id,
+  name,
+  label,
+  value,
+  options,
+  setValue,
+}) {
+  return (
+    <TextField
+      id={id}
+      name={name}
+      select
+      label={label}
+      value={value}
+      variant="standard"
+      sx={{ mt: 1.875, ...formInputStyle }}
+      slotProps={{
+        htmlInput: { id: name },
+        inputLabel: { htmlFor: name }
+      }}
+    >
+      {options.map((option) => (
+        <MenuItem
+          key={option.label}
+          value={option.label}
+          onClick={() => setValue(option.label)}
+        >
+          {option.label}
+        </MenuItem>
+      ))}
+    </TextField>
+  );
+}
 

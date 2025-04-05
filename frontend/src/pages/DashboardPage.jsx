@@ -13,13 +13,13 @@ import { useNavigate } from 'react-router-dom';
  */
 export default function DashboardPage({token}) {
   const navigate = useNavigate();
-  const [presentations, setPresentations] = useState([]);
-  const [companyCreated, setCompanyCreated] = useState(false);
-  const [invoices, setInvoices] = useState(null);
+  const [companyDialog, setCompanyDialog] = useState(false);
+  const [company, setCompany] = useState(false);
+  const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
   const registerButton = loading
   ? null
-  : companyCreated
+  : company
     ? <Box 
       sx= {{
         display: 'flex',
@@ -41,7 +41,7 @@ export default function DashboardPage({token}) {
       </Typography>
       <Button 
         variant='contained' 
-        onClick={() => navigate(`/${companyCreated}/invoices/create`)}
+        onClick={() => navigate(`/${company}/invoices/create`)}
         sx={{
           bgcolor: '#9ccde1', 
           height: 50,
@@ -73,28 +73,28 @@ export default function DashboardPage({token}) {
         }}>
         Register a Company
       </Typography>
-      <RegisterCompanyDialog token={token} setCompanyCreated={setCompanyCreated}/>
+      <RegisterCompanyDialog token={token} setCompanyCreated={setCompanyDialog}/>
       </Box>;
 
   useEffect(() => {
     setLoading(true)
     axios.get(`${API_URL}/v1/user/details`, {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => {
-      setCompanyCreated(response.data.companyId)
+      setCompany(response.data.companyId)
       setLoading(false)
     }).catch(error => console.log(error.response.data.error));
-  }, [])
+  }, [companyDialog])
 
   useEffect(() => {
-    if (companyCreated) {
+    if (company) {
       setLoading(true)
-      axios.get(`${API_URL}/v1/company/${companyCreated}/invoices`, {headers: {Authorization: `Bearer ${token}`}})
+      axios.get(`${API_URL}/v1/company/${company}/invoices`, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         setInvoices(response.data)
         setLoading(false)
       })      
     }
-  },[companyCreated])
+  },[company])
 
   return (
     <>
@@ -137,14 +137,14 @@ export default function DashboardPage({token}) {
                     gridTemplateColumns: '1fr',
                   },
                 }}>
-                {presentations.map((p, index) => (
+                {invoices.map((i, index) => (
                   <PresentationCard
                     key={index}
-                    id={p.id}
-                    title={p.title}
-                    thumbnail={p.thumbnail}
-                    slides={p.slides}
-                    description={p.description}
+                    id={i.id}
+                    title={i.title}
+                    thumbnail={i.thumbnail}
+                    slides={i.slides}
+                    description={i.description}
                   />
                 ))}
               </Box>

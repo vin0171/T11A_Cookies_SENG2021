@@ -6,7 +6,7 @@ import { API_URL } from '../App';
 
 /**
  * This component sets up the dialog that pops up when the user clicks on the create
- * presentation button on the dashboard.
+ * company button on the dashboard.
  */
 export default function RegisterCompanyDialog({token, setCompanyCreated}) {
 const [open, setOpen] = useState(false);
