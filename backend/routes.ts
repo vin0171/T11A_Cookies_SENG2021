@@ -9,7 +9,7 @@ import HTTPError from 'http-errors';
 import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
 import { getCompany, getInvoice } from "./interfaceHelpers";
-import validateUBL from "./validation";
+import { validateUBL } from "./validation";
 
 function routes(app: Express) {
 // ========================================================================= //
