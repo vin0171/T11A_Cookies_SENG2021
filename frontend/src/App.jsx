@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Router from './Router';
 
 export const API_URL = 'http://localhost:8080';
+export const API_URL2 = 'https://gzwmrl0sz7.execute-api.us-east-1.amazonaws.com/';
 
 const GlobalStyle = createGlobalStyle`
   html, body {

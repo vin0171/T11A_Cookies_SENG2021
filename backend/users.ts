@@ -64,9 +64,9 @@ export async function userLogin(email: string, password: string): Promise<string
  * @param {string} token - token of the user
  * @returns {}
  */
-export function userLogout(token: string): EmptyObject {
-	const user: User = validateToken(token);
-	if (user.token == null) throw helpers.errorReturn(401, 'User has already logged out');
-	user.token = null;
-	return {};
-}
+// export function userLogout(token: string): EmptyObject {
+// 	const user: User = validateToken(token);
+// 	if (user.token == null) throw helpers.errorReturn(401, 'User has already logged out');
+// 	user.token = null;
+// 	return {};
+// }

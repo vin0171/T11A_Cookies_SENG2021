@@ -137,7 +137,6 @@ export function validateLocation(address: string, city: string, state: string, p
     }   
 }
 
-
 // This function is for people who are members of a company but not an admin,
 // they can only create and read invoices.
 export async function validateUsersPerms(userId: string, userCompanyId: string, invoiceId: string) {

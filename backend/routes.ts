@@ -44,15 +44,15 @@ function routes(app: Express) {
     }
   });
 
-  app.post('/v1/user/logout', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const token = req.headers['authorization'].split(' ')[1];
-      const response = users.userLogout(token);
-      res.status(200).json(response);
-    } catch(err) {
-      next(err);
-    }
-  });
+  // app.post('/v1/user/logout', async (req: Request, res: Response, next: NextFunction) => {
+  //   try {
+  //     const token = req.headers['authorization'].split(' ')[1];
+  //     const response = users.userLogout(token);
+  //     res.status(200).json(response);
+  //   } catch(err) {
+  //     next(err);
+  //   }
+  // });
 
   app.get('/v1/user/invoices', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -193,7 +193,7 @@ function routes(app: Express) {
       next(err);
     }
   });
-  
+
   app.post('/v2/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { invoiceId, invoiceDetails, isDraft } = req.body;

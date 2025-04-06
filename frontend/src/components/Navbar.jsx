@@ -6,6 +6,7 @@ import PrestoLogo from './PrestoLogo';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { useEffect, useState } from 'react';
 import {  Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 
@@ -28,11 +29,16 @@ export default function Navbar({token, loggedIn, children}) {
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleMenu(false)}>
       <List>
-        {['Stats'].map((text) => (
+        {['Stats', 'AI Chat'].map((text) => (
           <ListItem key={text} disablePadding>
-            <ListItemButton onClick={() => navigate('/')}> {/* i need to update this once that lazy ass mf adds a get function for user details which is like idk super basic literally takse two seconds???*/}
+            <ListItemButton onClick={() => navigate('/')}> 
               <ListItemIcon>
-                <QueryStatsIcon fontSize='large' sx={{ color: '#27548A'}}/>
+                {text === 'Stats' && 
+                  <QueryStatsIcon fontSize='large' sx={{ color: '#27548A'}}/>
+                }
+                {text === 'AI Chat' && 
+                  <SmartToyIcon fontSize='large' sx={{ color: '#27548A'}}/>
+                }
               </ListItemIcon>
               <ListItemText  
                 slotProps={{
