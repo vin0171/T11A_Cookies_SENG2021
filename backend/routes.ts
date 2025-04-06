@@ -193,25 +193,7 @@ function routes(app: Express) {
       next(err);
     }
   });
-
-  app.post('/v1/invoice/:invoiceId/xml', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const invoiceId = req.params.invoiceId;
-      const token = req.headers['authorization']?.split(' ')[1] || undefined;
   
-      // Generate the PDF for the invoice
-      const xml = await invoices.generateInvoiceXML(token, invoiceId);
-  
-      // Set headers for PDF response
-      res.setHeader('Content-Type', 'application/xml');
-      res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoiceId}.xml`);
-      console.log('XML generated successfully😅');
-      res.status(200).send(xml);
-    } catch (err) {
-      next(err);
-    }
-  });
-
   app.post('/v2/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { invoiceId, invoiceDetails, isDraft } = req.body;
