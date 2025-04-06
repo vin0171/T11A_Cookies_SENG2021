@@ -227,7 +227,7 @@ export default function InvoicePage({token}) {
   ];
   
   const formatOptions = [
-    {label: 'XML'},
+    {label: 'UBL (PINT A-NZ Billing Profile)'},
     {label: 'PDF'}
   ]
   return (
@@ -393,6 +393,14 @@ export default function InvoicePage({token}) {
             autoComplete='on'
             sx={{ width: '100%' }}
             onChange={(e) => setNotes(e.target.value)}
+          />
+          <SelectField
+            id={'format-id'}
+            name={'format'}
+            label={'Format'}
+            value={format}
+            options={formatOptions}
+            setValue={setFormat}
           />     
           <InvoiceItemTable rows={invoiceItems} setRows={setInvoiceItems} setSubtotal={setSubtotal} currency={currency}/>
           <InvoiceDiscountDialog setWideDiscount={setWideDiscount}/>
@@ -404,7 +412,7 @@ export default function InvoicePage({token}) {
           {Object.keys(wideDiscount).length !== 0 && 
           (
             <Fragment>
-              {wideDiscount.discountType === 'Flat' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {parseFloat(wideDiscount.discountAmount)}</Typography>}
+              {wideDiscount.discountType === 'Flat' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {parseFloat(wideDiscount.discountAmount).toFixed(2)}</Typography>}
               {wideDiscount.discountType === 'Percentage' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {subTotal * (parseFloat(wideDiscount.discountAmount) / 100) + '%'}</Typography>}
             </Fragment>
           )}
@@ -421,23 +429,15 @@ export default function InvoicePage({token}) {
               {tax.taxType === 'GST' && <Typography>GST: {subTotal * (0.1)}</Typography>}
               {tax.taxType === 'Custom' && 
                 <Fragment>
-                  {tax.taxOption === 'Percentage' && tax.taxAmount !== '' &&<Typography>Tax : {parseFloat(tax.taxAmount)+ '%'}</Typography>}
-                  {tax.taxOption === 'Flat' && tax.taxAmount !== '' &&<Typography>Tax : {parseFloat(tax.taxAmount)}</Typography>}
+                  {tax.taxOption === 'Percentage' && tax.taxAmount !== '' &&<Typography>Tax : {parseFloat(tax.taxAmount).toFixed(2)+ '%'}</Typography>}
+                  {tax.taxOption === 'Flat' && tax.taxAmount !== '' &&<Typography>Tax : {parseFloat(tax.taxAmount).toFixed(2)}</Typography>}
                 </Fragment>
               }
             </Fragment>
           }
           <Typography>
-            total = {currency}{calculateTotal()}
+            total = {currency}{calculateTotal().toFixed(2)}
           </Typography>
-          <SelectField
-            id={'format-id'}
-            name={'format'}
-            label={'Format'}
-            value={format}
-            options={formatOptions}
-            setValue={setFormat}
-          />
           <Button
             onClick={() => {
               setCustomer('');
@@ -471,7 +471,6 @@ export default function InvoicePage({token}) {
             Reset Invoice
           </Button>
           <Button
-            // SUBMIT THE FORM BUT SAVE AS A DRAFT
             type='submit'
             name='save'
           >

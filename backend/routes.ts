@@ -163,6 +163,7 @@ function routes(app: Express) {
       try {
         const token = req.headers['authorization']?.split(' ')[1] || undefined;
         const { invoiceId, edits } = req.body;
+        console.log(invoiceId, edits)
         const response = await invoices.editInvoiceDetails(token, invoiceId, edits);
         res.status(200).json(response);
       } catch(err) {
