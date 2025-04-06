@@ -4,7 +4,23 @@ import { generateInvoice, generateInvoiceV2, getCompany,  } from "./interfaceHel
 import { getData } from "./dataStore";
 import {v4 as uuidv4} from 'uuid';
 import HTTPError from 'http-errors';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import path from 'path';
+import PdfPrinter from "pdfmake";
+import { create } from 'xmlbuilder2';
 
+const fonts = {
+    Helvetica: {
+      normal: 'Helvetica',
+      bold: 'Helvetica-Bold',
+      italics: 'Helvetica-Oblique',
+      bolditalics: 'Helvetica-BoldOblique',
+    }
+};
+
+const printer = new PdfPrinter(fonts);
 /**
  * Stub for the createInvoice function.
  * 
@@ -188,3 +204,110 @@ export async function listUserInvoices(token: string) {
     return getInvoiceList(user.invoices);
 }
 
+export async function generateInvoicePDF(token: string, invoiceId: string) {
+    const data = getData();
+    const user = await validators.validateToken(token);
+    const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+    const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
+    const item1 = response.Item;
+    console.log(response);
+    console.log("😎");
+    console.log(item1);
+    // idk error code lol
+    if (!item1) HTTPError(403, 'Error: Invoice does not exist');
+    //const pdf = await generatePDF(item);
+    const item = item1.details;
+    const docDefinition: TDocumentDefinitions = {
+        content: [
+          { text: 'Invoice', style: 'header' },
+          {
+            columns: [
+              { text: `From:\n${item.sender.companyName}\n${item.sender.address}`, width: '50%' },
+              { text: `To:\n${item.receiver.companyName}\n${item.receiver.address}`, width: '50%', alignment: 'right' },
+            ]
+          },
+          { text: `Invoice #: ${item.invoiceNumber || invoiceId}`, margin: [0, 10] },
+          { text: `Issue Date: ${new Date(item.issueDate).toLocaleDateString()}` },
+          { text: `Due Date: ${new Date(item.dueDate).toLocaleDateString()}` },
+          {
+            style: 'tableExample',
+            table: {
+              widths: ['*', 'auto', 'auto', 'auto'],
+              body: [
+                ['Description', 'Qty', 'Unit Price', 'Total'],
+                ...item.items.map((i: any) => [
+                  i.description,
+                  i.quantity,
+                  `${item.currency} ${i.unitPrice}`,
+                  `${item.currency} ${i.quantity * i.unitPrice}`
+                ]),
+                [
+                  { text: 'Total', colSpan: 3, alignment: 'right' }, {}, {},
+                  `${item.currency} ${item.total}`
+                ]
+              ]
+            },
+            layout: 'lightHorizontalLines',
+            margin: [0, 20]
+          },
+            item.notes ? { text: `Notes: ${item.notes}` } : null,
+        ],
+        defaultStyle: {
+            font: "Helvetica"
+        },
+        styles: {
+          header: { fontSize: 22, bold: true, margin: [0, 0, 0, 10] },
+          tableExample: { margin: [0, 5, 0, 15] }
+        }
+      };
+
+      console.log('PDF😎');
+
+      return new Promise<Buffer>((resolve, reject) => {
+        const pdfDoc = printer.createPdfKitDocument(docDefinition);
+        const chunks: Uint8Array[] = [];
+        pdfDoc.on('data', (chunk) => chunks.push(chunk));
+        pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
+        pdfDoc.on('error', reject);
+        pdfDoc.end();
+      });
+} 
+
+
+export async function generateInvoiceXML(token: string, invoiceId: string) {
+    const data = getData();
+    const user = await validators.validateToken(token);
+    const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+    const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
+    const item1 = response.Item;
+
+    // idk error code lol
+    if (!item1) HTTPError(403, 'Error: Invoice does not exist');
+    //const pdf = await generatePDF(item);
+    const item = item1.details;
+    function invoiceToXML(invoice : any): string {
+        const xml = create({ version: '1.0' })
+          .ele('Invoice')
+            .ele('Receiver').txt(item.receiver.company).up()
+            .ele('IssueDate').txt(new Date(item.issueDate).toISOString()).up()
+            .ele('DueDate').txt(new Date(item.dueDate).toISOString()).up()
+            //.ele('Status').txt(invoice.status).up()
+            //.ele('State').txt(invoice.state).up()
+            .ele('Currency').txt(item.currency).up()
+            .ele('Total').txt(item.total).up()
+            .ele('Notes').txt(item.notes || '').up()
+            .ele('Items');
+      
+        for (const item of invoice.items) {
+          xml
+            .ele('Item')
+              .ele('Description').txt(item.description).up()
+              .ele('Quantity').txt(item.quantity.toString()).up()
+              .ele('UnitPrice').txt(item.unitPrice).up()
+              .ele('Total').txt(item.total).up()
+            .up();
+        }
+      
+        return xml.end({ prettyPrint: true });
+    }
+} 

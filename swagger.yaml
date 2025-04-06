@@ -1064,6 +1064,80 @@ paths:
         403:
           $ref: '#/components/responses/InvoiceDeleteError403'
       
+  /v1/invoice/{invoiceId}/pdf:
+    post:
+      summary: Generate a PDF for the given Invoice ID
+      description: Generates and returns a PDF file for the specified invoice.
+      tags:
+        - "Invoice Endpoints"
+      security:
+        - Token: []
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          description: The ID of the invoice to generate the PDF for.
+          schema:
+            type: string
+            example: "6f5bddd6-57cf-4250-b59f-bed5189aaf3e"
+      responses:
+        200:
+          $ref: '#/components/responses/InvoicePDFSuccess'
+        400:
+          $ref: '#/components/responses/InvoicePDFError400'
+        401:
+          $ref: '#/components/responses/InvoicePDFError401'
+        403:
+          $ref: '#/components/responses/InvoicePDFError403'
+
+  /v1/invoice/{invoiceId}/xml:
+    post:
+      summary: Generate an XML for the given Invoice ID
+      description: Generates and returns an XML file for the specified invoice.
+      tags:
+        - "Invoice Endpoints"
+      security:
+        - Token: []
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          description: The ID of the invoice to generate the XML for.
+          schema:
+            type: string
+            example: "6f5bddd6-57cf-4250-b59f-bed5189aaf3e"
+      responses:
+        200:
+          description: Invoice XML file successfully generated.
+          content:
+            application/xml:
+              schema:
+                type: string
+                example: |
+                  <Invoice>
+                    <Receiver>John Doe</Receiver>
+                    <IssueDate>2025-04-05T14:23:00Z</IssueDate>
+                    <DueDate>2025-04-15T14:23:00Z</DueDate>
+                    <Status>UNPAID</Status>
+                    <State>DRAFT</State>
+                    <Currency>USD</Currency>
+                    <Total>1200.00</Total>
+                    <Notes>Thanks for your business!</Notes>
+                    <Items>
+                      <Item>
+                        <Description>Design Services</Description>
+                        <Quantity>10</Quantity>
+                        <UnitPrice>100.00</UnitPrice>
+                        <Total>1000.00</Total>
+                      </Item>
+                    </Items>
+                  </Invoice>
+        400:
+          $ref: '#/components/responses/InvoicePDFError400'
+        401:
+          $ref: '#/components/responses/InvoicePDFError401'
+        403:
+          $ref: '#/components/responses/InvoicePDFError403'
 
   # Invoice Edit 
   /v1/invoice/{invoiceId}/edit:

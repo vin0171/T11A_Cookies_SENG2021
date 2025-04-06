@@ -183,6 +183,42 @@ function routes(app: Express) {
     }
   });
 
+  app.post('/v1/invoice/:invoiceId/pdf', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const invoiceId = req.params.invoiceId;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+  
+      // Generate the PDF for the invoice
+      const pdfBuffer = await invoices.generateInvoicePDF(token, invoiceId);
+  
+      // Set headers for PDF response
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoiceId}.pdf`);
+      console.log('PDF generated successfully😅');
+      res.status(200).send(pdfBuffer);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.post('/v1/invoice/:invoiceId/xml', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const invoiceId = req.params.invoiceId;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+  
+      // Generate the PDF for the invoice
+      const xml = await invoices.generateInvoiceXML(token, invoiceId);
+  
+      // Set headers for PDF response
+      res.setHeader('Content-Type', 'application/xml');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoiceId}.xml`);
+      console.log('XML generated successfully😅');
+      res.status(200).send(xml);
+    } catch (err) {
+      next(err);
+    }
+  });
+
   // We indirectly use next but not directly which causes linting errors
   // eslint-disable-next-line 
   app.use((err: HTTPError.HttpError, req: Request, res: Response, next: NextFunction) => {
