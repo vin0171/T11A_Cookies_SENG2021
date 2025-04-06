@@ -101,7 +101,6 @@ function routes(app: Express) {
   app.get('/v1/company/:companyId', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const companyId = req.params.companyId;
-      // Lr!!M¶5!Q
       const response = await getCompany(companyId)
       res.status(200).json(response);
     } catch(err) {
@@ -125,17 +124,6 @@ function routes(app: Express) {
       const {invoiceDetails} = req.body;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const response = await invoices.createInvoice(token, invoiceDetails); 
-      res.status(200).json(response);
-    } catch(err) {
-      next(err);
-    }
-  });
-
-  app.post('/v2/invoice', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { invoiceId, invoiceDetails, isDraft } = req.body;
-      const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const response = await invoices.createInvoiceV2(token, invoiceId, invoiceDetails, isDraft); 
       res.status(200).json(response);
     } catch(err) {
       next(err);
@@ -184,6 +172,10 @@ function routes(app: Express) {
     }
   });
 
+// ========================================================================= //
+// Iteration 2
+// ========================================================================= //
+
   app.post('/v1/invoice/:invoiceId/pdf', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
@@ -216,6 +208,17 @@ function routes(app: Express) {
       console.log('XML generated successfully😅');
       res.status(200).send(xml);
     } catch (err) {
+      next(err);
+    }
+  });
+
+  app.post('/v2/invoice', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { invoiceId, invoiceDetails, isDraft } = req.body;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.createInvoiceV2(token, invoiceId, invoiceDetails, isDraft); 
+      res.status(200).json(response);
+    } catch(err) {
       next(err);
     }
   });
