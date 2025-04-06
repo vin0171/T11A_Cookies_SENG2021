@@ -185,8 +185,8 @@ function routes(app: Express) {
 
   app.post('/v1/invoice/:invoiceId/pdf', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const invoiceId = req.params.invoiceId;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const invoiceId = req.params.invoiceId;
   
       // Generate the PDF for the invoice
       const pdfBuffer = await invoices.generateInvoicePDF(token, invoiceId);

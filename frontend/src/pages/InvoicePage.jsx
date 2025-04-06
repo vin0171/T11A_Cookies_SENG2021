@@ -13,6 +13,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import TaxDialog from "../components/TaxDialog";
 import AddressFields from "../components/AddressFields";
 import dayjs from "dayjs";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+pdfMake.addVirtualFileSystem(pdfFonts);
 
 export default function InvoicePage({token}) {
   const navigate = useNavigate();
@@ -68,6 +71,7 @@ export default function InvoicePage({token}) {
       setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
       setShippingCountry(res.data.details.receiver.shippingAddress.country);  
       setShippingChecked(res.data.details.shippingChecked);
+      setShippingCostDetails(res.data.details.shippingCost)
       
       setInvoiceNumber(res.data.details.invoiceNumber);
       setBankNum(res.data.details.receiver.bankAccount);
@@ -180,7 +184,9 @@ export default function InvoicePage({token}) {
       tax: tax,
       format: formData.get('format'),
       currency: formData.get('currency'),
-      subtotal: calculateTotal(),
+      shippingCostDetails: shippingCostDetails,
+      subtotal: subTotal,
+      total: calculateTotal(),
       notes: formData.get('notes')
     }
     const params = {
@@ -191,24 +197,7 @@ export default function InvoicePage({token}) {
             isDraft: true,
             invoiceDetails: invoiceDetails
           }
-      ),
-      invoiceDetails: {
-        receiver: participant,
-        issueDate: issueDate,
-        dueDate: dueDate,
-        invoiceNumber: formData.get('invoice-num'),
-        shippingChecked: shippingChecked,
-        status: 'DRAFT',
-        state: 'MAIN',
-        items: items,
-        wideDiscount: wideDiscount,
-        tax: tax,
-        format: formData.get('format'),
-        currency: formData.get('currency'),
-        subtotal: calculateTotal(),
-        notes: formData.get('notes')
-      },
-
+      )
     }
     if (button === 'save') {
       const url = update ? `${API_URL}/v1/invoice/${invoiceId}/edit` : `${API_URL}/v2/invoice`
@@ -217,7 +206,18 @@ export default function InvoicePage({token}) {
       })
       .then((res) => {console.log(res.data); navigate('/dashboard')})
       .catch(error => console.log(error.response.data.error))
-    }  
+    } else if (button === 'download') {
+      console.log(invoiceId)
+      if (format === 'PDF') {
+        axios.post(`${API_URL}/v1/invoice/${invoiceId}/pdf`, {}, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((doc) => {
+          pdfMake.createPdf(doc.data).download(`invoice-${invoiceNumber}.pdf`);
+        })
+        .catch(error => console.log(error?.response?.data?.error || error.message));
+      }
+    } 
   }
 
   const currencyOptions = [

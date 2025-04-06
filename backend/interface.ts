@@ -102,6 +102,19 @@ export interface ParticipantV2 {
   bankAccount: string,
 }
 
+// these should be parsed as a float/ int when used
+export interface ShippingCostDetails {
+  shippingTax?: string,
+  shippingCost?: string 
+}
+
+// these should be parsed as a float/ int when used
+export interface Tax {
+  taxType: string,
+  taxOption?: string,
+  taxAmount?: string
+}
+
 export interface InvoiceDetailsV2 {
   receiver: ParticipantV2,
   issueDate: Dayjs,
@@ -112,7 +125,8 @@ export interface InvoiceDetailsV2 {
   state: InvoiceState,
   items: InvoiceItemV2[],
   wideDiscount: number,
-  tax: number,
+  tax: Tax,
+  shippingCostDetails: ShippingCostDetails,
   format: string,
   currency: string,
   subtotal: number,

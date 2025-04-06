@@ -205,72 +205,66 @@ export async function listUserInvoices(token: string) {
 }
 
 export async function generateInvoicePDF(token: string, invoiceId: string) {
-    const data = getData();
-    const user = await validators.validateToken(token);
-    const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
-    const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
-    const item1 = response.Item;
-    console.log(response);
-    console.log("😎");
-    console.log(item1);
-    // idk error code lol
-    if (!item1) HTTPError(403, 'Error: Invoice does not exist');
-    //const pdf = await generatePDF(item);
-    const item = item1.details;
-    const docDefinition: TDocumentDefinitions = {
-        content: [
-          { text: 'Invoice', style: 'header' },
-          {
-            columns: [
-              { text: `From:\n${item.sender.companyName}\n${item.sender.address}`, width: '50%' },
-              { text: `To:\n${item.receiver.companyName}\n${item.receiver.address}`, width: '50%', alignment: 'right' },
+  const data = getData();
+  const user = await validators.validateToken(token);
+  const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+  const company = await getCompany(user.companyId);
+  const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
+  const item1 = response.Item;
+  // idk error code lol
+  if (!item1) HTTPError(403, 'Error: Invoice does not exist');
+  //const pdf = await generatePDF(item);
+  const item = item1.details;
+  console.log(item)
+  const receiverAddress = [item.receiver.billingAddress.addressLine1, 
+    item.receiver.billingAddress.addressLine2, item.receiver.billingAddress.suburb,
+    item.receiver.billingAddress.state, item.receiver.billingAddress.postcode,
+    item.receiver.billingAddress.country,
+  ].filter(part => part).join(', ');
+  const docDefinition: TDocumentDefinitions = {
+    content: [
+      { text: 'Invoice', style: 'header' },
+      {
+        columns: [
+          { text: `From:\n${company.name}\n${company.headquarters.address}`, width: '50%' },
+          { text: `To:\n${item.receiver.companyName}\n${receiverAddress}`, width: '50%', alignment: 'right' },
+        ]
+      },
+      { text: `Invoice #: ${item.invoiceNumber || invoiceId}`, margin: [0, 10] },
+      { text: `Issue Date: ${new Date(item.issueDate).toLocaleDateString()}` },
+      { text: `Due Date: ${new Date(item.dueDate).toLocaleDateString()}` },
+      {
+        style: 'tableExample',
+        table: {
+          widths: ['*', 'auto', 'auto', 'auto'],
+          body: [
+            ['Description', 'Qty', 'Unit Price', 'Total'],
+            ...item.items.map((i: any) => [
+              i.description,
+              i.quantity,
+              `${item.currency} ${i.unitPrice}`,
+              `${item.currency} ${i.quantity * i.unitPrice}`
+            ]),
+            [
+              { text: 'Total', colSpan: 3, alignment: 'right' }, {}, {},
+              `${item.currency} ${item.subtotal.toFixed(2)} ${item.total.toFixed(2)}`
             ]
-          },
-          { text: `Invoice #: ${item.invoiceNumber || invoiceId}`, margin: [0, 10] },
-          { text: `Issue Date: ${new Date(item.issueDate).toLocaleDateString()}` },
-          { text: `Due Date: ${new Date(item.dueDate).toLocaleDateString()}` },
-          {
-            style: 'tableExample',
-            table: {
-              widths: ['*', 'auto', 'auto', 'auto'],
-              body: [
-                ['Description', 'Qty', 'Unit Price', 'Total'],
-                ...item.items.map((i: any) => [
-                  i.description,
-                  i.quantity,
-                  `${item.currency} ${i.unitPrice}`,
-                  `${item.currency} ${i.quantity * i.unitPrice}`
-                ]),
-                [
-                  { text: 'Total', colSpan: 3, alignment: 'right' }, {}, {},
-                  `${item.currency} ${item.total}`
-                ]
-              ]
-            },
-            layout: 'lightHorizontalLines',
-            margin: [0, 20]
-          },
-            item.notes ? { text: `Notes: ${item.notes}` } : null,
-        ],
-        defaultStyle: {
-            font: "Helvetica"
+          ]
         },
-        styles: {
-          header: { fontSize: 22, bold: true, margin: [0, 0, 0, 10] },
-          tableExample: { margin: [0, 5, 0, 15] }
-        }
-      };
-
-      console.log('PDF😎');
-
-      return new Promise<Buffer>((resolve, reject) => {
-        const pdfDoc = printer.createPdfKitDocument(docDefinition);
-        const chunks: Uint8Array[] = [];
-        pdfDoc.on('data', (chunk) => chunks.push(chunk));
-        pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
-        pdfDoc.on('error', reject);
-        pdfDoc.end();
-      });
+        layout: 'lightHorizontalLines',
+        margin: [0, 20]
+      },
+        item.notes ? { text: `Notes: ${item.notes}` } : null,
+    ],
+    // defaultStyle: {
+    //   font: "Helvetica"
+    // },
+    styles: {
+      header: { fontSize: 22, bold: true, margin: [0, 0, 0, 10] },
+      tableExample: { margin: [0, 5, 0, 15] }
+    }
+  };
+  return docDefinition;
 } 
 
 
