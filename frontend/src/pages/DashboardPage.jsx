@@ -7,6 +7,7 @@ import { API_URL } from '../App';
 import { useNavigate } from 'react-router-dom';
 import {v4 as uuidv4} from 'uuid';
 import InvoiceCard from '../components/InvoiceCard';
+import AddUserDialog from '../components/AddUserDialog';
 
 /**
  * This page sets up the dashboard page.
@@ -67,20 +68,7 @@ export default function DashboardPage({token}) {
           }}>
           Add a User
         </Typography>
-        
-        <Button 
-          variant='contained' 
-          sx={{
-            bgcolor: '#DDA853', 
-            height: 50,
-            width: 200,
-            textTransform: 'none',
-            fontWeight: 'bold',
-            fontSize: '1.5em',
-          }}
-        >
-          Add
-        </Button>
+        <AddUserDialog token={token} companyId={company.companyId}/>
       </Box>
       </Box>
     : <Box 
