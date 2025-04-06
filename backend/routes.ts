@@ -9,6 +9,7 @@ import HTTPError from 'http-errors';
 import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
 import { getCompany, getInvoice } from "./interfaceHelpers";
+import validateUBL from "./validation";
 
 function routes(app: Express) {
 // ========================================================================= //
@@ -152,13 +153,23 @@ function routes(app: Express) {
       try {
         const token = req.headers['authorization']?.split(' ')[1] || undefined;
         const { invoiceId, edits } = req.body;
-        console.log(invoiceId, edits)
         const response = await invoices.editInvoiceDetails(token, invoiceId, edits);
         res.status(200).json(response);
       } catch(err) {
         next(err);
       }
     });
+
+  app.post('/v1/invoice/validate', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const { ublInvoice } = req.body;
+      const response = validateUBL(ublInvoice);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
   
 
   app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
