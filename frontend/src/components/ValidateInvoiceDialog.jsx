@@ -2,6 +2,7 @@ import { Button, Dialog, DialogContent, DialogTitle, TextField, DialogActions } 
 import axios from 'axios';
 import { Fragment, useState } from 'react';
 import { API_URL } from '../App';
+import { SelectField } from '../helper';
 
 /**
  * This component sets up the dialog that pops up when the user clicks on the create
@@ -11,16 +12,29 @@ export default function ValidateInvoiceDialog({token, companyId}) {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => (setOpen(true));
   const handleClose = () => (setOpen(false));
+  const [ruleSet, setRuleSet] = useState('PINT A-NZ Billing BIS');
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const email = formData.get('user-email');
-    axios.post(`${API_URL}/v1/company/userAdd`, {companyId: companyId, userEmailToAdd: email},
-      {headers: {Authorization: `Bearer ${token}`}
-    }).then(() => handleClose())
-    .catch(error => console.log(error.response.data.error))
+    const invoice = formData.get('ubl-invoice');
+    axios.post(`${API_URL}/v1/invoice/validate`, {ublInvoice: invoice})
+    .then((res) => {
+      if (!res.data) {
+        console.log('error')
+      } else {
+        console.log('success')
+      }
+      handleClose()
+    })
+    .catch(error => console.log(error))
   }
+
+  const ruleOptions = [
+    {
+      label: 'PINT A-NZ Billing BIS'
+    }
+  ]
 
   return (
     <Fragment>
@@ -35,7 +49,7 @@ export default function ValidateInvoiceDialog({token, companyId}) {
           fontWeight: 'bold',
           bgcolor: 'darkseagreen'
         }}>
-      Add a User
+      Validate
       </Button>
       <Dialog
         open={open}
@@ -49,7 +63,7 @@ export default function ValidateInvoiceDialog({token, companyId}) {
             '& .MuiPaper-root': {
               bgcolor:'#e2dacd',
               width: 550,
-              height: 225,
+              height: 275,
             },
           },
         }}
@@ -62,14 +76,21 @@ export default function ValidateInvoiceDialog({token, companyId}) {
             Enter UBL Invoice
         </DialogTitle>
         <DialogContent>
+          <SelectField
+            id={'rule-set'}
+            name={'rule-set-name'}
+            label={'Select Rule Set'}
+            value={ruleSet}
+            options={ruleOptions}
+            setValue={setRuleSet}        
+          />
           <TextField
             required
             fullWidth
             margin='dense'
-            id='user-email'
-            name='user-email'
-            label='Enter Email'
-            type='email'
+            id='ubl-invoice'
+            name='ubl-invoice'
+            label='Input UBL Invoice'
             variant='standard'
             autoComplete='off'
             sx={{

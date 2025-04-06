@@ -3,6 +3,7 @@ import { create } from 'xmlbuilder2';
 import { Invoice, InvoiceItem } from './interface';
 import { XMLBuilder } from 'xmlbuilder2/lib/interfaces';
 import { getCompany } from './interfaceHelpers';
+import dayjs from 'dayjs';
 
 const XML_NAMESPACES = {
   xmlns: 'urn:oasis:names:specification:ubl:schema:xsd:Invoice-2',
@@ -69,8 +70,8 @@ export class InvoiceConverter {
     parseToUBL(companyName: string): string {
       return this
         .setID(this.invoice.invoiceId)
-        .setInvoicePeriod(new Date (this.invoice.details.issueDate).toISOString(), 
-        new Date(this.invoice.details.dueDate).toISOString())
+        .setInvoicePeriod(dayjs(this.invoice.details.issueDate).format('YYYY-MM-DD'),
+        dayjs(this.invoice.details.dueDate).format('YYYY-MM-DD'))
         .setCurrency(this.invoice.details.currency)
         .addParties(companyName, this.invoice.details.receiver.companyName)
         .addItems(this.invoice.details.items)

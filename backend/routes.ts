@@ -162,7 +162,6 @@ function routes(app: Express) {
 
   app.post('/v1/invoice/validate', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const { ublInvoice } = req.body;
       const response = validateUBL(ublInvoice);
       res.status(200).json(response);
