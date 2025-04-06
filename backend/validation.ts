@@ -51,8 +51,6 @@ export function validateUBL(invoiceXML: string): boolean {
   const parser = new DOMParser({
     errorHandler: {
       warning: () => {},
-      error: (msg) => console.error('❌ XML Error:', msg),
-      fatalError: (msg) => console.error('💥 Fatal XML Error:', msg),
     }
   });
 
