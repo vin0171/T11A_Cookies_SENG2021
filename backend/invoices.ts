@@ -216,9 +216,12 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
   //const pdf = await generatePDF(item);
   const item = item1.details;
   console.log(item)
-  const receiverAddress = [item.receiver.billingAddress.addressLine1, 
-    item.receiver.billingAddress.addressLine2, item.receiver.billingAddress.suburb,
-    item.receiver.billingAddress.state, item.receiver.billingAddress.postcode,
+  const receiverAddress = [
+    item.receiver.billingAddress.addressLine1, 
+    item.receiver.billingAddress.addressLine2, 
+    item.receiver.billingAddress.suburb,
+    item.receiver.billingAddress.state, 
+    item.receiver.billingAddress.postcode,
     item.receiver.billingAddress.country,
   ].filter(part => part).join(', ');
   const docDefinition: TDocumentDefinitions = {
@@ -279,29 +282,31 @@ export async function generateInvoiceXML(token: string, invoiceId: string) {
     if (!item1) HTTPError(403, 'Error: Invoice does not exist');
     //const pdf = await generatePDF(item);
     const item = item1.details;
-    function invoiceToXML(invoice : any): string {
-        const xml = create({ version: '1.0' })
-          .ele('Invoice')
-            .ele('Receiver').txt(item.receiver.company).up()
-            .ele('IssueDate').txt(new Date(item.issueDate).toISOString()).up()
-            .ele('DueDate').txt(new Date(item.dueDate).toISOString()).up()
-            //.ele('Status').txt(invoice.status).up()
-            //.ele('State').txt(invoice.state).up()
-            .ele('Currency').txt(item.currency).up()
-            .ele('Total').txt(item.total).up()
-            .ele('Notes').txt(item.notes || '').up()
-            .ele('Items');
+    const invoiceToXML = (invoice : InvoiceDetailsV2): string  => {
       
-        for (const item of invoice.items) {
-          xml
-            .ele('Item')
-              .ele('Description').txt(item.description).up()
-              .ele('Quantity').txt(item.quantity.toString()).up()
-              .ele('UnitPrice').txt(item.unitPrice).up()
-              .ele('Total').txt(item.total).up()
-            .up();
-        }
-      
-        return xml.end({ prettyPrint: true });
+    const xml = create({ version: '1.0' })
+      .ele('Invoice')
+      .ele('Receiver').txt(item.receiver.company).up()
+      .ele('IssueDate').txt(new Date(item.issueDate).toISOString()).up()
+      .ele('DueDate').txt(new Date(item.dueDate).toISOString()).up()
+      .ele('Status').txt(invoice.status).up()
+      .ele('State').txt(invoice.state).up()
+      .ele('Currency').txt(item.currency).up()
+      .ele('Total').txt(item.total).up()
+      .ele('Notes').txt(item.notes || '').up()
+      .ele('Items');
+    for (const item of invoice.items) {
+      xml
+        .ele('Item')
+          .ele('Description').txt(item.description).up()
+          .ele('Quantity').txt(item.quantity.toString()).up()
+          .ele('UnitPrice').txt(String(item.unitPrice)).up()
+          .ele('Total').txt(String(invoice.total)).up()
+        .up();
     }
-} 
+    
+      return xml.end({ prettyPrint: true });
+    }
+    return invoiceToXML(item);
+  } 
+  

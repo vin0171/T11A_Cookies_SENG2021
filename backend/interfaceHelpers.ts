@@ -93,7 +93,7 @@ export function createCompany(companyName: string, companyAbn: string, headquart
         members: [userId],
         invoices: []
     }
-    }
+}
     
 export async function getCompany(companyId: string) {
     const data = getData();

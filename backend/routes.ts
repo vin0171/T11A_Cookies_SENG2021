@@ -149,7 +149,8 @@ function routes(app: Express) {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const response = await invoices.retrieveInvoice(token, invoiceId);
       if (contentType.includes('application/xml'))  {
-        const invoiceUBL = new InvoiceConverter(response).parseToUBL();
+        const company = await getCompany(response.companyId);
+        const invoiceUBL = new InvoiceConverter(response).parseToUBL(company.companyId);
         res.status(200).send(invoiceUBL);
         return;
       } 

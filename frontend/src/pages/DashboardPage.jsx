@@ -23,36 +23,65 @@ export default function DashboardPage({token}) {
     ? <Box 
       sx= {{
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         height: '100%',
         gap: '10%',
       }}>
-      <Typography 
-        variant='h5' 
-        sx={{
-          color: '#41444d', 
-          '@media (max-width: 437px)': {
-            fontSize: '1.25em',
-          },
-        }}>
-        Create an Invoice
-      </Typography>
-      <Button 
-        variant='contained' 
-        onClick={() => navigate(`/${company.name}/invoices/${uuidv4()}/create`)}
-        sx={{
-          bgcolor: '#9ccde1', 
-          height: 50,
-          width: 200,
-          textTransform: 'none',
-          fontWeight: 'bold',
-          fontSize: '1.5em',
-        }}
-      >
-        Create
-      </Button>
+      <Box>
+        <Typography 
+          variant='h5' 
+          sx={{
+            color: '#41444d', 
+            textAlign: 'center',
+            '@media (max-width: 437px)': {
+              fontSize: '1.25em',
+            },
+          }}>
+          Create an Invoice
+        </Typography>
+        <Button 
+          variant='contained' 
+          onClick={() => navigate(`/${company.name}/invoices/${uuidv4()}/create`)}
+          sx={{
+            bgcolor: '#9ccde1', 
+            height: 50,
+            width: 200,
+            textTransform: 'none',
+            fontWeight: 'bold',
+            fontSize: '1.5em',
+          }}
+        >
+          Create
+        </Button>
+      </Box>
+      <Box>
+        <Typography 
+          variant='h5' 
+          sx={{
+            color: '#41444d', 
+            textAlign: 'center',
+            '@media (max-width: 437px)': {
+              fontSize: '1.25em',
+            },
+          }}>
+          Add a User
+        </Typography>
+        
+        <Button 
+          variant='contained' 
+          sx={{
+            bgcolor: '#DDA853', 
+            height: 50,
+            width: 200,
+            textTransform: 'none',
+            fontWeight: 'bold',
+            fontSize: '1.5em',
+          }}
+        >
+          Add
+        </Button>
+      </Box>
       </Box>
     : <Box 
       sx= {{
@@ -117,7 +146,7 @@ export default function DashboardPage({token}) {
         <Box 
           component='section' 
           sx={{
-            bgcolor: '#6f4e7d',
+            bgcolor: '#27548A',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',

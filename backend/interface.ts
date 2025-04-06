@@ -130,6 +130,7 @@ export interface InvoiceDetailsV2 {
   format: string,
   currency: string,
   subtotal: number,
+  total: number,
   notes: string,
 }
 

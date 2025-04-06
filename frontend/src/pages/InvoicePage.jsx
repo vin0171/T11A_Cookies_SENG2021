@@ -10,6 +10,7 @@ import ShippingCostDialog from "../components/ShippingCostDialog";
 import axios from "axios";
 import { API_URL } from "../App";
 import { useNavigate, useParams } from "react-router-dom";
+import { saveAs } from 'file-saver';
 import TaxDialog from "../components/TaxDialog";
 import AddressFields from "../components/AddressFields";
 import dayjs from "dayjs";
@@ -19,7 +20,6 @@ pdfMake.addVirtualFileSystem(pdfFonts);
 
 export default function InvoicePage({token}) {
   const navigate = useNavigate();
-
   const invoiceId =  useParams().invoiceId;
   const [customer, setCustomer] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -193,10 +193,7 @@ export default function InvoicePage({token}) {
       invoiceId: invoiceId,
       ...(update
         ? { edits: invoiceDetails }
-        : {
-            isDraft: true,
-            invoiceDetails: invoiceDetails
-          }
+        : {isDraft: true, invoiceDetails: invoiceDetails}
       )
     }
     if (button === 'save') {
@@ -207,7 +204,6 @@ export default function InvoicePage({token}) {
       .then((res) => {console.log(res.data); navigate('/dashboard')})
       .catch(error => console.log(error.response.data.error))
     } else if (button === 'download') {
-      console.log(invoiceId)
       if (format === 'PDF') {
         axios.post(`${API_URL}/v1/invoice/${invoiceId}/pdf`, {}, {
           headers: { Authorization: `Bearer ${token}` },
@@ -216,6 +212,16 @@ export default function InvoicePage({token}) {
           pdfMake.createPdf(doc.data).download(`invoice-${invoiceNumber}.pdf`);
         })
         .catch(error => console.log(error?.response?.data?.error || error.message));
+      } else {
+        // download as ubl
+        axios.get(`${API_URL}/v1/invoice/${invoiceId}/`, {
+          headers: { Authorization: `Bearer ${token}`,  'Accept': 'application/xml' },
+        })
+        .then((res) => {
+          const blob = new Blob([res.data], { type: 'application/xml' });
+          saveAs(blob, `invoice-${invoiceNumber}.xml`);
+        })
+        .catch(error => console.log(error.response.data.error))
       }
     } 
   }
@@ -232,7 +238,7 @@ export default function InvoicePage({token}) {
   ]
   return (
     <Fragment>
-      <Box>
+      <Box sx={{p: 10, bgcolor: '#e2dacd'}}>
         <Typography>New Invoice</Typography>
         <form onSubmit={handleSubmit}>
           <TextField
@@ -412,16 +418,16 @@ export default function InvoicePage({token}) {
           {Object.keys(wideDiscount).length !== 0 && 
           (
             <Fragment>
-              {wideDiscount.discountType === 'Flat' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {parseFloat(wideDiscount.discountAmount).toFixed(2)}</Typography>}
-              {wideDiscount.discountType === 'Percentage' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {subTotal * (parseFloat(wideDiscount.discountAmount) / 100) + '%'}</Typography>}
+              {wideDiscount.discountType === 'Flat' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {currency}{parseFloat(wideDiscount.discountAmount).toFixed(2)}</Typography>}
+              {wideDiscount.discountType === 'Percentage' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {currency}{subTotal * (parseFloat(wideDiscount.discountAmount) / 100) + '%'}</Typography>}
             </Fragment>
           )}
           <Typography>
           </Typography>
           {Object.keys(shippingCostDetails).length !== 0 && 
             <Fragment>
-              {shippingCostDetails.shippingCost !== '' && <Typography>Shipping Cost: {shippingCostDetails.shippingCost}</Typography>}
-              {shippingCostDetails.shippingTax !== '' && <Typography>Shipping Tax: {shippingCostDetails.shippingTax}</Typography>}
+              {shippingCostDetails.shippingCost !== '' && <Typography>Shipping Cost: {currency}{shippingCostDetails.shippingCost}</Typography>}
+              {shippingCostDetails.shippingTax !== '' && <Typography>Shipping Tax: {currency}{shippingCostDetails.shippingTax}</Typography>}
             </Fragment>
           }
           {Object.keys(tax).length !== 0 && 
@@ -429,8 +435,8 @@ export default function InvoicePage({token}) {
               {tax.taxType === 'GST' && <Typography>GST: {subTotal * (0.1)}</Typography>}
               {tax.taxType === 'Custom' && 
                 <Fragment>
-                  {tax.taxOption === 'Percentage' && tax.taxAmount !== '' &&<Typography>Tax : {parseFloat(tax.taxAmount).toFixed(2)+ '%'}</Typography>}
-                  {tax.taxOption === 'Flat' && tax.taxAmount !== '' &&<Typography>Tax : {parseFloat(tax.taxAmount).toFixed(2)}</Typography>}
+                  {tax.taxOption === 'Percentage' && tax.taxAmount !== '' &&<Typography>Tax : {currency}{parseFloat(tax.taxAmount).toFixed(2)+ '%'}</Typography>}
+                  {tax.taxOption === 'Flat' && tax.taxAmount !== '' &&<Typography>Tax : {currency}{parseFloat(tax.taxAmount).toFixed(2)}</Typography>}
                 </Fragment>
               }
             </Fragment>
@@ -479,7 +485,6 @@ export default function InvoicePage({token}) {
           <Button
             type='submit'
             name='download'
-          // SUBMIT THE FORM BUT DOWNLOAD IT 
           >
             Download
           </Button>
