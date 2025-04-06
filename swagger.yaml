@@ -2,9 +2,8 @@ openapi: 3.0.3
 info:
   title: Invoice API
   description: |
-    API description for Toohak.
-    All error strings are required to be clear descriptive messages. The descriptive message won't change the marks you receive when being automarked as long as you make an attempt for each one to be custom, but they will improve the usability of the frontend.
-  version: 1.0.0
+    API description for Invoice Generation API.
+  version: 1.0.2
 
 tags:
   - name: "User Authentication (Iteration 1: Sprint 2)"
@@ -16,7 +15,6 @@ tags:
 
 components:
   schemas:
-
     # Primitive Types 
     Empty:
       type: object
@@ -166,6 +164,57 @@ components:
     Terms:
       type: string
       example: "15 percent off if paid within 2 days"
+    Id:
+      type: number
+      example: 1
+    IsNew:
+      type: boolean
+      example: true
+    AddressLine1:
+      type: string
+      example: "21 jump street"
+    AddressLine2:
+      type: string
+      example: "Apartment 18"
+    Suburb:
+      type: string
+      example: "Homebush"
+    ShippingTax:
+      type: string
+      example: "15"
+    ShippingCost:
+      type: string
+      example: "15"
+    TaxType:
+      type: string
+      example: "GST"
+    TaxOption:
+      type: string
+      example: "Flat"
+    TaxAmountV2:
+      type: string
+      example: "15"
+    IssueDateV2:
+      type: Dayjs
+      example: "dayjs({ hour:15, minute:10 })"
+    DueDateV2:
+      type: Dayjs
+      example: "dayjs({ hour:15, minute:10 })"
+    InvoiceNumber:
+      type: number
+      example: 1234
+    ShippingChecked:
+      type: boolean
+      example: true
+    WideDiscount:
+      type: number
+      example: 1
+    Format:
+      type: string
+      example: "PDF"
+    Subtotal:
+      type: number
+      example: 15
     Token:
       type: string
       example: 'jwtToken'
@@ -237,6 +286,57 @@ components:
           $ref: '#/components/schemas/TaxRate'
         totalAmount:
           $ref: '#/components/schemas/TotalAmount'
+    InvoiceItemV2:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        isNew:
+          $ref: '#/components/schemas/IsNew'
+        itemSku:
+          $ref: '#/components/schemas/ItemSku'
+        itemName:
+          $ref: '#/components/schemas/ItemName'
+        description:
+          $ref: '#/components/schemas/Description'
+        quantity:
+          $ref: '#/components/schemas/Quantity'
+        unitPrice:
+          $ref: '#/components/schemas/UnitPrice'
+        discountAmount:
+          $ref: '#/components/schemas/DiscountAmount'
+        totalAmount:
+          $ref: '#/components/schemas/TotalAmount'
+    AddressInterface:
+      type: object
+      properties:
+        addressLine1:
+          $ref: '#/components/schemas/AddressLine1'
+        addressLine2:
+          $ref: '#/components/schemas/AddressLine2'
+        suburb:
+          $ref: '#/components/schemas/Suburb'
+        state:
+          $ref: '#/components/schemas/State'
+        postcode:
+          $ref: '#/components/schemas/Postcode'
+        country:
+          $ref: '#/components/schemas/Country'
+    ParticipantV2:
+      type: object
+      properties:
+        companyName:
+          $ref: '#/components/schemas/CompanyName'
+        billingAddress:
+          $ref: '#/components/schemas/AddressInterface'
+        shippingAddress:
+          $ref: '#/components/schemas/AddressInterface'
+        email:
+          $ref: '#/components/schemas/Email'
+        bankName:
+          $ref: '#/components/schemas/BankName'
+        bankAccount:
+          $ref: '#/components/schemas/BankAccount'
     Participant:
       type: object
       properties:
@@ -264,6 +364,57 @@ components:
           $ref: '#/components/schemas/Website'
         logo:
           $ref: '#/components/schemas/Logo'
+        notes:
+          $ref: '#/components/schemas/Notes'
+    Tax:
+      type: object
+      properties:
+        taxType:
+          $ref: '#/components/schemas/TaxType'
+        taxOption:
+          $ref: '#/components/schemas/TaxOption'
+        taxAmount:
+          $ref: '#/components/schemas/TaxAmount'
+    ShippingCostDetails:
+      type: object
+      properties:
+        shippingTax:
+          $ref: '#/components/schemas/ShippingTax'
+        shippingCost:
+          $ref: '#/components/schemas/ShippingCost'
+    InvoiceDetailsV2:
+      type: object
+      properties:
+        receiver:
+          $ref: '#/components/schemas/ParticipantV2'
+        issueDate:
+          $ref: '#/components/schemas/IssueDateV2'
+        dueDate:
+          $ref: '#/components/schemas/DueDateV2'
+        invoiceNumber:
+          $ref: '#/components/schemas/InvoiceNumber'
+        status:
+          $ref: '#/components/schemas/Status'
+        shippingChecked:
+          $ref: '#/components/schemas/ShippingChecked'
+        state:
+          $ref: '#/components/schemas/InvoiceState'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItemV2'
+        tax:
+          $ref: '#/components/schemas/Tax'
+        shippingCostDetails:
+          $ref: '#/components/schemas/ShippingCostDetails'
+        format:
+          $ref: '#/components/schemas/Format'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        subtotal:
+          $ref: '#/components/schemas/Subtotal'
+        total:
+          $ref: '#/components/schemas/Total'
         notes:
           $ref: '#/components/schemas/Notes'
     InvoiceDetails:
@@ -295,6 +446,17 @@ components:
           $ref: '#/components/schemas/Notes'
         terms:
           $ref: '#/components/schemas/Terms'
+    InvoiceV2:
+      type: object
+      properties:
+        invoiceId:
+          $ref: '#/components/schemas/InvoiceId'
+        userId:
+          $ref: '#/components/schemas/UserID'
+        companyId:
+          $ref: '#/components/schemas/CompanyID'
+        details:
+          $ref: '#/components/schemas/InvoiceDetailsV2'
     Invoice:
       type: object
       properties:
@@ -306,7 +468,6 @@ components:
           $ref: '#/components/schemas/CompanyID'
         details:
           $ref: '#/components/schemas/InvoiceDetails'
-
     User:
       type: object
       properties:
@@ -409,6 +570,13 @@ components:
       required: true
       schema:
         type: integer
+    Token:
+      in: path
+      description: User Token
+      name: token
+      required: true
+      schema:
+        type: string
         
   requestBodies:
     InvoiceDetailsRequestBody:
@@ -444,6 +612,19 @@ components:
                 $ref: '#/components/schemas/Notes'
               terms:
                 $ref: '#/components/schemas/Terms'
+    InvoiceCreationRequestBodyV2:
+      description: Input from user's invoice creation V2
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              invoiceDetails: 
+                $ref: '#/components/schemas/InvoiceDetailsV2'
+              isDraft:
+                $ref: '#/components/schemas/IsNew'
+              invoiceId:
+                $ref: '#/components/schemas/InvoiceId'
     CompanyRequestBody:
       description: Company registration request
       content:
@@ -608,7 +789,31 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-            
+
+    # User Retrieval Response
+    UserRetrievalSuccess:
+      description: |
+        Retrieval of user was successful
+      content: 
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    UserRetrievalError400:
+      description: |
+        If parameters are not valid/missing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'   
+    
+    UserRetrievalError401:
+      description: |
+        If the Session Token is empty or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'   
+
     # Invoice Creation Responses
     InvoiceCreationSuccess:
       description: |
@@ -618,7 +823,7 @@ components:
           schema:
             type: object
             required:
-             - invoiceId
+              - invoiceId
             properties:
               invoiceId:
                 $ref: '#/components/schemas/InvoiceId'
@@ -711,6 +916,7 @@ components:
           schema:
             $ref: '#/components/schemas/Error'   
             
+
             
             
     # Invoice Edit
@@ -855,6 +1061,28 @@ components:
       content:
         application/json:
           schema:
+            $ref: '#/components/schemas/Error' 
+    #Get Company
+    CompanyGetSuccess:
+      description: |
+        Successfully get the company
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Empty'
+    CompanyGet400:
+      description: |
+        If parameters are not valid/missing
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    CompanyGet401:
+      description: |
+        If the session token is empty or invalid
+      content:
+        application/json:
+          schema:
             $ref: '#/components/schemas/Error'     
             
     # Company User Add
@@ -966,7 +1194,7 @@ paths:
       requestBody:
         content:
           schema:
-           example: |
+          example: |
             <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
               <cbc:ID>INV-123456</cbc:ID>
               <cac:InvoicePeriod>
@@ -1012,7 +1240,7 @@ paths:
       summary: Creates a new invoice  
       description: Creating an Invoice Document including the given ID and storing it
       tags:
-       - "Invoice Endpoints (Iteration 1: Sprint 2)"
+        - "Invoice Endpoints (Iteration 1: Sprint 2)"
       security:
           - Token: []
       requestBody:
@@ -1049,7 +1277,7 @@ paths:
       summary: Permanently deletes the Invoice with the given ID
       description: Removes the invoice permanently
       tags:
-       - "Invoice Endpoints (Iteration 1: Sprint 2)"
+        - "Invoice Endpoints (Iteration 1: Sprint 2)"
       security:
         - Token: []
       parameters:
@@ -1069,7 +1297,7 @@ paths:
       summary: Generate a PDF for the given Invoice ID
       description: Generates and returns a PDF file for the specified invoice.
       tags:
-        - "Invoice Endpoints"
+        - "Invoice Endpoints (Iteration 1: Sprint 3)"
       security:
         - Token: []
       parameters:
@@ -1090,54 +1318,41 @@ paths:
         403:
           $ref: '#/components/responses/InvoicePDFError403'
 
-  /v1/invoice/{invoiceId}/xml:
-    post:
-      summary: Generate an XML for the given Invoice ID
-      description: Generates and returns an XML file for the specified invoice.
+  /v2/invoice/:
+      post:
+        summary: Create an invoice.
+        description: Creates an invoice with blank fields given an invoice ID.
+        tags:
+          - "Invoice Endpoints (Iteration 1: Sprint 3)"
+        security:
+          - Token: []
+        requestBody:
+          $ref: '#/components/requestBodies/InvoiceCreationRequestBodyV2'
+        responses:
+          200:
+            $ref: '#/components/responses/InvoiceCreationSuccess'
+          400:
+            $ref: '#/components/responses/InvoiceCreationError400'
+
+  /v1/user/details:
+    get:
+      summary: Retrieves user details
+      description: Retrieves details about a user given their JWT.
       tags:
-        - "Invoice Endpoints"
+        - "User Endpoints (Iteration 1: Sprint 3"
       security:
         - Token: []
       parameters:
-        - name: invoiceId
-          in: path
-          required: true
-          description: The ID of the invoice to generate the XML for.
-          schema:
-            type: string
-            example: "6f5bddd6-57cf-4250-b59f-bed5189aaf3e"
+        - $ref: '#/components/parameters/Token'
       responses:
-        200:
-          description: Invoice XML file successfully generated.
-          content:
-            application/xml:
-              schema:
-                type: string
-                example: |
-                  <Invoice>
-                    <Receiver>John Doe</Receiver>
-                    <IssueDate>2025-04-05T14:23:00Z</IssueDate>
-                    <DueDate>2025-04-15T14:23:00Z</DueDate>
-                    <Status>UNPAID</Status>
-                    <State>DRAFT</State>
-                    <Currency>USD</Currency>
-                    <Total>1200.00</Total>
-                    <Notes>Thanks for your business!</Notes>
-                    <Items>
-                      <Item>
-                        <Description>Design Services</Description>
-                        <Quantity>10</Quantity>
-                        <UnitPrice>100.00</UnitPrice>
-                        <Total>1000.00</Total>
-                      </Item>
-                    </Items>
-                  </Invoice>
+        200: 
+          $ref: '#/components/responses/UserRetrievalSuccess'
         400:
-          $ref: '#/components/responses/InvoicePDFError400'
+          $ref: '#/components/responses/UserRetrievalError400'
         401:
-          $ref: '#/components/responses/InvoicePDFError401'
+          $ref: '#/components/responses/UserRetrievalError401'
         403:
-          $ref: '#/components/responses/InvoicePDFError403'
+          $ref: '#/components/responses/UserRetrievalError403'
 
   # Invoice Edit 
   /v1/invoice/{invoiceId}/edit:
@@ -1162,22 +1377,7 @@ paths:
         403:
           $ref: '#/components/responses/InvoiceEditError403'
   
-  
-    # Invoice List
-  /v1/user/invoice/list:
-    get:
-      summary: Returns a list of known invoices the user has access to
-      description: Fetches a list of invoice that user has access to
-      tags:
-        - "Invoice Endpoints (Iteration 1: Sprint 2)"
-      security:
-        - Token: []
-      responses:
-        200:
-          $ref: '#/components/responses/InvoiceListSuccess'
-        401:
-          $ref: '#/components/responses/InvoiceListError401'
-          
+
 # ===================================================================
 # Company Endpoints 
 # ===================================================================   
@@ -1200,7 +1400,23 @@ paths:
         401:
           $ref: '#/components/responses/CompanyRegisterError401'
         
-        
+  /v1/company/{companyId}:
+    get:
+      summary: Retrieves a company's details.
+      description: View a company's details.
+      security:
+        - Token: []
+      tags:
+        - "Company Endpoints (Iteration 1: Sprint 3)"
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      responses:
+        200:
+          $ref: '#/components/responses/CompanyRegisterSuccess'
+        400:
+          $ref: '#/components/responses/CompanyRegisterError400'
+        401:
+          $ref: '#/components/responses/CompanyRegisterError401'
   /v1/company/userAdd:
     put:
       summary: Adds the given user to the company 
@@ -1223,7 +1439,7 @@ paths:
     
   
   # Invoice List
-  /v1/company/{companyId}/list:
+  /v1/company/{companyId}/invoices:
     get:
       summary: Returns a list of known invoices
       description: Fetches a list of invoice that user has access to

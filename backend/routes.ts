@@ -65,16 +65,6 @@ function routes(app: Express) {
     }
   });
 
-  app.get('/v1/user/details', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const response = await validateToken(token)
-      res.status(200).json(response);
-    } catch(err) {
-      next(err)
-    }
-  });
-
   app.post('/v1/company/register', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
@@ -212,6 +202,16 @@ function routes(app: Express) {
       res.status(200).json(response);
     } catch(err) {
       next(err);
+    }
+  });
+
+  app.get('/v1/user/details', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await validateToken(token)
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
     }
   });
 
