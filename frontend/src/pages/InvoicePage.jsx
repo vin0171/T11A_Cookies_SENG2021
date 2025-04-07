@@ -71,7 +71,7 @@ export default function InvoicePage({token}) {
       setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
       setShippingCountry(res.data.details.receiver.shippingAddress.country);  
       setShippingChecked(res.data.details.shippingChecked);
-      setShippingCostDetails(res.data.details.shippingCost)
+      setShippingCostDetails(res.data.details.shippingCostDetails)
       
       setInvoiceNumber(res.data.details.invoiceNumber);
       setBankNum(res.data.details.receiver.bankAccount);
