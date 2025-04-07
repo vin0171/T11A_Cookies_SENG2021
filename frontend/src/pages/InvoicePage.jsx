@@ -240,6 +240,7 @@ export default function InvoicePage({token}) {
   return (
     <Fragment>
       <Box sx={{p: 10, bgcolor: '#e2dacd'}}>
+        <Button> Upload Order Document </Button>
         <Typography>New Invoice</Typography>
         <form onSubmit={handleSubmit}>
           <TextField

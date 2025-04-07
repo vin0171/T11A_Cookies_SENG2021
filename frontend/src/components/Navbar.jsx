@@ -96,7 +96,6 @@ export default function Navbar({token, loggedIn, children}) {
     </Box>
   }
 
-
   return (
     <Box component='nav' sx={{ flex: 1 }}>
       <AppBar position='static'>
