@@ -198,7 +198,8 @@ export default function InvoicePage({token}) {
     }
     if (button === 'save') {
       const url = update ? `${API_URL}/v1/invoice/${invoiceId}/edit` : `${API_URL}/v2/invoice`
-      axios.put(url, params, {
+      const method = update ? axios.put : axios.post;
+      method(url, params, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then((res) => {console.log(res.data); navigate('/dashboard')})
