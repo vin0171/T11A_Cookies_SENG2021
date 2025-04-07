@@ -1,10 +1,26 @@
 import * as validators from "./validationHelpers"
-import { Invoice, InvoiceDetails } from "./interface";
-import { generateInvoice, getCompany,  } from "./interfaceHelpers";
+import { Invoice, InvoiceDetails, InvoiceDetailsV2, InvoiceV2 } from "./interface";
+import { generateInvoice, generateInvoiceV2, getCompany,  } from "./interfaceHelpers";
 import { getData } from "./dataStore";
 import {v4 as uuidv4} from 'uuid';
 import HTTPError from 'http-errors';
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import path from 'path';
+import PdfPrinter from "pdfmake";
+import { create } from 'xmlbuilder2';
 
+const fonts = {
+    Helvetica: {
+      normal: 'Helvetica',
+      bold: 'Helvetica-Bold',
+      italics: 'Helvetica-Oblique',
+      bolditalics: 'Helvetica-BoldOblique',
+    }
+};
+
+const printer = new PdfPrinter(fonts);
 /**
  * Stub for the createInvoice function.
  * 
@@ -28,6 +44,32 @@ export async function createInvoice(token: string, invoiceDetails: InvoiceDetail
     }
     return invoiceInfo.invoiceId;
 }
+
+/**
+ * Stub for the createInvoicev2 function.
+ * 
+ * Create an invoice with a given details and return it (Version 2).
+ * 
+ * @param {string} token - the token of the current user
+ * @param {string} invoiceId - the id for the invoice
+ * @param {InvoiceDetails} invoiceDetails - contains all invoice details
+ * @param {boolean} isDraft - states whether the invoice is a draft or not
+ * @returns {string}
+ */
+export async function createInvoiceV2(token: string, invoiceId: string, invoiceDetails: InvoiceDetailsV2, isDraft: boolean) : Promise<string> {
+    const user = await validators.validateToken(token);
+    const data = getData();
+    const invoiceInfo : InvoiceV2 = generateInvoiceV2(invoiceId, user.userId, user.companyId, invoiceDetails, isDraft);
+    
+    await data.put({ TableName: "Invoices", Item: invoiceInfo });
+    await addInvoiceIdToTable("Users", user.userId, invoiceId);
+
+    if (user.companyId !== null) {
+        await addInvoiceIdToTable("Companies", user.companyId, invoiceId)
+    }
+    return invoiceInfo.invoiceId;
+}
+
 
 // TODO: fix the two functions below if you want (Hashmap of name to object? idk)
 // and also i dont use this in other functions so um 
@@ -142,8 +184,7 @@ async function getInvoiceList(invoiceList: number[]) {
 export async function listCompanyInvoices(token: string, companyId: string) {
     const data = getData();
     const user = await validators.validateToken(token);
-    const company = await getCompany(companyId);
-  
+    const company = await getCompany(companyId); 
     if (user.companyId != company.companyId) {
         throw HTTPError(403, 'Error: User is not authorised')
     }
@@ -163,3 +204,109 @@ export async function listUserInvoices(token: string) {
     return getInvoiceList(user.invoices);
 }
 
+export async function generateInvoicePDF(token: string, invoiceId: string) {
+  const data = getData();
+  const user = await validators.validateToken(token);
+  const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+  const company = await getCompany(user.companyId);
+  const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
+  const item1 = response.Item;
+  // idk error code lol
+  if (!item1) HTTPError(403, 'Error: Invoice does not exist');
+  //const pdf = await generatePDF(item);
+  const item = item1.details;
+  console.log(item)
+  const receiverAddress = [
+    item.receiver.billingAddress.addressLine1, 
+    item.receiver.billingAddress.addressLine2, 
+    item.receiver.billingAddress.suburb,
+    item.receiver.billingAddress.state, 
+    item.receiver.billingAddress.postcode,
+    item.receiver.billingAddress.country,
+  ].filter(part => part).join(', ');
+  const docDefinition: TDocumentDefinitions = {
+    content: [
+      { text: 'Invoice', style: 'header' },
+      {
+        columns: [
+          { text: `From:\n${company.name}\n${company.headquarters.address}`, width: '50%' },
+          { text: `To:\n${item.receiver.companyName}\n${receiverAddress}`, width: '50%', alignment: 'right' },
+        ]
+      },
+      { text: `Invoice #: ${item.invoiceNumber || invoiceId}`, margin: [0, 10] },
+      { text: `Issue Date: ${new Date(item.issueDate).toLocaleDateString()}` },
+      { text: `Due Date: ${new Date(item.dueDate).toLocaleDateString()}` },
+      {
+        style: 'tableExample',
+        table: {
+          widths: ['*', 'auto', 'auto', 'auto'],
+          body: [
+            ['Description', 'Qty', 'Unit Price', 'Total'],
+            ...item.items.map((i: any) => [
+              i.description,
+              i.quantity,
+              `${item.currency} ${i.unitPrice}`,
+              `${item.currency} ${i.quantity * i.unitPrice}`
+            ]),
+            [
+              { text: 'Total', colSpan: 3, alignment: 'right' }, {}, {},
+              `${item.currency} ${item.subtotal.toFixed(2)} ${item.total.toFixed(2)}`
+            ]
+          ]
+        },
+        layout: 'lightHorizontalLines',
+        margin: [0, 20]
+      },
+        item.notes ? { text: `Notes: ${item.notes}` } : null,
+    ],
+    // defaultStyle: {
+    //   font: "Helvetica"
+    // },
+    styles: {
+      header: { fontSize: 22, bold: true, margin: [0, 0, 0, 10] },
+      tableExample: { margin: [0, 5, 0, 15] }
+    }
+  };
+  return docDefinition;
+} 
+
+
+export async function generateInvoiceXML(token: string, invoiceId: string) {
+    const data = getData();
+    const user = await validators.validateToken(token);
+    const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+    const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
+    const item1 = response.Item;
+
+    // idk error code lol
+    if (!item1) HTTPError(403, 'Error: Invoice does not exist');
+    //const pdf = await generatePDF(item);
+    const item = item1.details;
+    const invoiceToXML = (invoice : InvoiceDetailsV2): string  => {
+      
+    const xml = create({ version: '1.0' })
+      .ele('Invoice')
+      .ele('Receiver').txt(item.receiver.company).up()
+      .ele('IssueDate').txt(new Date(item.issueDate).toISOString()).up()
+      .ele('DueDate').txt(new Date(item.dueDate).toISOString()).up()
+      .ele('Status').txt(invoice.status).up()
+      .ele('State').txt(invoice.state).up()
+      .ele('Currency').txt(item.currency).up()
+      .ele('Total').txt(item.total).up()
+      .ele('Notes').txt(item.notes || '').up()
+      .ele('Items');
+    for (const item of invoice.items) {
+      xml
+        .ele('Item')
+          .ele('Description').txt(item.description).up()
+          .ele('Quantity').txt(item.quantity.toString()).up()
+          .ele('UnitPrice').txt(String(item.unitPrice)).up()
+          .ele('Total').txt(String(invoice.total)).up()
+        .up();
+    }
+    
+      return xml.end({ prettyPrint: true });
+    }
+    return invoiceToXML(item);
+  } 
+  

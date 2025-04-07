@@ -2,12 +2,14 @@ import { Express, NextFunction, Request, Response } from "express";
 import * as users from './users';
 import * as companies from './companies';
 import * as invoices from './invoices';
-import { validateLocation } from "./validationHelpers";
+import { validateLocation, validateToken } from "./validationHelpers";
 import { Invoice, Location } from "./interface";
 // import { InvoiceConverter } from "./InvoiceConverter";
 import HTTPError from 'http-errors';
 import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
+import { getCompany, getInvoice } from "./interfaceHelpers";
+import { validateUBL } from "./validation";
 
 function routes(app: Express) {
 // ========================================================================= //
@@ -87,6 +89,16 @@ function routes(app: Express) {
     }
   });
 
+  app.get('/v1/company/:companyId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const companyId = req.params.companyId;
+      const response = await getCompany(companyId)
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
   app.get('/v1/company/:companyId/invoices', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization'].split(' ')[1];
@@ -100,7 +112,7 @@ function routes(app: Express) {
 
   app.post('/v1/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const invoiceDetails = req.body;
+      const {invoiceDetails} = req.body;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const response = await invoices.createInvoice(token, invoiceDetails); 
       res.status(200).json(response);
@@ -116,7 +128,8 @@ function routes(app: Express) {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const response = await invoices.retrieveInvoice(token, invoiceId);
       if (contentType.includes('application/xml'))  {
-        const invoiceUBL = new InvoiceConverter(response).parseToUBL();
+        const company = await getCompany(response.companyId);
+        const invoiceUBL = new InvoiceConverter(response).parseToUBL(company.companyId);
         res.status(200).send(invoiceUBL);
         return;
       } 
@@ -136,12 +149,66 @@ function routes(app: Express) {
         next(err);
       }
     });
-    
+
+  app.post('/v1/invoice/validate', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { ublInvoice } = req.body;
+      const response = validateUBL(ublInvoice);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+  
+
   app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const invoiceId  = req.params.invoiceId;
       const response = await invoices.deleteInvoice(token, invoiceId);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
+// ========================================================================= //
+// Iteration 2
+// ========================================================================= //
+
+  app.post('/v1/invoice/:invoiceId/pdf', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const invoiceId = req.params.invoiceId;
+  
+      // Generate the PDF for the invoice
+      const pdfBuffer = await invoices.generateInvoicePDF(token, invoiceId);
+  
+      // Set headers for PDF response
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoiceId}.pdf`);
+      console.log('PDF generated successfully😅');
+      res.status(200).send(pdfBuffer);
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  app.post('/v2/invoice', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { invoiceId, invoiceDetails, isDraft } = req.body;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.createInvoiceV2(token, invoiceId, invoiceDetails, isDraft); 
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+
+  app.get('/v1/user/details', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await validateToken(token)
       res.status(200).json(response);
     } catch(err) {
       next(err)

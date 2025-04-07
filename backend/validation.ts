@@ -2,6 +2,7 @@ import { XMLValidator } from 'fast-xml-parser';
 import { DOMParser } from 'xmldom';
 import xpath from 'xpath';
 import { currencyCodes } from '../data/currencyCode.js';
+import { validateToken } from './validationHelpers';
 
 function isFormattedYYYYMMDD(str: string): boolean {
   return /^\d{4}-\d{2}-\d{2}$/.test(str);
@@ -47,7 +48,6 @@ function validateParty(select: xpath.XPathSelect, party: Node, label: string): v
 }
 
 export function validateUBL(invoiceXML: string): boolean {
-  
   const parser = new DOMParser({
     errorHandler: {
       warning: () => {},
@@ -55,10 +55,9 @@ export function validateUBL(invoiceXML: string): boolean {
   });
 
   const xmlDoc = parser.parseFromString(invoiceXML, 'application/xml');
-
   // Check if XML is well-formed
   if (!(XMLValidator.validate(invoiceXML) === true)) {
-    console.error('❌ Invalid UBL XML structure!');
+    console.log('Invalid UBL XML structure!');
     return false;
   }
 
@@ -149,15 +148,13 @@ export function validateUBL(invoiceXML: string): boolean {
       selectSingleNode(select, 'cbc:Description/text()', item, 'Item Description');
     }
 
-    console.log('✅ Validation successful!');
     return true;
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error('❌ Validation failed:', error.message);
+      console.log('Validation failed:', error.message);
     } else {
-      console.error('❌ Validation failed with unknown error:', error);
+      console.log('Validation failed with unknown error:', error);
     }
-
     return false;
   }
 }

@@ -29,17 +29,13 @@ async function updateUserCompany(userId: string, companyId: string) {
  * @param {string} contactNumber - contact number of the company
  */
 export async function registerCompany(token: string, companyName: string, companyAbn: string, headquarters: Location, 
-    companyEmail: string, contactNumber: string): Promise<string> {
-
+    companyEmail: string, contactNumber: string): Promise<string> { 
     const user = await validators.validateToken(token);
-    
-    if (user.companyId !== null) throw HTTPError(400, 'Error: User already works at a company');
-    
+    if (user.companyId !== null) throw HTTPError(400, 'Error: User already works at a company'); 
     const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user.userId);
     const data = getData();
     await data.put({ TableName: "Companies", Item: newCompany});
     await updateUserCompany(user.userId, newCompany.companyId);
-
     return newCompany.companyId;
 }
 

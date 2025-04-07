@@ -137,11 +137,13 @@ export function validateLocation(address: string, city: string, state: string, p
     }   
 }
 
-
 // This function is for people who are members of a company but not an admin,
 // they can only create and read invoices.
 export async function validateUsersPerms(userId: string, userCompanyId: string, invoiceId: string) {
     const invoice = await getInvoice(invoiceId);
+    if (!invoice) {
+        throw HTTPError(403, 'Error: Invoice does not exist');
+    }
 
     // Check if the invoice is not a company invoice and it wasn't made by the current user
     // or check if the invoice is a company invoice and if the current user belongs to that company.
