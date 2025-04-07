@@ -2,7 +2,7 @@ import { IconButton } from '@mui/material';
 import { useState, Fragment } from 'react';
 
 /**
- * This component adds an icon to the toolbar above the slide section in the presentation page.
+ * This component adds an icon to the toolbar above the slide section
  */
 export default function AddIcon ({Icon, Dialog, type, token, slideIndex, presentationId, setPresentation}) {
   console.log(type);

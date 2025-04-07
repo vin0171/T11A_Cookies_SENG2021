@@ -1,10 +1,10 @@
 import Typography from '@mui/material/Typography';
 
 /**
- * This component renders the skeleton for the Presto logo (i.e its background colour and text).
+ * This component renders the skeleton for the Cookie logo (i.e its background colour and text).
  * If this component is used it should have a width, height and added customisations added.
  */
-export default function PrestoLogo({styles = {}, handleClick={}}) {
+export default function CookieLogo({styles = {}, handleClick={}}) {
   return (
     <Typography
       noWrap

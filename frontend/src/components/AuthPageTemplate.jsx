@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import PrestoLogo from './PrestoLogo';
+import PrestoLogo from './CookieLogo';
 import '../assets/style.css';
 
 /**

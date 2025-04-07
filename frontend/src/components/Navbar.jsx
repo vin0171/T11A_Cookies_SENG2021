@@ -2,7 +2,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import { useNavigate } from 'react-router-dom';
-import PrestoLogo from './PrestoLogo';
+import CookieLogo from './CookieLogo';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
@@ -55,7 +55,7 @@ export default function Navbar({token, loggedIn, children}) {
   );
 
   let toolbarComponent =  
-  <PrestoLogo
+  <CookieLogo
     styles={{	
       fontSize: '1.5em', 
       width: 110,
