@@ -1,6 +1,7 @@
-import { Box, Button, SvgIcon, Typography } from '@mui/material';
+import { Box, Button, Divider, SvgIcon, Typography } from '@mui/material';
 import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
+import HomePageFeatures from '../components/HomePageFeatures';
 
 /**
  * This page sets up the home page.
@@ -133,6 +134,7 @@ export default function HomePage ({token}) {
       <Box>
         Insert screenshot of our dashboard here
       </Box>
+      <HomePageFeatures/>
     </Fragment>
   )
 }
