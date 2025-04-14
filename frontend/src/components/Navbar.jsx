@@ -66,6 +66,7 @@ export default function Navbar({token, loggedIn, children}) {
     handleClick={() => {navigate('/')}}
   />
 
+
   if (loggedIn) { 
     toolbarComponent = 
     <Box sx={{display: 'flex'}}>
@@ -97,22 +98,40 @@ export default function Navbar({token, loggedIn, children}) {
   }
 
   return (
-    <Box component='nav' sx={{ flex: 1 }}>
-      <AppBar position='static'>
-        <Toolbar
-          disableGutters
-          variant ='dense' 
-          sx={{
-            bgcolor: '#27548A',
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            pl: 1.3, 
-            pr: 1.3,
-            minHeight: 75
-          }}>
-          {toolbarComponent}
-          {children}
-        </Toolbar>
+    <Box component='nav'>
+      <AppBar 
+        position='fixed'
+        sx ={{
+          boxShadow: 0,
+          bgcolor: 'transparent',
+          backgroundImage: 'none',
+          mt: 'calc(var(--template-frame-height, 0px) + 28px)',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <Box sx={{width: '70%', maxWidth: '1400px'}}>
+          <Toolbar
+            disableGutters
+            variant ='dense' 
+            sx={{
+              display: 'flex',
+              bgcolor: '#27548A',
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              flexShrink: 0,
+              backdropFilter: 'blur(24px)',
+              borderRadius: 5,
+              borderColor: 'grey',
+              boxShadow: 5,
+              pl: 1.3, 
+              pr: 1.3,
+              minHeight: 75
+            }}>
+            {toolbarComponent}
+            {children}
+          </Toolbar>
+        </Box>
       </AppBar>
     </Box>
   );
