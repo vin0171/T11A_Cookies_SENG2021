@@ -1,4 +1,4 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, SvgIcon, Typography } from '@mui/material';
 import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -7,93 +7,131 @@ import { useNavigate } from 'react-router-dom';
  */
 export default function HomePage ({token}) {
   const navigate = useNavigate();
-  const commonBtnStyles = {
-    textTransform: 'none', 
-    fontWeight: 'bold',
-    height: 55,
-    fontSize: '1.2em',
-    borderRadius: 3.8,
-  }
 
   return (
     <Fragment>
-      <Box component='section' sx={{ height: '100%', display: 'grid', gridTemplateRows: '6fr 4fr'}}>
-        <Box
-          component='section' 
-          sx={{ 
-            bgcolor: '#9ccde1',
+      <Box
+        sx={{
+          bgcolor: '#e2dacd',
+          width: '100%',
+          backgroundRepeat: 'no-repeat',
+          backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)',
+        }}
+      >
+        <Box 
+          sx ={{
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', color: '3a3c43', alignItems: 'center', textAlign: 'center'}}>
-            <Typography 
-              variant='h3' 
+            pt: 20,
+            pb: 12 ,
+          }}
+        >
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center', 
+              width: '70%'
+            }}
+          >
+            <Typography
+              variant='h1'
               sx={{
-                fontWeight: 'bold',  
-                '@media (min-width: 569px) and (max-width: 695px)': {
-                  width: '80%'
-                },
-              }}>
-              Streamline your invoicing process
+                display:'flex',
+                alignItems: 'center',
+                fontSize: '1.5em'
+              }}
+            >
+              Streamline Invoices&nbsp; 
+              <Typography sx={{fontSize: 'inherit', color: 'blue'}}>
+                Effortlessly
+              </Typography>
             </Typography>
-            <br/>
-            <Typography 
-              variant='h5' 
+            <Typography
               sx={{
-                '@media (max-width: 675px)' : {
-                  width: 400
-                }
-              }}>
-              Start generating, validating, and managing invoices with just a few clicks.
+                textAlign: 'center',
+                color: 'grey',
+                width: '80%'
+              }}
+            > 
+              This is a description hello guys hi hi hi welcome to the invoice page.
             </Typography>
-            {token && 
-            <Button
-              onClick={() => navigate('/dashboard')}
-              variant='contained'
-              sx={{ 
-                ...commonBtnStyles,
-                width: 250,
-                color: '#41444d',
-                bgcolor: '#e2dacd',
-                mt: 6.25
-              }}>
-                Head to Dashboard
+            <Button sx={{
+              textTransform: 'none',
+              background: "#a370f0",
+              color: "white",
+              padding: "0.35em",
+              paddingLeft: "1.2em",
+              fontSize: "17px",
+              fontWeight: 500,
+              borderRadius: "0.9em",
+              border: "none",
+              letterSpacing: "0.05em",
+              display: "flex",
+              alignItems: "center",
+              boxShadow: "inset 0 0 1.6em -0.6em #714da6",
+              overflow: "hidden",
+              position: "relative",
+              height: "2.8em",
+              paddingRight: "3.3em",
+              cursor: "pointer",
+              "&:hover .icon": {
+                width: "calc(100% - 0.6em)",
+              },
+              "&:hover .icon svg": {
+                transform: "translateX(0.1em)",
+              },
+              "&:active .icon": {
+                transform: "scale(0.95)",
+              },
+            }}
+            >
+              Get Started
+              <Box
+                className='icon'
+                sx={{
+                  background: 'white',
+                  marginLeft: '1em',
+                  position: 'absolute',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '2.2em',
+                  width: '2.2em',
+                  borderRadius: '0.7em',
+                  boxShadow: '0.1em 0.1em 0.6em 0.2em #7b52b9',
+                  right: '0.3em',
+                  transition: 'all 0.3s',
+                }}              
+              >
+                <SvgIcon
+                  sx={{
+                    width: "1.1em",
+                    transition: "transform 0.3s",
+                    color: "#7b52b9",
+                  }}
+                >
+                  <svg
+                    height="24"
+                    width="24"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M0 0h24v24H0z" fill="none"></path>
+                    <path
+                      d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"
+                      fill="currentColor"
+                    ></path>
+                  </svg>
+                </SvgIcon>
+              </Box>
             </Button>
-            }
           </Box>
         </Box>
-        <Box
-          component='section' 
-          sx={{ 
-            flex: 1,
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            bgcolor: '#e2dacd'
-          }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4}}>
-            <Typography 
-              variant='h5' 
-              sx={{ 
-                fontSize: '2em', 
-                fontWeight: 'bold',
-                color: '#3a3c43',
-              }}>
-              Not Registered with Us?
-            </Typography>
-            <Button
-              onClick={() => navigate('user/register')}
-              variant='contained'
-              sx={{ 
-                ...commonBtnStyles,
-                width: 200,
-                bgcolor: '#9ccde1'
-              }}>
-              Register Now
-            </Button>
-          </Box>
-        </Box>
+      </Box>
+      <Box>
+        Insert screenshot of our dashboard here
       </Box>
     </Fragment>
   )

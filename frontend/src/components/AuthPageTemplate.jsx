@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import PrestoLogo from './CookieLogo';
+import CookieLogo from './CookieLogo';
 import '../assets/style.css';
 
 /**
@@ -65,7 +65,7 @@ export default function AuthPageTemplate({
                 justifyContent: 'space-evenly', 
                 alignItems: 'center', 
               }}>
-              <PrestoLogo
+              <CookieLogo
                 styles={{
                   height: 85,
                   fontSize: '3.5em',

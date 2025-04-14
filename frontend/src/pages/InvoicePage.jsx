@@ -16,6 +16,7 @@ import AddressFields from "../components/AddressFields";
 import dayjs from "dayjs";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import PDFpreview from "../components/PDFpreview";
 pdfMake.addVirtualFileSystem(pdfFonts);
 
 export default function InvoicePage({token}) {
@@ -239,258 +240,272 @@ export default function InvoicePage({token}) {
   ]
   return (
     <Fragment>
-      <Box sx={{p: 10, bgcolor: '#e2dacd'}}>
-        <Button> Upload Order Document </Button>
-        <Typography>New Invoice</Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            id='customer-name'
-            name='customer-name'
-            label='Customer'
-            value={customer}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setCustomer(e.target.value)}
-          />
-          <TextField
-            id='customer-email'
-            name='customer-email'
-            label='Customer Email'
-            value={customerEmail}
-            variant='outlined'
-            type='email'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setCustomerEmail(e.target.value)}
-          />
-          <Box>
-            <Typography>Billing Address</Typography>
-            <AddressFields
-              type='billing'
-              addressLine1={billingAddress1}
-              setAddressLine1={setBillingAddress1}
-              addressLine2={billingAddress2}
-              setAddressLine2={setBillingAddress2}
-              suburb={billingSuburb}
-              setSuburb={setBillingSuburb}
-              state={billingState}
-              setState={setBillingState}
-              postCode={billingPostCode}
-              setPostCode={setBillingPostCode}
-              country={billingCountry}
-              setCountry={setBillingCountry}
-            />
-          </Box>
-          <Box>
-            <Typography>
-              Shipping Address
-            </Typography>
-            <Box>
-              <Typography>Same as Billing Address</Typography>
-              <Checkbox
-                checked={shippingChecked}
-                onChange={(event) => {
-                  setShippingChecked(event.target.checked)
-                }}
-                slotProps={{
-                  input: {'aria-label': 'controlled'}
+      <Box sx={{display: 'flex', height: '100%', width: '100%'}}>
+        <Box sx={{bgcolor: '#e2dacd', width: '50%'}}>
+          <Button> Upload Order Document </Button>
+          <Typography>New Invoice</Typography>
+          <Box sx={{height: '100%'}}>
+            <form onSubmit={handleSubmit}>
+              <TextField
+                id='customer-name'
+                name='customer-name'
+                label='Customer'
+                value={customer}
+                variant='outlined'
+                autoComplete='on'
+                sx={{ width: '100%' }}
+                onChange={(e) => setCustomer(e.target.value)}
+              />
+              <TextField
+                id='customer-email'
+                name='customer-email'
+                label='Customer Email'
+                value={customerEmail}
+                variant='outlined'
+                type='email'
+                autoComplete='on'
+                sx={{ width: '100%' }}
+                onChange={(e) => setCustomerEmail(e.target.value)}
+              />
+              <Box>
+                <Typography>Billing Address</Typography>
+                <AddressFields
+                  type='billing'
+                  addressLine1={billingAddress1}
+                  setAddressLine1={setBillingAddress1}
+                  addressLine2={billingAddress2}
+                  setAddressLine2={setBillingAddress2}
+                  suburb={billingSuburb}
+                  setSuburb={setBillingSuburb}
+                  state={billingState}
+                  setState={setBillingState}
+                  postCode={billingPostCode}
+                  setPostCode={setBillingPostCode}
+                  country={billingCountry}
+                  setCountry={setBillingCountry}
+                />
+              </Box>
+              <Box>
+                <Typography>
+                  Shipping Address
+                </Typography>
+                <Box>
+                  <Typography>Same as Billing Address</Typography>
+                  <Checkbox
+                    checked={shippingChecked}
+                    onChange={(event) => {
+                      setShippingChecked(event.target.checked)
+                    }}
+                    slotProps={{
+                      input: {'aria-label': 'controlled'}
+                    }}
+                  />
+                  {
+                    !shippingChecked && 
+                    <AddressFields
+                      type='shipping'
+                      addressLine1={shippingAddress1}
+                      setAddressLine1={setShippingAddress1}
+                      addressLine2={shippingAddress2}
+                      setAddressLine2={setShippingAddress2}
+                      suburb={shippingSuburb}
+                      setSuburb={setShippingSuburb}
+                      state={shippingState}
+                      setState={setShippingState}
+                      postCode={shippingPostCode}
+                      setPostCode={setShippingPostCode}
+                      country={shippingCountry}
+                      setCountry={setShippingCountry}
+                    />
+                  }
+                </Box>
+              </Box>
+              <TextField
+                id='bank-name'
+                name='bank-name'
+                label='Bank Name'
+                value={bankName}
+                variant='outlined'
+                autoComplete='on'
+                sx={{ width: '100%' }}
+                onChange={(e) => setBankName(e.target.value)}
+              />
+              <TextField
+                id='bank-number'
+                name='bank-number'
+                label='Bank Account Number'
+                type='number'
+                value={bankNum}
+                variant='outlined'
+                autoComplete='on'
+                sx={{ width: '100%' }}
+                onChange={(e) => setBankNum(e.target.value)}
+              />
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker 
+                  label='Issue Date'
+                  name='issue-date'
+                  value={issueDate}
+                  onChange={(newValue) => setIssueDate(newValue)}
+                />
+              </LocalizationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DatePicker 
+                  label='Due Date'
+                  name='due-date'
+                  value={dueDate}
+                  onChange={(newValue) => setDueDate(newValue)}
+                />
+              </LocalizationProvider>
+              <TextField
+                required
+                fullWidth
+                margin='dense'
+                id='invoice-num'
+                name='invoice-num'
+                label='Invoice Number'
+                value={invoiceNumber}
+                onChange={(e) => setInvoiceNumber(e.target.value)}
+                type='number'
+                variant='standard'
+                autoComplete='off'
+                sx={{
+                  '& label.Mui-focused': { color: '#41444d' },
+                  '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+                  '& input[type=number]': {
+                    MozAppearance: 'textfield',
+                  },
+                  '& input[type=number]::-webkit-outer-spin-button': {
+                    WebkitAppearance: 'none',
+                    margin: 0,
+                  },
+                  '& input[type=number]::-webkit-inner-spin-button': {
+                    WebkitAppearance: 'none',
+                    margin: 0,
+                  },
                 }}
               />
-              {
-                !shippingChecked && 
-                <AddressFields
-                  type='shipping'
-                  addressLine1={shippingAddress1}
-                  setAddressLine1={setShippingAddress1}
-                  addressLine2={shippingAddress2}
-                  setAddressLine2={setShippingAddress2}
-                  suburb={shippingSuburb}
-                  setSuburb={setShippingSuburb}
-                  state={shippingState}
-                  setState={setShippingState}
-                  postCode={shippingPostCode}
-                  setPostCode={setShippingPostCode}
-                  country={shippingCountry}
-                  setCountry={setShippingCountry}
-                />
-              }
-            </Box>
-          </Box>
-          <TextField
-            id='bank-name'
-            name='bank-name'
-            label='Bank Name'
-            value={bankName}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setBankName(e.target.value)}
-          />
-          <TextField
-            id='bank-number'
-            name='bank-number'
-            label='Bank Account Number'
-            type='number'
-            value={bankNum}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setBankNum(e.target.value)}
-          />
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker 
-              label='Issue Date'
-              name='issue-date'
-              value={issueDate}
-              onChange={(newValue) => setIssueDate(newValue)}
-            />
-          </LocalizationProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker 
-              label='Due Date'
-              name='due-date'
-              value={dueDate}
-              onChange={(newValue) => setDueDate(newValue)}
-            />
-          </LocalizationProvider>
-          <TextField
-            required
-            fullWidth
-            margin='dense'
-            id='invoice-num'
-            name='invoice-num'
-            label='Invoice Number'
-            value={invoiceNumber}
-            onChange={(e) => setInvoiceNumber(e.target.value)}
-            type='number'
-            variant='standard'
-            autoComplete='off'
-            sx={{
-              '& label.Mui-focused': { color: '#41444d' },
-              '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
-              '& input[type=number]': {
-                MozAppearance: 'textfield',
-              },
-              '& input[type=number]::-webkit-outer-spin-button': {
-                WebkitAppearance: 'none',
-                margin: 0,
-              },
-              '& input[type=number]::-webkit-inner-spin-button': {
-                WebkitAppearance: 'none',
-                margin: 0,
-              },
-            }}
-          />
-          <SelectField
-            id={'currency-id'}
-            name={'currency'}
-            label={'Currency'}
-            value={currency}
-            options={currencyOptions}
-            setValue={setCurrency}
-          />     
-          <TextField
-            id='notes'
-            name='notes'
-            label='Notes'
-            multiline
-            maxRows={4}
-            value={notes}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-          <SelectField
-            id={'format-id'}
-            name={'format'}
-            label={'Format'}
-            value={format}
-            options={formatOptions}
-            setValue={setFormat}
-          />     
-          <InvoiceItemTable rows={invoiceItems} setRows={setInvoiceItems} setSubtotal={setSubtotal} currency={currency}/>
-          <InvoiceDiscountDialog setWideDiscount={setWideDiscount}/>
-          <ShippingCostDialog shippingCostDetails={shippingCostDetails} setShippingCostDetails={setShippingCostDetails}/>
-          <TaxDialog setTax={setTax}/>
-          <Typography>
-            subtotal = {currency}{subTotal}
-          </Typography>
-          {Object.keys(wideDiscount).length !== 0 && 
-          (
-            <Fragment>
-              {wideDiscount.discountType === 'Flat' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {currency}{parseFloat(wideDiscount.discountAmount).toFixed(2)}</Typography>}
-              {wideDiscount.discountType === 'Percentage' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {currency}{subTotal * (parseFloat(wideDiscount.discountAmount) / 100) + '%'}</Typography>}
-            </Fragment>
-          )}
-          <Typography>
-          </Typography>
-          {Object.keys(shippingCostDetails).length !== 0 && 
-            <Fragment>
-              {shippingCostDetails.shippingCost !== '' && <Typography>Shipping Cost: {currency}{shippingCostDetails.shippingCost}</Typography>}
-              {shippingCostDetails.shippingTax !== '' && <Typography>Shipping Tax: {currency}{shippingCostDetails.shippingTax}</Typography>}
-            </Fragment>
-          }
-          {Object.keys(tax).length !== 0 && 
-            <Fragment>
-              {tax.taxType === 'GST' && <Typography>GST: {subTotal * (0.1)}</Typography>}
-              {tax.taxType === 'Custom' && 
+              <SelectField
+                id={'currency-id'}
+                name={'currency'}
+                label={'Currency'}
+                value={currency}
+                options={currencyOptions}
+                setValue={setCurrency}
+              />     
+              <TextField
+                id='notes'
+                name='notes'
+                label='Notes'
+                multiline
+                maxRows={4}
+                value={notes}
+                variant='outlined'
+                autoComplete='on'
+                sx={{ width: '100%' }}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+              <Box>
+                <Typography>Recurring</Typography>
+                <Checkbox></Checkbox>
+              </Box>
+              <SelectField
+                id={'format-id'}
+                name={'format'}
+                label={'Format'}
+                value={format}
+                options={formatOptions}
+                setValue={setFormat}
+              />     
+              <InvoiceItemTable rows={invoiceItems} setRows={setInvoiceItems} setSubtotal={setSubtotal} currency={currency}/>
+              <InvoiceDiscountDialog setWideDiscount={setWideDiscount}/>
+              <ShippingCostDialog shippingCostDetails={shippingCostDetails} setShippingCostDetails={setShippingCostDetails}/>
+              <TaxDialog setTax={setTax}/>
+              <Typography>
+                subtotal = {currency}{subTotal}
+              </Typography>
+              {Object.keys(wideDiscount).length !== 0 && 
+              (
                 <Fragment>
-                  {tax.taxOption === 'Percentage' && tax.taxAmount !== '' &&<Typography>Tax : {currency}{parseFloat(tax.taxAmount).toFixed(2)+ '%'}</Typography>}
-                  {tax.taxOption === 'Flat' && tax.taxAmount !== '' &&<Typography>Tax : {currency}{parseFloat(tax.taxAmount).toFixed(2)}</Typography>}
+                  {wideDiscount.discountType === 'Flat' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {currency}{parseFloat(wideDiscount.discountAmount).toFixed(2)}</Typography>}
+                  {wideDiscount.discountType === 'Percentage' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {currency}{subTotal * (parseFloat(wideDiscount.discountAmount) / 100) + '%'}</Typography>}
+                </Fragment>
+              )}
+              <Typography>
+              </Typography>
+              {Object.keys(shippingCostDetails).length !== 0 && 
+                <Fragment>
+                  {shippingCostDetails.shippingCost !== '' && <Typography>Shipping Cost: {currency}{shippingCostDetails.shippingCost}</Typography>}
+                  {shippingCostDetails.shippingTax !== '' && <Typography>Shipping Tax: {currency}{shippingCostDetails.shippingTax}</Typography>}
                 </Fragment>
               }
-            </Fragment>
-          }
-          <Typography>
-            total = {currency}{calculateTotal().toFixed(2)}
-          </Typography>
-          <Button
-            onClick={() => {
-              setCustomer('');
-              setBillingAddress1('');
-              setBillingAddress2('');
-              setBillingSuburb('');
-              setBillingState('');
-              setBillingPostCode('');
-              setBillingCountry('');
-              setShippingAddress1('');
-              setShippingAddress2('');
-              setShippingSuburb('');
-              setShippingState('');
-              setShippingPostCode('');
-              setShippingCountry('');
-              setBankNum('');
-              setBankName('');
-              setShippingChecked(false);
-              setShippingCostDetails({});
-              setIssueDate(null);
-              setDueDate(null);
-              setNotes('');
-              setCurrency('$');
-              setWideDiscount({});
-              setTax({});
-              setSubtotal(0);
-              setInvoiceItems([]);
-              setFormat('PDF');
-            }}
-          >
-            Reset Invoice
-          </Button>
-          <Button
-            type='submit'
-            name='save'
-          >
-            Save
-          </Button>
-          <Button
-            type='submit'
-            name='download'
-          >
-            Download
-          </Button>
-        </form>
+              {Object.keys(tax).length !== 0 && 
+                <Fragment>
+                  {tax.taxType === 'GST' && <Typography>GST: {subTotal * (0.1)}</Typography>}
+                  {tax.taxType === 'Custom' && 
+                    <Fragment>
+                      {tax.taxOption === 'Percentage' && tax.taxAmount !== '' &&<Typography>Tax : {currency}{parseFloat(tax.taxAmount).toFixed(2)+ '%'}</Typography>}
+                      {tax.taxOption === 'Flat' && tax.taxAmount !== '' &&<Typography>Tax : {currency}{parseFloat(tax.taxAmount).toFixed(2)}</Typography>}
+                    </Fragment>
+                  }
+                </Fragment>
+              }
+              <Typography>
+                total = {currency}{calculateTotal().toFixed(2)}
+              </Typography>
+              <Button
+                onClick={() => {
+                  setCustomer('');
+                  setBillingAddress1('');
+                  setBillingAddress2('');
+                  setBillingSuburb('');
+                  setBillingState('');
+                  setBillingPostCode('');
+                  setBillingCountry('');
+                  setShippingAddress1('');
+                  setShippingAddress2('');
+                  setShippingSuburb('');
+                  setShippingState('');
+                  setShippingPostCode('');
+                  setShippingCountry('');
+                  setBankNum('');
+                  setBankName('');
+                  setShippingChecked(false);
+                  setShippingCostDetails({});
+                  setIssueDate(null);
+                  setDueDate(null);
+                  setNotes('');
+                  setCurrency('$');
+                  setWideDiscount({});
+                  setTax({});
+                  setSubtotal(0);
+                  setInvoiceItems([]);
+                  setFormat('PDF');
+                }}
+              >
+                Reset Invoice
+              </Button>
+              <Button
+                type='submit'
+                name='save'
+              >
+                Save
+              </Button>
+              <Button
+                type='submit'
+                name='download'
+              >
+                Download
+              </Button>
+            </form>
+          </Box>
+        </Box>
+        <Box sx={{width: '100%'}}>
+          <Box>
+            <Typography>Preview PDF</Typography>
+            <PDFpreview></PDFpreview>
+          </Box>
+        </Box>
       </Box>
     </Fragment>
   )
