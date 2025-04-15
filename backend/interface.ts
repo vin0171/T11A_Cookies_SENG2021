@@ -21,6 +21,7 @@ export enum Gender {
   OTHER = 'OTHER',
 }
 
+// TODO: DOUBLE CHECK IMPLEMENTATIONS
 export interface Participant {
   companyName: string,
   address: string,
@@ -37,6 +38,7 @@ export interface Participant {
   notes?: string
 }
 
+// TODO: OLD
 export interface InvoiceItem {
   itemSku: string,
   itemName: string,
@@ -49,18 +51,25 @@ export interface InvoiceItem {
   totalAmount: number
 }
 
-export interface InvoiceItemV2 {
+// TODO: NEW DONE
+export interface Item {
   id: number,
   isNew: boolean,
   itemSku: string,
   itemName: string,
   description: string,
+}
+
+// TODO: UPDATED
+export interface InvoiceItemV2 {
+  itemDetails: Item,
   quantity: number,
   unitPrice: number,
   discountAmount: number,
   totalAmount: number
 }
 
+// TODO: OLD
 export interface InvoiceDetails {
   sender: Participant,
   receiver: Participant,
@@ -77,6 +86,7 @@ export interface InvoiceDetails {
   terms: string,
 }
 
+// TODO: IS FINE
 export interface Invoice {
   invoiceId: string,
   userId: string,
@@ -84,6 +94,7 @@ export interface Invoice {
   details: InvoiceDetails
 }
 
+// TODO: NOT SURE
 export interface Address {
   addressLine1: string,
   addressLine2: string,
@@ -93,6 +104,7 @@ export interface Address {
   country: string
 }
 
+// TODO: IS THIS BEING USED?
 export interface ParticipantV2 {
   companyName: string,
   billingAddress: Address,
@@ -115,6 +127,7 @@ export interface Tax {
   taxAmount?: string
 }
 
+// TODO: Should be fine
 export interface InvoiceDetailsV2 {
   receiver: ParticipantV2,
   issueDate: Dayjs,
@@ -134,6 +147,8 @@ export interface InvoiceDetailsV2 {
   notes: string,
 }
 
+
+// TODO: Should be fine
 export interface InvoiceV2 {
   invoiceId: string,
   userId: string,
@@ -141,6 +156,7 @@ export interface InvoiceV2 {
   details: InvoiceDetailsV2
 }
 
+// TODO: UPDATED
 export interface User {
   userId: string,
   companyId: string,
@@ -148,13 +164,7 @@ export interface User {
   password: string,
   nameFirst: string,
   nameLast: string,
-  numSuccessfulLogins: number,
-  numFailedPasswordsSinceLastLogin: number,
-  age: number,
-  gender: Gender,
   timeCreated: string,
-  previousPasswords: string[],
-  invoices: number[]
 }
 
 export interface Location {
