@@ -10,9 +10,6 @@ const tiers = [
       'Free benefit 1',
       'Free benefit 2'
     ],
-    buttonText: 'Sign up for free',
-    buttonVariant: 'outlined',
-    buttonColor: 'primary',
   },
   {
     title: 'Professional',
@@ -21,14 +18,11 @@ const tiers = [
     description: [
       'Professional benefit 1',
       'Professional benefit 2',
-      'Professional benefit 1',
-      'Professional benefit 2',
-      'Professional benefit 1',
-      'Professional benefit 2',
+      'Professional benefit 3',
+      'Professional benefit 4',
+      'Professional benefit 5',
+      'Professional benefit 6',
     ],
-    buttonText: 'Start now',
-    buttonVariant: 'contained',
-    buttonColor: 'secondary',
   },
   {
     title: 'Enterprise',
@@ -37,9 +31,6 @@ const tiers = [
       'Enterprise benefit 1',
       'Enterprise benefit 2',
     ],
-    buttonText: 'Contact us',
-    buttonVariant: 'outlined',
-    buttonColor: 'primary',
   },
 ];
 
@@ -153,15 +144,6 @@ export default function HomePagePricing() {
                   </Box>
                 ))}
               </CardContent>
-              <CardActions>
-                <Button
-                  fullWidth
-                  variant={tier.buttonVariant}
-                  color={tier.buttonColor}
-                >
-                  {tier.buttonText}
-                </Button>
-              </CardActions>
             </Card>
           </Box>
         ))}

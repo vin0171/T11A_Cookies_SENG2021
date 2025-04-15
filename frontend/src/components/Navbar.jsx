@@ -100,7 +100,7 @@ export default function Navbar({token, loggedIn, children}) {
   return (
     <Box component='nav'>
       <AppBar 
-        position='fixed'
+        position='absolute'
         sx ={{
           boxShadow: 0,
           bgcolor: 'transparent',
@@ -116,7 +116,7 @@ export default function Navbar({token, loggedIn, children}) {
             variant ='dense' 
             sx={{
               display: 'flex',
-              bgcolor: '#27548A',
+              bgcolor: 'cornflowerblue',
               justifyContent: 'space-between', 
               alignItems: 'center',
               flexShrink: 0,
@@ -124,9 +124,9 @@ export default function Navbar({token, loggedIn, children}) {
               borderRadius: 5,
               borderColor: 'grey',
               boxShadow: 5,
-              pl: 1.3, 
-              pr: 1.3,
-              minHeight: 75
+              pl: 2.5, 
+              pr: 2.5,
+              minHeight: 85
             }}>
             {toolbarComponent}
             {children}

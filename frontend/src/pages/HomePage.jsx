@@ -1,8 +1,10 @@
-import { Box, Button, Divider, SvgIcon, Typography } from '@mui/material';
+import { Box, Button, Divider, styled, SvgIcon, Typography } from '@mui/material';
 import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HomePageFeatures from '../components/HomePageFeatures';
 import HomePagePricing from '../components/HomePagePricing';
+import HomePageFooter from '../components/HomePageFooter';
+import dashboard from '../assets/dashboard.jpg'
 
 /**
  * This page sets up the home page.
@@ -17,7 +19,7 @@ export default function HomePage ({token}) {
           bgcolor: '#e2dacd',
           width: '100%',
           backgroundRepeat: 'no-repeat',
-          backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(210, 100%, 16%), transparent)',
+          backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(199, 74.70%, 38.80%), transparent)',
         }}
       >
         <Box 
@@ -61,7 +63,7 @@ export default function HomePage ({token}) {
             </Typography>
             <Button sx={{
               textTransform: 'none',
-              background: "#a370f0",
+              background: "cornflowerblue",
               color: "white",
               padding: "0.35em",
               paddingLeft: "1.2em",
@@ -72,7 +74,7 @@ export default function HomePage ({token}) {
               letterSpacing: "0.05em",
               display: "flex",
               alignItems: "center",
-              boxShadow: "inset 0 0 1.6em -0.6em #714da6",
+              boxShadow: "inset 0 0 1.6em -0.6em cornflowerblue",
               overflow: "hidden",
               position: "relative",
               height: "2.8em",
@@ -102,7 +104,6 @@ export default function HomePage ({token}) {
                   height: '2.2em',
                   width: '2.2em',
                   borderRadius: '0.7em',
-                  boxShadow: '0.1em 0.1em 0.6em 0.2em #7b52b9',
                   right: '0.3em',
                   transition: 'all 0.3s',
                 }}              
@@ -111,7 +112,7 @@ export default function HomePage ({token}) {
                   sx={{
                     width: "1.1em",
                     transition: "transform 0.3s",
-                    color: "#7b52b9",
+                    color: "cornflowerblue",
                   }}
                 >
                   <svg
@@ -130,13 +131,26 @@ export default function HomePage ({token}) {
               </Box>
             </Button>
           </Box>
+          <Box
+            sx={{
+              alignSelf: "center",
+              width: "100%",
+              height: 400,
+              outline: "6px solid",
+              outlineColor: "hsla(220, 25%, 80%, 0.2)",
+              border: "1px solid",
+              boxShadow: "0 0 12px 8px hsla(220, 25%, 80%, 0.2)",
+              backgroundImage: `url(${dashboard})`,
+              backgroundSize: 'cover'
+            }}
+          >
+          </Box>
         </Box>
       </Box>
-      <Box>
-        Insert screenshot of our dashboard here
-      </Box>
       <HomePageFeatures/>
+      <Divider sx={{mt: 5, borderColor: 'black'}}/>
       <HomePagePricing/>
+      <HomePageFooter/>
     </Fragment>
   )
 }

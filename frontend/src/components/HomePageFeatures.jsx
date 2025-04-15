@@ -36,7 +36,7 @@ export default function HomePageFeatures() {
   };
 
   return (
-    <Box sx={{mt: 16, alignItems: 'center'}}>
+    <Box sx={{mt: 5, alignItems: 'center'}}>
       <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
         <Box sx={{width: '60%'}}>
           <Typography

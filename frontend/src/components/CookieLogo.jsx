@@ -1,4 +1,6 @@
 import Typography from '@mui/material/Typography';
+import Cookie from '../assets/cookie.svg'
+import { Box } from '@mui/material';
 
 /**
  * This component renders the skeleton for the Cookie logo (i.e its background colour and text).
@@ -6,25 +8,22 @@ import Typography from '@mui/material/Typography';
  */
 export default function CookieLogo({styles = {}, handleClick={}}) {
   return (
-    <Typography
-      noWrap
-      component='h3'
-      onClick={handleClick}
-      sx={{	
-        bgcolor: '#DDA853',
-        textAlign: 'center',
-        p: 1,
-        pl: 1.5,
-        pr: 1.5,
-        borderRadius: 2,
-        fontWeight: 'bold',
-        letterSpacing: 1,
-        '&:hover': {
-          cursor: 'default'
-        },
-        ...styles
-      }}>
-    Cookie	
-    </Typography>
+    <Box sx={{display: 'flex', gap: '20px', alignItems: 'center'}}>
+      <Box component='img' src={Cookie} sx={{width: '25%'}}></Box>
+      <Typography
+        noWrap
+        component='h3'
+        onClick={handleClick}
+        sx={{	
+          fontWeight: 'bold',
+          letterSpacing: 1,
+          '&:hover': {
+            cursor: 'default'
+          },
+          ...styles
+        }}>
+      Cookie	
+      </Typography>
+    </Box>
   )
 }
