@@ -37,7 +37,7 @@ export default function Router () {
         ) : null
       }
       <Routes>
-        <Route path='/' element={<HomePage token={token}/>}/>
+        <Route path='/' element={<HomePage/>}/>
         <Route path='user/login' element={<LoginPage setToken={setToken} type='user'/>}/>
         <Route path='user/register' element={<RegisterPage setToken={setToken}/>}/>
         <Route path='/dashboard' element={<DashboardPage token={token}/>}/>

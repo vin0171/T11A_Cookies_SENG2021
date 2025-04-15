@@ -29,7 +29,7 @@ const footerInfo = [
 
 function Copyright() {
   return (
-    <Typography>
+    <Typography component='h6'>
       {'Copyright © '}
       <Link href='#'>
         <Typography sx={{display: 'inline', color: 'cornflowerblue'}}>Cookie </Typography>

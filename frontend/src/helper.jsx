@@ -24,7 +24,7 @@ export const loginRegisterFormStyle = (
   styled.form`
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 20px;
     width: 350px;
     align-items: center;
     @media (max-width: 445px) {

@@ -75,7 +75,7 @@ export default function Navbar({token, loggedIn, children}) {
         edge='start'
         color='inherit'
         aria-label='menu'
-        sx={{ mr: 2, p: 0, ml: 0.1 }}
+        sx={{ mr: 2, p: 0, ml: 0.1}}
         onClick={toggleMenu(true)}
       >
         <MenuIcon fontSize='large'/>

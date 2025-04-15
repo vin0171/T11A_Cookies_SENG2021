@@ -9,7 +9,7 @@ import dashboard from '../assets/dashboard.jpg'
 /**
  * This page sets up the home page.
  */
-export default function HomePage ({token}) {
+export default function HomePage () {
   const navigate = useNavigate();
 
   return (
@@ -76,7 +76,9 @@ export default function HomePage ({token}) {
                 This is a description hello guys hi hi hi welcome to the invoice page.
               </Typography>
             </Box>
-            <Button sx={{
+            <Button 
+            onClick={() => navigate('/user/register')}
+            sx={{
               width: '300px',
               textTransform: 'none',
               background: 'cornflowerblue',
