@@ -66,6 +66,12 @@ export default function Navbar({token, loggedIn, children}) {
     handleClick={() => {navigate('/')}}
   />
 
+  let navStyle = 
+  <>
+  
+  
+  </>
+
 
   if (loggedIn) { 
     toolbarComponent = 
@@ -98,19 +104,24 @@ export default function Navbar({token, loggedIn, children}) {
   }
 
   return (
-    <Box component='nav'>
+    <Box component='nav' sx={{flex: 1}}>
       <AppBar 
-        position='absolute'
+        position={loggedIn ? 'static': 'absolute'}
         sx ={{
-          boxShadow: 0,
-          bgcolor: 'transparent',
-          backgroundImage: 'none',
-          mt: 'calc(var(--template-frame-height, 0px) + 28px)',
-          display: 'flex',
-          alignItems: 'center'
+          ...(loggedIn
+            ? {}
+            : {
+                boxShadow: 0,
+                bgcolor: 'transparent',
+                backgroundImage: 'none',
+                mt: 'calc(var(--template-frame-height, 0px) + 28px)',
+                display: 'flex',
+                alignItems: 'center'
+            }
+          )
         }}
       >
-        <Box sx={{width: '70%', maxWidth: '1400px'}}>
+        <Box sx={{...(loggedIn ? {} : {width: '70%', maxWidth: '1400px'})}}>
           <Toolbar
             disableGutters
             variant ='dense' 
@@ -120,13 +131,13 @@ export default function Navbar({token, loggedIn, children}) {
               justifyContent: 'space-between', 
               alignItems: 'center',
               flexShrink: 0,
-              backdropFilter: 'blur(24px)',
-              borderRadius: 5,
+              backdropFilter: loggedIn ? '' : 'blur(24px)',
+              borderRadius: loggedIn ? 0 : 5,
               borderColor: 'grey',
               boxShadow: 5,
               pl: 2.5, 
               pr: 2.5,
-              minHeight: 85
+              minHeight: loggedIn ? 75 :85
             }}>
             {toolbarComponent}
             {children}
