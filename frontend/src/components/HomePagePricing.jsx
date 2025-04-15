@@ -1,0 +1,171 @@
+import { Box, Grid2, Typography, Button, Card, CardActions, CardContent, Divider, Chip } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
+
+const tiers = [
+  {
+    title: 'Free',
+    price: '0',
+    description: [
+      'Free benefit 1',
+      'Free benefit 2'
+    ],
+    buttonText: 'Sign up for free',
+    buttonVariant: 'outlined',
+    buttonColor: 'primary',
+  },
+  {
+    title: 'Professional',
+    subheader: 'Recommended',
+    price: '5',
+    description: [
+      'Professional benefit 1',
+      'Professional benefit 2',
+      'Professional benefit 1',
+      'Professional benefit 2',
+      'Professional benefit 1',
+      'Professional benefit 2',
+    ],
+    buttonText: 'Start now',
+    buttonVariant: 'contained',
+    buttonColor: 'secondary',
+  },
+  {
+    title: 'Enterprise',
+    price: '10',
+    description: [
+      'Enterprise benefit 1',
+      'Enterprise benefit 2',
+    ],
+    buttonText: 'Contact us',
+    buttonVariant: 'outlined',
+    buttonColor: 'primary',
+  },
+];
+
+export default function HomePagePricing() {
+  return (
+    <Box
+      sx={{
+        mt: 12,
+        mb: 12,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: 6,
+      }}
+    >
+      <Box sx={{width: '60%', textAlign: 'center'}}>
+        <Typography sx={{fontWeight:'bold'}}>Pricing</Typography>
+        <Typography>
+          Check out our plans
+        </Typography>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          width: '80%', 
+          gap: 10
+        }}
+      >
+        {tiers.map((tier) => (
+          <Box sx={{width: '100%'}} key={tier.title}>
+            <Card
+              sx={{
+                p: 2,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                bgcolor: 'grey',
+                ...(tier.title === 'Professional' && {
+                  border: 'none',
+                  background:
+                    'radial-gradient(circle at 50% 0%, hsl(220, 20%, 35%), hsl(220, 30%, 6%))',
+                  boxShadow: `0 8px 12px hsla(220, 20%, 42%, 0.2)`,
+                })
+              }}
+            >
+              <CardContent>
+                <Box
+                  sx={{
+                    mb: 1,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 2,
+                    ...(tier.title === 'Professional'
+                      ? { color: 'white'}
+                      : {color: 'blue'}
+                    )
+                  }}
+                >
+                  <Typography>
+                    {tier.title}
+                  </Typography>
+                  {tier.title === 'Professional' && (
+                    <Chip icon={<AutoAwesomeIcon />} label={tier.subheader} />
+                  )}
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    ...(tier.title === 'Professional' && {color: 'white'})
+                  }}
+                >
+                  <Typography sx={{fontSize : '3em'}}>
+                    ${tier.price}
+                  </Typography>
+                  <Typography>
+                    &nbsp; per month
+                  </Typography>
+                </Box>
+                <Divider sx={{ my: 2, opacity: 0.8, borderColor: 'black' }} />
+                {tier.description.map((line) => (
+                  <Box
+                    key={line}
+                    sx={{
+                      py: 1,
+                      display: 'flex',
+                      gap: 1.5,
+                      alignItems: 'center',
+                    }}
+                  >
+                    <CheckCircleRoundedIcon
+                      sx={{
+                        width: 20,
+                        ...(tier.title === 'Professional'
+                          ? { color: 'white' }
+                          : { color: 'black' })
+                      }}
+                    />
+                    <Typography
+                      sx={{
+                        ...(tier.title === 'Professional'
+                          ? { color: 'white' }
+                          : { color: 'black' })
+                      }}
+                    >
+                      {line}
+                    </Typography>
+                  </Box>
+                ))}
+              </CardContent>
+              <CardActions>
+                <Button
+                  fullWidth
+                  variant={tier.buttonVariant}
+                  color={tier.buttonColor}
+                >
+                  {tier.buttonText}
+                </Button>
+              </CardActions>
+            </Card>
+          </Box>
+        ))}
+      </Box>
+    </Box>
+  )
+}

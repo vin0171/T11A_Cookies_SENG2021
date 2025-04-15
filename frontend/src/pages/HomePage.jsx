@@ -2,6 +2,7 @@ import { Box, Button, Divider, SvgIcon, Typography } from '@mui/material';
 import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HomePageFeatures from '../components/HomePageFeatures';
+import HomePagePricing from '../components/HomePagePricing';
 
 /**
  * This page sets up the home page.
@@ -135,6 +136,7 @@ export default function HomePage ({token}) {
         Insert screenshot of our dashboard here
       </Box>
       <HomePageFeatures/>
+      <HomePagePricing/>
     </Fragment>
   )
 }
