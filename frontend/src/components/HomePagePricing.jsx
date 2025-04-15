@@ -38,17 +38,18 @@ export default function HomePagePricing() {
   return (
     <Box
       sx={{
-        mt: 12,
-        mb: 12,
+        pt: 4,
+        pb: 12,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         gap: 6,
+        bgcolor: 'aliceblue'
       }}
     >
       <Box sx={{width: '60%', textAlign: 'center'}}>
-        <Typography sx={{fontWeight:'bold'}}>Pricing</Typography>
-        <Typography>
+        <Typography sx={{fontWeight:'bold', fontSize: '3em'}}>Pricing</Typography>
+        <Typography sx={{fontSize: '1.5em'}}>
           Check out our plans
         </Typography>
       </Box>
@@ -69,11 +70,11 @@ export default function HomePagePricing() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 4,
-                bgcolor: 'grey',
+                border:'2px solid black',
+                bgcolor: 'cornflowerblue',
                 ...(tier.title === 'Professional' && {
-                  border: 'none',
                   background:
-                    'radial-gradient(circle at 50% 0%, hsl(220, 20%, 35%), hsl(220, 30%, 6%))',
+                    'radial-gradient(circle at 50% 0%, hsl(221, 100.00%, 74.30%), hsl(224, 49.50%, 36.50%))',
                   boxShadow: `0 8px 12px hsla(220, 20%, 42%, 0.2)`,
                 })
               }}
@@ -88,15 +89,24 @@ export default function HomePagePricing() {
                     gap: 2,
                     ...(tier.title === 'Professional'
                       ? { color: 'white'}
-                      : {color: 'blue'}
+                      : {color: 'black'}
                     )
                   }}
                 >
-                  <Typography>
+                  <Typography sx={{fontSize: '2em',}}>
                     {tier.title}
                   </Typography>
                   {tier.title === 'Professional' && (
-                    <Chip icon={<AutoAwesomeIcon />} label={tier.subheader} />
+                    <Chip 
+                      sx={{
+                        color: 'white',
+                        '& .MuiChip-icon' : {
+                          color: 'white'
+                        }
+                      }} 
+                      icon={<AutoAwesomeIcon />} 
+                      label={tier.subheader} 
+                    />
                   )}
                 </Box>
                 <Box

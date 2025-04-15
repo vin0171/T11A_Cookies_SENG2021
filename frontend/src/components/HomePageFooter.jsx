@@ -31,10 +31,9 @@ function Copyright() {
   return (
     <Typography>
       {'Copyright © '}
-      <Link>
-        Cookies
+      <Link href='#'>
+        <Typography sx={{display: 'inline', color: 'cornflowerblue'}}>Cookie </Typography>
       </Link>
-      &nbsp;
       {new Date().getFullYear()}
     </Typography>
   );
@@ -46,7 +45,8 @@ export default function HomePageFooter() {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
+        alignItems: 'center',
+        bgcolor: 'aliceblue'
       }}
     >
       <Box
@@ -63,17 +63,17 @@ export default function HomePageFooter() {
               <Icon>
                 <Box component='img' src={CookieLogo} sx={{width: '100%', height: '100%'}}></Box>
               </Icon>
-              <Typography sx={{position: 'relative', top: '1px'}}>Cookies</Typography>
+              <Typography sx={{position: 'relative', top: '1px'}}>Cookie</Typography>
             </Box>
             <Box>
               <Link href="#">
-                <Typography sx={{display: 'inline'}}>Privacy Policy</Typography>
+                <Typography sx={{display: 'inline', color: 'cornflowerblue'}}>Privacy Policy</Typography>
               </Link>
-              <Typography sx={{display: "inline", ml: 0.5}}>
+              <Typography sx={{display: "inline", color: 'cornflowerblue', ml: 0.5}}>
                 &nbsp;•&nbsp;
               </Typography>
               <Link href="#">
-                <Typography sx={{display: 'inline'}}>Terms of Service</Typography>
+                <Typography sx={{display: 'inline', color: 'cornflowerblue'}}>Terms of Service</Typography>
               </Link>
               <Copyright />
             </Box>
@@ -88,12 +88,12 @@ export default function HomePageFooter() {
               gap: 1,
             }}
           >
-            <Typography sx={{ fontWeight: "medium" }}>
+            <Typography>
               {info.title}
             </Typography>
             {info.links.map((link) => (
               <Link key={link} href='#'>
-                <Typography>{link}</Typography>
+                <Typography sx={{color: 'cornflowerblue'}}>{link}</Typography>
               </Link>
             ))}
           </Box>
@@ -106,10 +106,9 @@ export default function HomePageFooter() {
           pt: 8,
           mb: 2,
           width: '80%',
-          borderTop: '1px solid black'
+          borderTop: '1px solid grey',
         }}
       >
-
       </Box>
     </Box>
   );

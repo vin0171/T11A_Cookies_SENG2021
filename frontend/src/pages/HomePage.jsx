@@ -16,7 +16,7 @@ export default function HomePage ({token}) {
     <Fragment>
       <Box
         sx={{
-          bgcolor: '#e2dacd',
+          bgcolor: 'aliceblue',
           width: '100%',
           backgroundRepeat: 'no-repeat',
           backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, hsl(199, 74.70%, 38.80%), transparent)',
@@ -28,7 +28,7 @@ export default function HomePage ({token}) {
             flexDirection: 'column',
             alignItems: 'center',
             pt: 20,
-            pb: 12 ,
+            pb: 8 ,
           }}
         >
           <Box
@@ -36,58 +36,74 @@ export default function HomePage ({token}) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center', 
-              width: '70%'
+              width: '70%',
+              mb: 5
             }}
           >
-            <Typography
-              variant='h1'
-              sx={{
-                display:'flex',
-                alignItems: 'center',
-                fontSize: '1.5em'
+            <Box sx={{
+              display: 'flex', 
+              alignItems: 'center', 
+              flexDirection: 'column',
+              mb: 2
               }}
             >
-              Streamline Invoices&nbsp; 
-              <Typography sx={{fontSize: 'inherit', color: 'blue'}}>
-                Effortlessly
+              <Typography
+                component='h1'
+                sx={{
+                  display:'flex',
+                  alignItems: 'center',
+                  fontSize: '4em'
+                }}
+              >
+                Streamline Invoices&nbsp; 
+                <Typography sx={{
+                  fontSize: 'inherit', 
+                  color: 'cornflowerblue',
+                  WebkitTextStrokeWidth: '0.1px',
+                  WebkitTextStrokeColor: 'black'
+                  }}
+                >
+                  Effortlessly
+                </Typography>
               </Typography>
-            </Typography>
-            <Typography
-              sx={{
-                textAlign: 'center',
-                color: 'grey',
-                width: '80%'
-              }}
-            > 
-              This is a description hello guys hi hi hi welcome to the invoice page.
-            </Typography>
+              <Typography
+                sx={{
+                  textAlign: 'center',
+                  color: 'grey',
+                  width: '80%'
+                }}
+              > 
+                This is a description hello guys hi hi hi welcome to the invoice page.
+              </Typography>
+            </Box>
             <Button sx={{
+              width: '300px',
               textTransform: 'none',
-              background: "cornflowerblue",
-              color: "white",
-              padding: "0.35em",
-              paddingLeft: "1.2em",
-              fontSize: "17px",
+              background: 'cornflowerblue',
+              color: 'white',
+              padding: '0.35em',
+              paddingLeft: '1.2em',
+              fontSize: '1.5em',
               fontWeight: 500,
-              borderRadius: "0.9em",
-              border: "none",
-              letterSpacing: "0.05em",
-              display: "flex",
-              alignItems: "center",
-              boxShadow: "inset 0 0 1.6em -0.6em cornflowerblue",
-              overflow: "hidden",
-              position: "relative",
-              height: "2.8em",
-              paddingRight: "3.3em",
-              cursor: "pointer",
-              "&:hover .icon": {
-                width: "calc(100% - 0.6em)",
+              borderRadius: '0.9em',
+              border: 'none',
+              letterSpacing: '0.05em',
+              display: 'flex',
+              alignItems: 'center',
+              boxShadow: 'inset 0 0 1.6em -0.6em cornflowerblue',
+              overflow: 'hidden',
+              position: 'relative',
+              height: '2.8em',
+              paddingRight: '3.3em',
+              cursor: 'pointer',
+              '&:hover .icon': {
+                width: 'calc(100% - 0.6em)',
               },
-              "&:hover .icon svg": {
-                transform: "translateX(0.1em)",
+              '&:hover .icon svg': {
+                transform: 'translateX(0.1em)',
               },
-              "&:active .icon": {
-                transform: "scale(0.95)",
+              '&:active .icon': {
+                transform: 'scale(0.95)',
               },
             }}
             >
@@ -110,21 +126,21 @@ export default function HomePage ({token}) {
               >
                 <SvgIcon
                   sx={{
-                    width: "1.1em",
-                    transition: "transform 0.3s",
-                    color: "cornflowerblue",
+                    width: '1.1em',
+                    transition: 'transform 0.3s',
+                    color: 'cornflowerblue',
                   }}
                 >
                   <svg
-                    height="24"
-                    width="24"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
+                    height='24'
+                    width='24'
+                    viewBox='0 0 24 24'
+                    xmlns='http://www.w3.org/2000/svg'
                   >
-                    <path d="M0 0h24v24H0z" fill="none"></path>
+                    <path d='M0 0h24v24H0z' fill='none'></path>
                     <path
-                      d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"
-                      fill="currentColor"
+                      d='M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z'
+                      fill='currentColor'
                     ></path>
                   </svg>
                 </SvgIcon>
@@ -133,22 +149,22 @@ export default function HomePage ({token}) {
           </Box>
           <Box
             sx={{
-              alignSelf: "center",
-              width: "100%",
-              height: 400,
-              outline: "6px solid",
-              outlineColor: "hsla(220, 25%, 80%, 0.2)",
-              border: "1px solid",
-              boxShadow: "0 0 12px 8px hsla(220, 25%, 80%, 0.2)",
+              alignSelf: 'center',
+              width: '60%',
+              height: 680,
+              outline: '6px solid',
+              outlineColor: 'hsla(220, 25%, 80%, 0.2)',
+              border: '1px solid',
+              boxShadow: '0 0 12px 8px hsla(220, 25%, 80%, 0.2)',
               backgroundImage: `url(${dashboard})`,
-              backgroundSize: 'cover'
+              backgroundSize: 'contain'
             }}
           >
           </Box>
         </Box>
       </Box>
       <HomePageFeatures/>
-      <Divider sx={{mt: 5, borderColor: 'black'}}/>
+      <Divider sx={{pt: 5, borderColor: 'grey', background: 'aliceblue'}}/>
       <HomePagePricing/>
       <HomePageFooter/>
     </Fragment>

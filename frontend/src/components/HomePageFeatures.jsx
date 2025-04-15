@@ -1,27 +1,27 @@
-import DevicesRoundedIcon from '@mui/icons-material/DevicesRounded';
-import EdgesensorHighRoundedIcon from '@mui/icons-material/EdgesensorHighRounded';
-import ViewQuiltRoundedIcon from '@mui/icons-material/ViewQuiltRounded';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useState } from 'react';
 import dummy from '../assets/dummy.jpg';
 
 const items = [
   {
-    icon: <ViewQuiltRoundedIcon />,
+    icon: <DescriptionIcon />,
     title: 'Intuitive Invoice Creation',
     description:
       'Drag and drop xml files',
     image: `url(${dummy})`
   },
   {
-    icon: <EdgesensorHighRoundedIcon />,
+    icon: <AssessmentIcon />,
     title: 'Accurate Statistics',
     description:
       'See accurate statistics of all of your created invoices',
     image: `url(${dummy})`
   },
   {
-    icon: <DevicesRoundedIcon />,
+    icon: <SmartToyIcon />,
     title: 'Talk with our AI teller',
     description:
       'you look lonely', 
@@ -36,16 +36,13 @@ export default function HomePageFeatures() {
   };
 
   return (
-    <Box sx={{mt: 5, alignItems: 'center'}}>
+    <Box sx={{bgcolor: 'aliceblue', pt: 5}}>
       <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <Box sx={{width: '60%'}}>
-          <Typography
-            component='h2'
-            variant='h4'
-          >
+        <Box sx={{width: '60%', mb: 2}}>
+          <Typography sx={{fontSize: '3em', fontWeight: 'bold'}}>
             What We Offer
           </Typography>
-          <Typography sx={{color: 'grey'}}>
+          <Typography sx={{color: 'grey', fontSize: '1.5em'}}>
             Fast Invoice Generation!
           </Typography>
         </Box>
@@ -83,6 +80,7 @@ export default function HomePageFeatures() {
                       flexDirection: 'column',
                       alignItems: 'left',
                       gap: 1,
+                      color: 'black',
                       textAlign: 'left',
                       textTransform: 'none',
                       ...selectedItemIndex === index && {
@@ -107,6 +105,8 @@ export default function HomePageFeatures() {
             <Box
               sx={{
                 m: 'auto',
+                // REMOVE ML: 0 WHEN YOU'RE ADDING THE REAL IMAGES
+                ml: 0,
                 width: 420,
                 height: 500,
                 backgroundSize: 'contain',
