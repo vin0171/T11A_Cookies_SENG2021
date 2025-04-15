@@ -9,6 +9,9 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { useEffect, useState } from 'react';
 import {  Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import DescriptionIcon from '@mui/icons-material/Description';
+import InventoryIcon from '@mui/icons-material/Inventory';
 
 /**
  * This component is the navbar that appears when the user is on any page that 
@@ -29,27 +32,20 @@ export default function Navbar({token, loggedIn, children}) {
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleMenu(false)}>
       <List>
-        {['Stats', 'AI Chat'].map((text) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton onClick={() => navigate('/')}> 
-              <ListItemIcon>
-                {text === 'Stats' && 
-                  <QueryStatsIcon fontSize='large' sx={{ color: '#27548A'}}/>
-                }
-                {text === 'AI Chat' && 
-                  <SmartToyIcon fontSize='large' sx={{ color: '#27548A'}}/>
-                }
-              </ListItemIcon>
-              <ListItemText  
-                slotProps={{
-                  primary: {
-                    style: { fontSize: '1.5em' }
-                  }
-                }}
-                primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+      {['Stats', 'AI Chat', 'Customers', 'Invoices', 'Items'].map((text) => (
+        <ListItem key={text} disablePadding>
+          <ListItemButton onClick={() => navigate(`/${text.toLowerCase()}`)}>
+            <ListItemIcon>
+              {text === 'Stats' && <QueryStatsIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+              {text === 'AI Chat' && <SmartToyIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+              {text === 'Customers' && <PeopleAltIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+              {text === 'Invoices' && <DescriptionIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+              {text === 'Items' && <InventoryIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+            </ListItemIcon>
+            <ListItemText primary={text} sx={{ '& span': { fontSize: '1.5em' } }} />
+          </ListItemButton>
+        </ListItem>
+      ))}
       </List>
     </Box>
   );
@@ -98,7 +94,7 @@ export default function Navbar({token, loggedIn, children}) {
 
 
   return (
-    <Box component='nav' sx={{ flex: 1 }}>
+    <Box component='nav'>
       <AppBar position='static'>
         <Toolbar
           disableGutters

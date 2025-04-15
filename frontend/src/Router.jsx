@@ -8,7 +8,9 @@ import LoginBtn from './components/LoginBtn';
 import LogoutBtn from './components/LogoutBtn';
 import DashboardPage from './pages/DashboardPage';
 import InvoicePage from './pages/InvoicePage';
-
+import CustomersPage from './pages/CustomersPage';
+import InvoicesPage from './pages/InvoicesPage';
+import ItemsPage from './pages/ItemsPage';
 
 export default function Router () {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -42,6 +44,9 @@ export default function Router () {
         <Route path='user/register' element={<RegisterPage setToken={setToken}/>}/>
         <Route path='/dashboard' element={<DashboardPage token={token}/>}/>
         <Route path='/:company/invoices/:invoiceId/create' element={<InvoicePage token={token}/>}/>
+        <Route path="/customers" element={<CustomersPage />} />
+        <Route path="/invoices" element={<InvoicesPage />} />
+        <Route path="/items" element={<ItemsPage />} />
       </Routes>
     </>
   )
