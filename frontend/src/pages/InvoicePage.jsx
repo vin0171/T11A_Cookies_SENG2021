@@ -17,7 +17,8 @@ import dayjs from "dayjs";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import PDFpreview from "../components/PDFpreview";
-import DashboardPage from "./DashboardPage";
+import CustomerField from "../components/CustomerField";
+import CustomerAdditionalFields from "../components/CustomerAdditionalFields";
 pdfMake.addVirtualFileSystem(pdfFonts);
 
 export default function InvoicePage({token}) {
@@ -257,6 +258,11 @@ export default function InvoicePage({token}) {
     {label: 'Total number of invoices sent'},
     {label: 'Custom'}
   ];
+
+  const itemTypeOptions = [
+    {label: 'Create a New Item'},
+    {label: 'Existing Item'}
+  ]
   
 
 
@@ -264,6 +270,7 @@ export default function InvoicePage({token}) {
   const [customerAdditionalFields, setCustomerAdditionalFields] = useState(false);
   const [customerAdditonalText, setCustomerAdditionalText] = useState('Add Additional Details');
   const [invoiceNumberOption, setInvoiceNumberOption] = useState('Invoices sent to this customer');
+
 
   useEffect(() => {
     if (customerAdditionalFields){
@@ -289,122 +296,51 @@ export default function InvoicePage({token}) {
                 options={customerTypeOptions}
                 setValue={setCustomerType}
               />
-              {customerType === 'Existing Customer' ? 
-                <Autocomplete
-                  disablePortal
-                  options={existingCustomersOptions}
-                  sx={{ width: 300 }}
-                  renderInput={(params) => <TextField {...params} label='Customer' />}
-                />
-                :
-                <Fragment>
-                  <TextField
-                    id='customer-name'
-                    name='customer-name'
-                    label='Customer'
-                    value={customer}
-                    variant='outlined'
-                    autoComplete='on'
-                    sx={{ width: '100%' }}
-                    onChange={(e) => setCustomer(e.target.value)}
-                  />
-                  <TextField
-                    id='customer-email'
-                    name='customer-email'
-                    label='Customer Email'
-                    value={customerEmail}
-                    variant='outlined'
-                    type='email'
-                    autoComplete='on'
-                    sx={{ width: '100%' }}
-                    onChange={(e) => setCustomerEmail(e.target.value)}
-                  />
-                  <Typography 
-                    onClick={() => setCustomerAdditionalFields(!customerAdditionalFields)}
-                    sx={{textDecoration: 'underline', cursor: 'pointer'}}
-                  >
-                    {customerAdditonalText}
-                  </Typography>
-                </Fragment>
-            }
-              {customerAdditionalFields &&
-                <Box>
-                  <Box>
-                    <Typography>Billing Address</Typography>
-                    <AddressFields
-                      type='billing'
-                      addressLine1={billingAddress1}
-                      setAddressLine1={setBillingAddress1}
-                      addressLine2={billingAddress2}
-                      setAddressLine2={setBillingAddress2}
-                      suburb={billingSuburb}
-                      setSuburb={setBillingSuburb}
-                      state={billingState}
-                      setState={setBillingState}
-                      postCode={billingPostCode}
-                      setPostCode={setBillingPostCode}
-                      country={billingCountry}
-                      setCountry={setBillingCountry}
-                    />
-                  </Box>
-                <Box>
-                  <Typography>
-                    Shipping Address
-                  </Typography>
-                  <Box>
-                    <Typography>Same as Billing Address</Typography>
-                    <Checkbox
-                      checked={shippingChecked}
-                      onChange={(event) => {
-                        setShippingChecked(event.target.checked)
-                      }}
-                      slotProps={{
-                        input: {'aria-label': 'controlled'}
-                      }}
-                    />
-                    {
-                      !shippingChecked && 
-                      <AddressFields
-                        type='shipping'
-                        addressLine1={shippingAddress1}
-                        setAddressLine1={setShippingAddress1}
-                        addressLine2={shippingAddress2}
-                        setAddressLine2={setShippingAddress2}
-                        suburb={shippingSuburb}
-                        setSuburb={setShippingSuburb}
-                        state={shippingState}
-                        setState={setShippingState}
-                        postCode={shippingPostCode}
-                        setPostCode={setShippingPostCode}
-                        country={shippingCountry}
-                        setCountry={setShippingCountry}
-                      />
-                    }
-                  </Box>
-                </Box>
-                  <TextField
-                    id='bank-name'
-                    name='bank-name'
-                    label='Bank Name'
-                    value={bankName}
-                    variant='outlined'
-                    autoComplete='on'
-                    sx={{ width: '100%' }}
-                    onChange={(e) => setBankName(e.target.value)}
-                  />
-                  <TextField
-                    id='bank-number'
-                    name='bank-number'
-                    label='Bank Account Number'
-                    type='number'
-                    value={bankNum}
-                    variant='outlined'
-                    autoComplete='on'
-                    sx={{ width: '100%' }}
-                    onChange={(e) => setBankNum(e.target.value)}
-                  />
-                </Box>
-              }
+              <CustomerField
+                customerType={customerType}
+                setCustomerType={setCustomerType}
+                customer={customer}
+                setCustomer={setCustomer}
+                customerEmail={customerEmail}
+                setCustomerEmail={setCustomerEmail}
+                customerAdditionalFields={customerAdditionalFields}
+                setCustomerAdditionalFields={setCustomerAdditionalFields}
+                customerAdditonalText={customerAdditonalText}
+              />
+              <CustomerAdditionalFields
+                customerAdditionalFields={customerAdditionalFields}
+                billingAddress1={billingAddress1}
+                setBillingAddress1={setBillingAddress1}
+                billingAddress2={billingAddress2}
+                setBillingAddress2={setBillingAddress2}
+                billingSuburb={billingSuburb}
+                setBillingSuburb={setBillingSuburb}
+                billingState={billingState}
+                setBillingState={setBillingState}
+                billingPostCode={billingPostCode}
+                setBillingPostCode={setBillingPostCode}
+                billingCountry={billingCountry}
+                setBillingCountry={setBillingCountry}
+                shippingChecked={shippingChecked}
+                setShippingChecked={setShippingChecked}
+                shippingAddress1={shippingAddress1}
+                setShippingAddress1={setShippingAddress1}
+                shippingAddress2={shippingAddress2}
+                setShippingAddress2={setShippingAddress2}
+                shippingSuburb={shippingSuburb}
+                setShippingSuburb={setShippingSuburb}
+                shippingState={shippingState}
+                setShippingState={setShippingState}
+                shippingPostCode={shippingPostCode}
+                setShippingPostCode={setShippingPostCode}
+                shippingCountry={shippingCountry}
+                setShippingCountry={setShippingCountry}
+                bankName={bankName}
+                setBankName={setBankName}
+                bankNum={bankNum}
+                setBankNum={setBankNum}
+              />
+              <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Date</Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker 
                   label='Issue Date'
@@ -421,6 +357,7 @@ export default function InvoicePage({token}) {
                   onChange={(newValue) => setDueDate(newValue)}
                 />
               </LocalizationProvider>
+              <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Details</Typography>
               <SelectField
                 id={'invoice-number-option-id'}
                 name={'invoice-number-option'}
@@ -491,6 +428,31 @@ export default function InvoicePage({token}) {
                 options={formatOptions}
                 setValue={setFormat}
               />     
+              <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Items</Typography>
+              {/* <SelectField
+                id={'item-type-id'}
+                name={'item-type'}
+                label={'Create or Find an Item'}
+                value={ItemType}
+                options={ItemTypeOptions}
+                setValue={setItemType}
+              /> */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
               <InvoiceItemTable rows={invoiceItems} setRows={setInvoiceItems} setSubtotal={setSubtotal} currency={currency}/>
               <InvoiceDiscountDialog setWideDiscount={setWideDiscount}/>
               <ShippingCostDialog shippingCostDetails={shippingCostDetails} setShippingCostDetails={setShippingCostDetails}/>
