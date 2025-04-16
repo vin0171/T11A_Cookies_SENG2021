@@ -19,6 +19,7 @@ import pdfFonts from "pdfmake/build/vfs_fonts";
 import PDFpreview from "../components/PDFpreview";
 import CustomerField from "../components/CustomerField";
 import CustomerAdditionalFields from "../components/CustomerAdditionalFields";
+import ItemField from "../components/ItemField";
 pdfMake.addVirtualFileSystem(pdfFonts);
 
 export default function InvoicePage({token}) {
@@ -241,35 +242,17 @@ export default function InvoicePage({token}) {
     {label: 'PDF'}
   ];
 
-  const customerTypeOptions = [
-    {label: 'Create a New Customer'},
-    {label: 'Existing Customer'}
-  ];
-
-  // wait for backend to store the customers and change this 
-  const existingCustomersOptions = [
-    {label: 'ann jade luong'},
-    {label: 'chiikawa'},
-    {label: 'ann usagi luong'}
-  ];
-
   const invoiceNumberOptions = [
     {label: 'Invoices sent to this customer'},
     {label: 'Total number of invoices sent'},
     {label: 'Custom'}
   ];
 
-  const itemTypeOptions = [
-    {label: 'Create a New Item'},
-    {label: 'Existing Item'}
-  ]
-  
-
-
   const [customerType, setCustomerType] = useState('Create a New Customer');
   const [customerAdditionalFields, setCustomerAdditionalFields] = useState(false);
   const [customerAdditonalText, setCustomerAdditionalText] = useState('Add Additional Details');
   const [invoiceNumberOption, setInvoiceNumberOption] = useState('Invoices sent to this customer');
+  const [itemType, setItemType] = useState('Add Existing Item')
 
 
   useEffect(() => {
@@ -288,14 +271,6 @@ export default function InvoicePage({token}) {
           <Box sx={{height: '100%', p: 5}}>
             <form onSubmit={handleSubmit}>
               <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Customer</Typography>
-              <SelectField
-                id={'customer-type-id'}
-                name={'customer-type'}
-                label={'Create or Find a Customer'}
-                value={customerType}
-                options={customerTypeOptions}
-                setValue={setCustomerType}
-              />
               <CustomerField
                 customerType={customerType}
                 setCustomerType={setCustomerType}
@@ -429,14 +404,8 @@ export default function InvoicePage({token}) {
                 setValue={setFormat}
               />     
               <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Items</Typography>
-              {/* <SelectField
-                id={'item-type-id'}
-                name={'item-type'}
-                label={'Create or Find an Item'}
-                value={ItemType}
-                options={ItemTypeOptions}
-                setValue={setItemType}
-              /> */}
+              <ItemField itemType={itemType} setItemType={setItemType}></ItemField>
+
 
 
 
