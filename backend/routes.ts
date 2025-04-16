@@ -82,7 +82,7 @@ function routes(app: Express) {
     try {
       const { companyId, userEmailToAdd } = req.body;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const response = await companies.addCompanyUser(token, companyId, userEmailToAdd);
+      const response = await companies.addCompanyUserV3(token, companyId, userEmailToAdd);
       res.status(200).json(response);
     } catch(err) {
       next(err);
@@ -214,6 +214,140 @@ function routes(app: Express) {
       next(err)
     }
   });
+
+// ========================================================================= //
+// Iteration 3
+// ========================================================================= //
+
+  app.post('/v3/user/register', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email, password, nameFirst, nameLast } = req.body;
+      const response = await users.registerUserV3(email, password, nameFirst, nameLast); 
+      res.status(200).json(response);
+    } catch(err) {    
+      next(err);
+    }
+  });
+
+  app.post('/v3/user/login', async (req: Request, res: Response, next: NextFunction) => {
+    try {       
+      const { email, password } = req.body;
+      const response = await users.userLoginV3(email, password);
+      res.status(200).json(response);
+    } catch(err) {    
+      next(err);
+    }
+  });
+
+  app.post('/v3/company/register', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const {companyName, companyAbn, companyEmail, contactNumber} = req.body;
+      const {address, city, state, postcode, country} = req.body;
+      const headquarters: Location = validateLocation(address, city, state, postcode, country);
+      const response = await companies.registerCompanyV3(token, companyName, companyAbn, headquarters, companyEmail, contactNumber);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+
+  app.post('/v3/company/userAdd', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { companyId, userEmailToAdd } = req.body;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await companies.addCompanyUserV3(token, companyId, userEmailToAdd);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+
+  app.get('/v3/company/:companyId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const companyId = req.params.companyId;
+      const response = await getCompany(companyId)
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
+  app.get('/v3/company/:companyId/invoices', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization'].split(' ')[1];
+      const companyId = req.params.companyId;
+      const response = await invoices.listCompanyInvoices(token, companyId);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
+
+  //// Invoices 
+  app.post('/v3/invoice', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {invoiceDetails} = req.body;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.createInvoice(token, invoiceDetails); 
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+  
+  app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const contentType = req.headers['accept'].split(' ')[0] || "application/JSON";
+      const invoiceId = req.params.invoiceId;
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await invoices.retrieveInvoice(token, invoiceId);
+      if (contentType.includes('application/xml'))  {
+        const company = await getCompany(response.companyId);
+        const invoiceUBL = new InvoiceConverter(response).parseToUBL(company.companyId);
+        res.status(200).send(invoiceUBL);
+        return;
+      } 
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+
+  app.put('/v1/invoice/:invoiceId/edit', async (req: Request, res: Response, next: NextFunction) => {
+      try {
+        const token = req.headers['authorization']?.split(' ')[1] || undefined;
+        const { invoiceId, edits } = req.body;
+        const response = await invoices.editInvoiceDetails(token, invoiceId, edits);
+        res.status(200).json(response);
+      } catch(err) {
+        next(err);
+      }
+    });
+
+  app.post('/v1/invoice/validate', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { ublInvoice } = req.body;
+      const response = validateUBL(ublInvoice);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+  
+
+  app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const invoiceId  = req.params.invoiceId;
+      const response = await invoices.deleteInvoice(token, invoiceId);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
 
   // We indirectly use next but not directly which causes linting errors
   // eslint-disable-next-line 

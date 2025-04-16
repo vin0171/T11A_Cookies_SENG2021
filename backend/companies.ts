@@ -28,6 +28,7 @@ async function updateUserCompany(userId: string, companyId: string) {
  * @param {string} companyAbn - ABN of the company
  * @param {string} contactNumber - contact number of the company
  */
+// ! DEPRECATED
 export async function registerCompany(token: string, companyName: string, companyAbn: string, headquarters: Location, 
     companyEmail: string, contactNumber: string): Promise<string> { 
     const user = await validators.validateToken(token);
@@ -50,7 +51,7 @@ export async function registerCompany(token: string, companyName: string, compan
  * @returns {object}
  */
 
-export async function addCompanyUser(token: string, companyId: string, email: string): Promise<EmptyObject> {
+export async function addCompanyUserV3(token: string, companyId: string, email: string): Promise<EmptyObject> {
     const user = await validators.validateToken(token);
     const company = await getCompany(companyId);
     if (!company.members.includes(user.userId)) {
@@ -85,3 +86,18 @@ export async function addCompanyUser(token: string, companyId: string, email: st
 }
 
 
+// ========================================================================= //
+// New Stuff
+// ========================================================================= //
+
+
+export async function registerCompanyV3(token: string, companyName: string, companyAbn: string, headquarters: Location, 
+    companyEmail: string, contactNumber: string): Promise<string> { 
+    const user = await validators.validateToken(token);
+    if (user.companyId !== null) throw HTTPError(400, 'Error: User already registered a company'); 
+    const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user.userId);
+    const data = getData();
+    await data.put({ TableName: "Companies", Item: newCompany});
+    await updateUserCompany(user.userId, newCompany.companyId);
+    return newCompany.companyId;
+}

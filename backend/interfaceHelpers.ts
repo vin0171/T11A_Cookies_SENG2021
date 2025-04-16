@@ -7,6 +7,8 @@ import { SECRET } from "./helper";
 import jwt from 'jsonwebtoken';
 import HTTPError from 'http-errors';
 
+
+// ! DEPRECATED
 export async function createUser(email: string, password: string, nameFirst: string, nameLast: string, age: number) : Promise<User> {
 
     if (!validators.isValidName(nameFirst) || !validators.isValidName(nameLast)) {
@@ -39,9 +41,57 @@ export async function createUser(email: string, password: string, nameFirst: str
     }
 }
 
+
+export async function createUserV3(email: string, password: string, nameFirst: string, nameLast: string) : Promise<User> {
+
+    if (!validators.isValidName(nameFirst) || !validators.isValidName(nameLast)) {
+		throw HTTPError(400, 'Error: Invalid Name');
+	}
+
+    const userExistsAlready = await getUserByEmailV3(email);
+    if (userExistsAlready !== undefined) {
+        throw HTTPError(400, 'Error: Email already used by another User');
+    }
+
+	if (!validators.isValidPass(password)) {
+		throw HTTPError(400, 'Error: Invalid Password');
+	}
+    
+    return {
+        userId: uuidv4(),
+        companyId: null,
+        email: email,
+        password: helpers.getPasswordHash(password),
+        nameFirst: nameFirst,
+        nameLast: nameLast,
+        timeCreated: new Date().toISOString(),
+    }
+}
+
+
 // Acts as a .find function returning undefined if none found 
 // else returns the user Object
+
+// ! DEPRECATED
 export async function getUserByEmail(email: string) {
+    if (!validators.isValidEmail(email)) {
+		throw HTTPError(400, 'Error: Invalid Email');
+	}
+
+    const data = getData();
+    const response = await data.query({
+        TableName: "Users", 
+        IndexName: "EmailIndex",
+        KeyConditionExpression: 'email = :email', 
+        ExpressionAttributeValues: {
+            ':email': email
+        }
+    });
+
+    return response.Items.length === 0 ? undefined : response.Items[0];
+}
+
+export async function getUserByEmailV3(email: string) {
     if (!validators.isValidEmail(email)) {
 		throw HTTPError(400, 'Error: Invalid Email');
 	}
@@ -92,6 +142,38 @@ export function createCompany(companyName: string, companyAbn: string, headquart
         admins: [userId],
         members: [userId],
         invoices: []
+    }
+}
+
+export function createCompanyV3(companyName: string, companyAbn: string, headquarters: Location, companyEmail: string, contactNumber: string,
+    userId: string): Company {
+
+    if (!validators.isValidName(companyName)) {
+        throw HTTPError(400, 'Error: Invalid Company Name');
+    }
+    if (!validators.isValidABN(companyAbn)) {
+        throw HTTPError(400, 'Error: Invalid Company ABN');
+    }
+    if (!validators.isValidEmail(companyEmail)) {
+        throw HTTPError(400, 'Error: Invalid Email');
+    }
+    if (!validators.isValidPhone(contactNumber)) {
+        throw HTTPError(400, 'Error: Invalid Phone Number');
+    }
+    
+    return {
+        companyId: uuidv4(),
+        name: companyName,
+        abn: companyAbn,
+        headquarters: headquarters,
+        phone: contactNumber,
+        email: companyEmail,
+        owner: userId,
+        admins: [userId],
+        members: [userId],
+        invoices: [],
+        customers: [],
+        items: []
     }
 }
     

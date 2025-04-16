@@ -310,3 +310,8 @@ export async function generateInvoiceXML(token: string, invoiceId: string) {
     return invoiceToXML(item);
   } 
   
+
+
+// ========================================================================= //
+// New Stuff
+// ========================================================================= //

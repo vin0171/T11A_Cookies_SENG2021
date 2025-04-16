@@ -185,7 +185,9 @@ export interface Company {
   owner: string,
   admins: string[],
   members: string[],
-  invoices: Invoice[]
+  invoices: string[]
+  customers: string[],
+  items: string[],
 }
 
 export interface companyRequestBody {
