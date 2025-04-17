@@ -2,7 +2,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import { useNavigate } from 'react-router-dom';
-import PrestoLogo from './PrestoLogo';
+import CookieLogo from './CookieLogo';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
@@ -55,7 +55,7 @@ export default function Navbar({token, loggedIn, children}) {
   );
 
   let toolbarComponent =  
-  <PrestoLogo
+  <CookieLogo
     styles={{	
       fontSize: '1.5em', 
       width: 110,
@@ -66,6 +66,13 @@ export default function Navbar({token, loggedIn, children}) {
     handleClick={() => {navigate('/')}}
   />
 
+  let navStyle = 
+  <>
+  
+  
+  </>
+
+
   if (loggedIn) { 
     toolbarComponent = 
     <Box sx={{display: 'flex'}}>
@@ -74,7 +81,7 @@ export default function Navbar({token, loggedIn, children}) {
         edge='start'
         color='inherit'
         aria-label='menu'
-        sx={{ mr: 2, p: 0, ml: 0.1 }}
+        sx={{ mr: 2, p: 0, ml: 0.1}}
         onClick={toggleMenu(true)}
       >
         <MenuIcon fontSize='large'/>
@@ -96,24 +103,46 @@ export default function Navbar({token, loggedIn, children}) {
     </Box>
   }
 
-
   return (
-    <Box component='nav' sx={{ flex: 1 }}>
-      <AppBar position='static'>
-        <Toolbar
-          disableGutters
-          variant ='dense' 
-          sx={{
-            bgcolor: '#27548A',
-            justifyContent: 'space-between', 
-            alignItems: 'center',
-            pl: 1.3, 
-            pr: 1.3,
-            minHeight: 75
-          }}>
-          {toolbarComponent}
-          {children}
-        </Toolbar>
+    <Box component='nav' sx={{flex: 1}}>
+      <AppBar 
+        position={loggedIn ? 'static': 'absolute'}
+        sx ={{
+          ...(loggedIn
+            ? {}
+            : {
+                boxShadow: 0,
+                bgcolor: 'transparent',
+                backgroundImage: 'none',
+                mt: 'calc(var(--template-frame-height, 0px) + 28px)',
+                display: 'flex',
+                alignItems: 'center'
+            }
+          )
+        }}
+      >
+        <Box sx={{...(loggedIn ? {} : {width: '70%', maxWidth: '1400px'})}}>
+          <Toolbar
+            disableGutters
+            variant ='dense' 
+            sx={{
+              display: 'flex',
+              bgcolor: 'cornflowerblue',
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              flexShrink: 0,
+              backdropFilter: loggedIn ? '' : 'blur(24px)',
+              borderRadius: loggedIn ? 0 : 5,
+              borderColor: 'grey',
+              boxShadow: 5,
+              pl: 2.5, 
+              pr: 2.5,
+              minHeight: loggedIn ? 75 :85
+            }}>
+            {toolbarComponent}
+            {children}
+          </Toolbar>
+        </Box>
       </AppBar>
     </Box>
   );

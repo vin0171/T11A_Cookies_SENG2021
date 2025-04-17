@@ -3,10 +3,7 @@ import axios from 'axios';
 import { Fragment, useState } from 'react';
 import { API_URL } from '../App';
 
-/**
- * This component sets up the dialog that pops up when the user clicks on the create
- * presentation button on the dashboard.
- */
+
 export default function AddUserDialog({token, companyId}) {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => (setOpen(true));

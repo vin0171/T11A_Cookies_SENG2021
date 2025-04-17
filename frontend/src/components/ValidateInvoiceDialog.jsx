@@ -6,7 +6,7 @@ import { SelectField } from '../helper';
 
 /**
  * This component sets up the dialog that pops up when the user clicks on the create
- * presentation button on the dashboard.
+ * company button on the dashboard.
  */
 export default function ValidateInvoiceDialog({token, companyId}) {
   const [open, setOpen] = useState(false);

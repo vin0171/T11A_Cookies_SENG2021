@@ -20,9 +20,9 @@ export default function Router () {
     if (!token && !location.pathname.includes('login') && !location.pathname.includes('register')) navigate('/', {replace: true});
   }, [token, location.pathname])
 
-  // if the user has a token and is on the dashboard, then the navbar should display
+  // if the user has a token and is on the dashboard or invoice page, then the navbar should display
   //a logout option instead of a login option
-  const navbarButton = token && (location.pathname === '/dashboard' || location.pathname.includes('/presentation'))
+  const navbarButton = token && (location.pathname === '/dashboard' || location.pathname.includes('/invoices'))
     ? <LogoutBtn token={token} setToken={setToken} />
     : <LoginBtn />;
   return (
@@ -37,7 +37,7 @@ export default function Router () {
         ) : null
       }
       <Routes>
-        <Route path='/' element={<HomePage token={token}/>}/>
+        <Route path='/' element={<HomePage/>}/>
         <Route path='user/login' element={<LoginPage setToken={setToken} type='user'/>}/>
         <Route path='user/register' element={<RegisterPage setToken={setToken}/>}/>
         <Route path='/dashboard' element={<DashboardPage token={token}/>}/>

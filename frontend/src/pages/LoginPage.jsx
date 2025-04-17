@@ -6,6 +6,7 @@ import { loginRegisterFormStyle } from '../helper';
 import axios from 'axios';
 import AuthPageTemplate from '../components/AuthPageTemplate';
 import ErrorMessage from '../components/ErrorMessage';
+import DefaultButton from '../components/LoginRegisterButton';
 
 const Form = loginRegisterFormStyle;
 
@@ -36,21 +37,7 @@ const LoginForm = ({ email, setEmail, password, setPassword, handleSubmit, error
       onChange={(e) => setPassword(e.target.value)}
     />
     {error.isError && <ErrorMessage error={error.msg} styles={{ fontSize: '1.4em' }} />}
-    <Button
-      type='submit'
-      sx={{
-        bgcolor: '#9ccde1', // Blue color
-        height: 55,
-        width: 200,
-        color: 'white',
-        textTransform: 'none',
-        fontWeight: 'bold',
-        fontSize: '1.25em',
-        borderRadius: 2,
-      }}
-    >
-      Login
-    </Button>
+    <DefaultButton type={'submit'} name={'Login'}/>
   </Form>
 );
 
