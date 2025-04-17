@@ -234,7 +234,10 @@ export default function InvoicePage({token}) {
         <Box sx={{width: '50%'}}>
           <Button> Upload Order Document </Button>
           <Box sx={{height: '100%', p: 5}}>
-            <form onSubmit={handleSubmit}>
+            <form 
+              onSubmit={handleSubmit} 
+              onKeyDown={(e) => {if (e.key === 'Enter') {e.preventDefault()}
+            }}>
               <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Customer</Typography>
               <CustomerField
                 customerType={customerType}
@@ -361,6 +364,7 @@ export default function InvoicePage({token}) {
                 variant='outlined'
                 sx={{ width: '100%' }}
                 onChange={(e) => setNotes(e.target.value)}
+                onBlur={() => setBlur(true)}
               />
               <Box>
                 <Typography>Recurring</Typography>
@@ -377,27 +381,21 @@ export default function InvoicePage({token}) {
                 value={format}
                 options={formatOptions}
                 setValue={setFormat}
+                setBlur={setBlur}
               />     
               <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Items</Typography>
-              <ItemField itemType={itemType} setItemType={setItemType}></ItemField>
+              <ItemField 
+                itemType={itemType} 
+                setItemType={setItemType} 
+                setBlur={setBlur}
+                
+              >
+              </ItemField>
 
-
-
-
-
-
-
-
-
-
-              <InvoiceItemTable rows={invoiceItems} setRows={setInvoiceItems} setSubtotal={setSubtotal} currency={currency}/>
               <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Options</Typography>
               <InvoiceDiscountDialog setWideDiscount={setWideDiscount}/>
               <ShippingCostDialog shippingCostDetails={shippingCostDetails} setShippingCostDetails={setShippingCostDetails}/>
               <TaxDialog setTax={setTax}/>
-              <Typography>
-                subtotal = {currency}{subTotal}
-              </Typography>
               {Object.keys(wideDiscount).length !== 0 && 
               (
                 <Fragment>
@@ -424,9 +422,6 @@ export default function InvoicePage({token}) {
                   }
                 </Fragment>
               }
-              <Typography>
-                total = {currency}{calculateTotal().toFixed(2)}
-              </Typography>
               <Button
                 onClick={() => {
                   setCustomer('');

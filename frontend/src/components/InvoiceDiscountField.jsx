@@ -7,23 +7,26 @@ const discountOptions = [
   {label: 'Percentage'}
 ]
 
-export default function InvoiceDiscountField({type}) {
-  const [discountType, setDiscountType] = useState('Flat');
-  const [discountAmount, setDiscountAmount] = useState('');
-
+export default function InvoiceDiscountField({
+  type, 
+  discountType,
+  setDiscountType,
+  discountAmount,
+  setDiscountAmount
+}) {
   return (
     <Fragment>
       <SelectField
-        id={`${type}-discount-type`}
-        name={`${type}-discount-type-name`}
+        id={`${type}-discount-type-id`}
+        name={`${type}-discount-type`}
         label={'Select Discount Type'}
         value={discountType}
         options={discountOptions}
-        setValue={setDiscountType}        
+        setValue={setDiscountType}     
       />
       <TextField
-        id={`${type}-discount-amount`}
-        name={`${type}-discount-amount-name`}
+        id={`${type}-discount-amount-id`}
+        name={`${type}-discount-amount`}
         margin='dense'
         value={discountAmount}
         onChange={(e) => setDiscountAmount(e.target.value)}

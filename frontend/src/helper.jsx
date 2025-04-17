@@ -40,6 +40,7 @@ export function SelectField({
   value,
   options,
   setValue,
+  setBlur = () => {}
 }) {
   return (
     <TextField
@@ -48,6 +49,7 @@ export function SelectField({
       select
       label={label}
       value={value}
+      onBlur={() => setBlur(true)}
       variant="standard"
       sx={{ mt: 1.875, ...formInputStyle }}
       slotProps={{

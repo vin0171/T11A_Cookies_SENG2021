@@ -26,16 +26,24 @@ const existingItems = [
   {name: 'item3', quantity: '3'}
 ]
 
-export default function ItemField({itemType, setItemType}) {
+export default function ItemField({itemType, setItemType, setBlur, setInvoiceItems, invoiceItems}) {
   const [open, setOpen] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [moreDetails, setMoreDetails] = useState(false);
+  const [discountType, setDiscountType] = useState('Flat');
+  const [discountAmount, setDiscountAmount] = useState('');
   const handleClickOpen = () => (setOpen(true));
   const handleClose = () => (setOpen(false));
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const name = formData.get('new-item-name');
+    const qty = formData.get('new-item-qty');
+    const price = formData.get('new-item-cost');
+    const sku = formData.get('item-sku');
+    const description = formData.get('description');
+    console.log(discountType, discountAmount)
     handleClose();
   }
 
@@ -83,6 +91,7 @@ export default function ItemField({itemType, setItemType}) {
           value={itemType}
           options={itemTypeOptions}
           setValue={setItemType}
+          setBlur={setBlur}
         />
         {itemType === 'Add Existing Item' && 
         <Autocomplete
@@ -123,6 +132,7 @@ export default function ItemField({itemType, setItemType}) {
               margin='dense'
               variant='standard'
               label='Item'
+              required
             />
             <TextField
               id={'new-item-qty-id'}
@@ -131,6 +141,7 @@ export default function ItemField({itemType, setItemType}) {
               variant='standard'
               label='Quantity'
               type='number'
+              required
               sx={{
                 '& label.Mui-focused': { color: '#41444d' },
                 '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
@@ -149,11 +160,12 @@ export default function ItemField({itemType, setItemType}) {
             />
             <TextField
               id={'new-item-cost-id'}
-              name={'new-item-cost-name'}
+              name={'new-item-cost'}
               margin='dense'
               variant='standard'
               label='Price'
               type='number'
+              required
               sx={{
                 '& label.Mui-focused': { color: '#41444d' },
                 '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
@@ -206,9 +218,7 @@ export default function ItemField({itemType, setItemType}) {
                   id='item-sku-id'
                   name='item-sku'
                   label='Item Sku'
-                  // value={notes}
                   variant='outlined'
-                  // onChange={(e) => setNotes(e.target.value)}
                   type='number'
                   sx={{
                     '& label.Mui-focused': { color: '#41444d' },
@@ -230,11 +240,15 @@ export default function ItemField({itemType, setItemType}) {
                   id='description-id'
                   name='description'
                   label='Description'
-                  // value={notes}
                   variant='outlined'
-                  // onChange={(e) => setNotes(e.target.value)}
                 />
-                <InvoiceDiscountField type={'item'}/>
+                <InvoiceDiscountField 
+                  type={'item'} 
+                  discountType={discountType}
+                  setDiscountType={setDiscountType}
+                  discountAmount={discountAmount}
+                  setDiscountAmount={setDiscountAmount}
+                />
               </Box>
             }
           </DialogContent>
