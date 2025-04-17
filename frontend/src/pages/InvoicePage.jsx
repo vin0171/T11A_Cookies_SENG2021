@@ -353,7 +353,6 @@ export default function InvoicePage({token}) {
                   onChange={(e) => setInvoiceNumber(e.target.value)}
                   type='number'
                   variant='standard'
-                  autoComplete='off'
                   sx={{
                     '& label.Mui-focused': { color: '#41444d' },
                     '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
@@ -387,13 +386,16 @@ export default function InvoicePage({token}) {
                 maxRows={4}
                 value={notes}
                 variant='outlined'
-                autoComplete='on'
                 sx={{ width: '100%' }}
                 onChange={(e) => setNotes(e.target.value)}
               />
               <Box>
                 <Typography>Recurring</Typography>
-                <Checkbox></Checkbox>
+                <Checkbox
+                  slotProps={{
+                    input: {'aria-label': 'controlled'}
+                  }}
+                />
               </Box>
               <SelectField
                 id={'format-id'}

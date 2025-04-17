@@ -1,17 +1,26 @@
 import { Fragment, useEffect, useState } from "react";
 import { SelectField } from "../helper";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, TextField } from "@mui/material";
-
+import { Autocomplete, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, TextField, Typography } from "@mui/material";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 const itemTypeOptions = [
   {label: 'Add New Item'},
   {label: 'Add Existing Item'}
 ]
 
+// replace with real data after backend implements allat
+const dummyExistingItems = [
+  {label: 'test1'},
+  {label: 'test2'},
+  {label: 'test3'}
+]
+
 
 export default function ItemField({itemType, setItemType}) {
   const [open, setOpen] = useState(false);
-  const [buttonClicked, setButtonClicked] = useState(false)
+  const [buttonClicked, setButtonClicked] = useState(false);
+  const [moreDetails, setMoreDetails] = useState(false);
   const handleClickOpen = () => (setOpen(true));
   const handleClose = () => (setOpen(false));
 
@@ -22,7 +31,6 @@ export default function ItemField({itemType, setItemType}) {
   }
 
   useEffect(() => {
-    console.log('open', open)
     if (!open) {
       setItemType('Add Existing Item');
     }
@@ -30,6 +38,7 @@ export default function ItemField({itemType, setItemType}) {
 
   useEffect(() => {
     if (buttonClicked && itemType === 'Add New Item') {
+      setMoreDetails(false)
       handleClickOpen();
     }
   }, [buttonClicked, itemType])
@@ -49,6 +58,14 @@ export default function ItemField({itemType, setItemType}) {
           options={itemTypeOptions}
           setValue={setItemType}
         />
+        {itemType === 'Add Existing Item' && 
+        <Autocomplete
+          disablePortal
+          options={dummyExistingItems}
+          sx={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label='Find Item' />}
+        /> 
+        }
         <Dialog
           open={open}
           onClose={handleClose}
@@ -71,16 +88,61 @@ export default function ItemField({itemType, setItemType}) {
               fontSize: '1.5em', 
               color: '#41444d',
             }}>
-              Enter Shipping Costs
+              Enter New Item Details
           </DialogTitle>
-          <DialogContent>
+          <DialogContent dividers>
             <TextField
-              id={'shipping-cost'}
-              name={'shipping-cost-name'}
+              id={'new-item-name-id'}
+              name={'new-item-name'}
               margin='dense'
               variant='standard'
-              label='Shipping Cost'
+              label='Item'
+            />
+            <TextField
+              id={'new-item-qty-id'}
+              name={'new-item-qty'}
+              margin='dense'
+              variant='standard'
+              label='Quantity'
               type='number'
+              sx={{
+                '& label.Mui-focused': { color: '#41444d' },
+                '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+                '& input[type=number]': {
+                  MozAppearance: 'textfield',
+                },
+                '& input[type=number]::-webkit-outer-spin-button': {
+                  WebkitAppearance: 'none',
+                  margin: 0,
+                },
+                '& input[type=number]::-webkit-inner-spin-button': {
+                  WebkitAppearance: 'none',
+                  margin: 0,
+                },
+              }}
+            />
+            <TextField
+              id={'new-item-cost-id'}
+              name={'new-item-cost-name'}
+              margin='dense'
+              variant='standard'
+              label='Price'
+              type='number'
+              sx={{
+                '& label.Mui-focused': { color: '#41444d' },
+                '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+                '& input[type=number]': {
+                  MozAppearance: 'textfield',
+                },
+                '& input[type=number]::-webkit-outer-spin-button': {
+                  WebkitAppearance: 'none',
+                  margin: 0,
+                },
+                '& input[type=number]::-webkit-inner-spin-button': {
+                  WebkitAppearance: 'none',
+                  margin: 0,
+                },
+              }}
               slotProps={{
                 input: {
                   startAdornment: <InputAdornment position='start'>$</InputAdornment>
@@ -90,6 +152,73 @@ export default function ItemField({itemType, setItemType}) {
                 }
               }}
             />
+            <Box sx={{display: 'flex'}}>
+              <Typography>Save Item</Typography>
+              <Checkbox
+                slotProps={{
+                  input: {'aria-label': 'controlled'}
+                }}
+              />
+            </Box>
+            <Typography
+              onClick={() => setMoreDetails(!moreDetails)}
+              sx={{
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                '&:hover': {
+                  color: 'primary.main', 
+                },
+              }}
+            >
+              Add Additional Details
+              {moreDetails ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+            </Typography>
+            {moreDetails && 
+              <Box>
+                <TextField
+                  id='item-sku-id'
+                  name='item-sku'
+                  label='Item Sku'
+                  // value={notes}
+                  variant='outlined'
+                  // onChange={(e) => setNotes(e.target.value)}
+                  type='number'
+                  sx={{
+                    '& label.Mui-focused': { color: '#41444d' },
+                    '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+                    '& input[type=number]': {
+                      MozAppearance: 'textfield',
+                    },
+                    '& input[type=number]::-webkit-outer-spin-button': {
+                      WebkitAppearance: 'none',
+                      margin: 0,
+                    },
+                    '& input[type=number]::-webkit-inner-spin-button': {
+                      WebkitAppearance: 'none',
+                      margin: 0,
+                    },
+                  }}
+                />
+                <TextField
+                  id='description-id'
+                  name='description'
+                  label='Description'
+                  // value={notes}
+                  variant='outlined'
+                  // onChange={(e) => setNotes(e.target.value)}
+                />
+                <TextField
+                  id='item-discount-id'
+                  name='item-discount'
+                  label='Discount'
+                  // value={notes}
+                  variant='outlined'
+                  // onChange={(e) => setNotes(e.target.value)}
+                />
+                
+              </Box>
+            }
           </DialogContent>
           <DialogActions sx={{justifyContent:'space-around'}}>
             <Button onClick={handleClose} sx={{fontSize: '1em', color:'#41444d'}}>Cancel</Button>
