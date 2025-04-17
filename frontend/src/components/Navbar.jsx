@@ -22,10 +22,6 @@ export default function Navbar({token, loggedIn, children}) {
     setOpenMenu(newOpen)
   }
 
-  useEffect(() => {
-    // use the token to grab the users id and then fetch their details
-  }, [token])
-
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleMenu(false)}>
       <List>

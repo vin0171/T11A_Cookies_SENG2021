@@ -1,8 +1,11 @@
 import { Fragment, useEffect, useState } from "react";
 import { SelectField } from "../helper";
-import { Autocomplete, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, TextField, Typography } from "@mui/material";
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import InvoiceDiscountField from "./InvoiceDiscountField";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const itemTypeOptions = [
   {label: 'Add New Item'},
@@ -16,6 +19,12 @@ const dummyExistingItems = [
   {label: 'test3'}
 ]
 
+// replace with real data
+const existingItems = [
+  {name: 'item1', quantity: '1'},
+  {name: 'item2', quantity: '2'},
+  {name: 'item3', quantity: '3'}
+]
 
 export default function ItemField({itemType, setItemType}) {
   const [open, setOpen] = useState(false);
@@ -45,6 +54,23 @@ export default function ItemField({itemType, setItemType}) {
   
   return (
     <Fragment> 
+      {!(JSON.stringify(existingItems) === '[{}]') &&
+      <Box>
+        {existingItems.map((item) => (
+          <Box key={item.name} sx={{display: 'flex', alignItems: 'center'}}>
+            <Typography>{item.name} × {item.quantity}</Typography>
+            {/* on click, edit the item (backend)*/}
+            <IconButton>
+              <EditIcon/>
+            </IconButton>
+            {/* on click, delete the item (backend)*/}
+            <IconButton>
+              <DeleteIcon/>
+            </IconButton>
+          </Box>
+        ))}
+      </Box>
+      }
       <Button onClick={() => setButtonClicked(!buttonClicked)}>
         {buttonClicked ? 'Cancel' : 'Add Item'}
       </Button>
@@ -208,15 +234,7 @@ export default function ItemField({itemType, setItemType}) {
                   variant='outlined'
                   // onChange={(e) => setNotes(e.target.value)}
                 />
-                <TextField
-                  id='item-discount-id'
-                  name='item-discount'
-                  label='Discount'
-                  // value={notes}
-                  variant='outlined'
-                  // onChange={(e) => setNotes(e.target.value)}
-                />
-                
+                <InvoiceDiscountField type={'item'}/>
               </Box>
             }
           </DialogContent>

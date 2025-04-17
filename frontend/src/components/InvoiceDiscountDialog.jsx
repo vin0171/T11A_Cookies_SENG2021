@@ -1,6 +1,7 @@
 import { Button, Dialog, DialogContent, DialogTitle, TextField, DialogActions, InputAdornment } from '@mui/material';
 import { Fragment, useState } from 'react';
 import { SelectField } from '../helper';
+import InvoiceDiscountField from './InvoiceDiscountField';
 
 /**
  * This component sets up the dialog that pops up when the user clicks on the create
@@ -10,13 +11,6 @@ export default function InvoiceDiscountDialog({setWideDiscount}) {
 const [open, setOpen] = useState(false);
 const handleClickOpen = () => (setOpen(true));
 const handleClose = () => (setOpen(false));
-const [discountType, setDiscountType] = useState('Flat');
-const [discountAmount, setDiscountAmount] = useState('');
-
-const discountOptions = [
-  {label: 'Flat'},
-  {label: 'Percentage'}
-]
 
 const handleSubmit = (event) => {
   event.preventDefault();
@@ -69,35 +63,7 @@ return (
           Enter Invoice-Wide Discount
       </DialogTitle>
       <DialogContent>
-        <SelectField
-          id={'wide-discount-type'}
-          name={'wide-discount-type-name'}
-          label={'Select Discount Type'}
-          value={discountType}
-          options={discountOptions}
-          setValue={setDiscountType}        
-        />
-        <TextField
-          id={'wide-discount-amount'}
-          name={'wide-discount-amount-name'}
-          margin='dense'
-          value={discountAmount}
-          onChange={(e) => setDiscountAmount(e.target.value)}
-          variant='standard'
-          label='Discount Amount'
-          type='number'
-          slotProps={{
-            input: {
-              ...(discountType === 'Flat')
-                ? { startAdornment: <InputAdornment position='start'>$</InputAdornment>}
-                : {endAdornment: <InputAdornment position='end'>%</InputAdornment>}
-            },
-            htmlInput : {
-              ...(discountType === 'Percentage' ? { max: 100 } : {}),
-              step: .01
-            }
-          }}
-        />
+        <InvoiceDiscountField type={'wide'}/>
       </DialogContent>
       <DialogActions sx={{justifyContent:'space-around'}}>
         <Button onClick={handleClose} sx={{fontSize: '1em', color:'#41444d'}}>Cancel</Button>

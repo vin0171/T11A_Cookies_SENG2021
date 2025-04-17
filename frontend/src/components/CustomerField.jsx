@@ -24,6 +24,7 @@ export default function CustomerField({
   customerAdditionalFields,
   setCustomerAdditionalFields,
   customerAdditonalText,
+  setBlur,
 }) {
   return (
     <Fragment>
@@ -41,6 +42,7 @@ export default function CustomerField({
           options={existingCustomersOptions}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label='Customer' />}
+          onBlur={() => (setBlur(true))}
         />
         :
         <Fragment>
@@ -53,6 +55,7 @@ export default function CustomerField({
             autoComplete='on'
             sx={{ width: '100%' }}
             onChange={(e) => setCustomer(e.target.value)}
+            onBlur={() => (setBlur(true))}
           />
           <TextField
             id='customer-email'
@@ -64,6 +67,7 @@ export default function CustomerField({
             autoComplete='on'
             sx={{ width: '100%' }}
             onChange={(e) => setCustomerEmail(e.target.value)}
+            onBlur={() => (setBlur(true))}
           />
           <Typography 
             onClick={() => setCustomerAdditionalFields(!customerAdditionalFields)}

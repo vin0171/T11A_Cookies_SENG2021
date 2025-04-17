@@ -1,9 +1,9 @@
-import { Autocomplete, Box, Button, Checkbox, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, TextField, Typography } from "@mui/material";
 import { Fragment, useEffect, useState } from "react";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { SelectField } from "../helper";
+import { makeInvoiceParams, SelectField } from "../helper";
 import InvoiceItemTable from "../components/InvoiceItemTable";
 import InvoiceDiscountDialog from "../components/InvoiceDiscountDialog";
 import ShippingCostDialog from "../components/ShippingCostDialog";
@@ -12,7 +12,6 @@ import { API_URL } from "../App";
 import { useNavigate, useParams } from "react-router-dom";
 import { saveAs } from 'file-saver';
 import TaxDialog from "../components/TaxDialog";
-import AddressFields from "../components/AddressFields";
 import dayjs from "dayjs";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
@@ -126,73 +125,39 @@ export default function InvoicePage({token}) {
     return total
   }
 
-
   const handleSubmit = (event) => {
     event.preventDefault();
     const button = event.nativeEvent.submitter.name
-    const formData = new FormData(event.currentTarget);
-    const billingAddress = {
-      addressLine1: formData.get('billing-address-line1') || '',
-      addressLine2: formData.get('billing-address-line2') || '',
-      suburb: formData.get('billing-suburb') || '',
-      state: formData.get('billing-state') || '',
-      postcode: formData.get('billing-postcode') || '',
-      country: formData.get('billing-country') || ''
-    }
-
-    const shippingAddress = {
-      addressLine1: formData.get('shipping-address-line1') || '',
-      addressLine2: formData.get('shipping-address-line2') || '',
-      suburb: formData.get('shipping-suburb') || '',
-      state: formData.get('shipping-state') || '',
-      postcode: formData.get('shipping-postcode') || '',
-      country: formData.get('shipping-country') || '',
-    }
-
-    const participant = {
-      companyName: formData.get('customer-name'),
-      billingAddress: billingAddress,
-      shippingAddress: shippingAddress,
-      email: formData.get('customer-email'),
-      bankName: formData.get('bank-name'),
-      bankAccount: formData.get('bank-number'),
-    }
-    const items = invoiceItems.map((item) => {
-      const itemQuantity = parseInt(item.quantity || 0);
-      const unitPrice = parseInt(item.unitPrice || 0);
-      const discountAmount = parseInt(item.discountAmount || 0);
-      const total = itemQuantity * unitPrice
-      return {
-        id: item.id,
-        isNew: false,
-        itemSku: item.itemSku,
-        itemName: item.itemName,
-        description: item.description,
-        quantity: itemQuantity,
-        unitPrice: unitPrice, 
-        discountAmount: discountAmount,
-        totalAmount: total * (1 - discountAmount / 100)
-      };
-    });
-
-    const invoiceDetails = {
-      receiver: participant,
-      issueDate: issueDate,
-      dueDate: dueDate,
-      invoiceNumber: formData.get('invoice-num'),
-      shippingChecked: shippingChecked,
-      status: 'DRAFT',
-      state: 'MAIN',
-      items: items,
-      wideDiscount: wideDiscount,
-      tax: tax,
-      format: formData.get('format'),
-      currency: formData.get('currency'),
-      shippingCostDetails: shippingCostDetails,
-      subtotal: subTotal,
-      total: calculateTotal(),
-      notes: formData.get('notes')
-    }
+    const invoiceDetails = makeInvoiceParams(
+      customer,
+      customerEmail,
+      billingAddress1,
+      billingAddress2,
+      billingSuburb,
+      billingState,
+      billingPostCode,
+      billingCountry,
+      shippingAddress1,
+      shippingAddress2,
+      shippingSuburb,
+      shippingState,
+      shippingPostCode,
+      shippingCountry,
+      invoiceNumber,
+      bankNum,
+      bankName,
+      shippingChecked,
+      shippingCostDetails,
+      issueDate,
+      dueDate,
+      notes,
+      currency,
+      wideDiscount,
+      tax,
+      subTotal,
+      invoiceItems,
+      format
+    );
     const params = {
       invoiceId: invoiceId,
       ...(update
@@ -206,7 +171,7 @@ export default function InvoicePage({token}) {
       method(url, params, {
         headers: { Authorization: `Bearer ${token}` }
       })
-      .then((res) => {console.log(res.data); navigate('/dashboard')})
+      .then(() => {navigate('/dashboard')})
       .catch(error => console.log(error.response.data.error))
     } else if (button === 'download') {
       if (format === 'PDF') {
@@ -251,9 +216,9 @@ export default function InvoicePage({token}) {
   const [customerType, setCustomerType] = useState('Create a New Customer');
   const [customerAdditionalFields, setCustomerAdditionalFields] = useState(false);
   const [customerAdditonalText, setCustomerAdditionalText] = useState('Add Additional Details');
-  const [invoiceNumberOption, setInvoiceNumberOption] = useState('Invoices sent to this customer');
+  const [invoiceNumberOption, setInvoiceNumberOption] = useState('Custom');
   const [itemType, setItemType] = useState('Add Existing Item')
-
+  const [blur, setBlur] = useState(false);
 
   useEffect(() => {
     if (customerAdditionalFields){
@@ -266,7 +231,7 @@ export default function InvoicePage({token}) {
   return (
     <Fragment>
       <Box sx={{display: 'flex', height: '100%', width: '100%'}}>
-        <Box sx={{bgcolor: '#e2dacd', width: '50%'}}>
+        <Box sx={{width: '50%'}}>
           <Button> Upload Order Document </Button>
           <Box sx={{height: '100%', p: 5}}>
             <form onSubmit={handleSubmit}>
@@ -281,6 +246,7 @@ export default function InvoicePage({token}) {
                 customerAdditionalFields={customerAdditionalFields}
                 setCustomerAdditionalFields={setCustomerAdditionalFields}
                 customerAdditonalText={customerAdditonalText}
+                setBlur={setBlur}
               />
               <CustomerAdditionalFields
                 customerAdditionalFields={customerAdditionalFields}
@@ -314,6 +280,7 @@ export default function InvoicePage({token}) {
                 setBankName={setBankName}
                 bankNum={bankNum}
                 setBankNum={setBankNum}
+                setBlur={setBlur}
               />
               <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Date</Typography>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -322,6 +289,8 @@ export default function InvoicePage({token}) {
                   name='issue-date'
                   value={issueDate}
                   onChange={(newValue) => setIssueDate(newValue)}
+                  onBlur={() => (setBlur(true))}
+                  
                 />
               </LocalizationProvider>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -330,6 +299,7 @@ export default function InvoicePage({token}) {
                   name='due-date'
                   value={dueDate}
                   onChange={(newValue) => setDueDate(newValue)}
+                  onBlur={() => (setBlur(true))}
                 />
               </LocalizationProvider>
               <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Details</Typography>
@@ -340,6 +310,7 @@ export default function InvoicePage({token}) {
                 value={invoiceNumberOption}
                 options={invoiceNumberOptions}
                 setValue={setInvoiceNumberOption}
+                setBlur={setBlur}
               />
               {invoiceNumberOption === 'Custom' && 
                 <TextField
@@ -351,6 +322,7 @@ export default function InvoicePage({token}) {
                   label='Invoice Number'
                   value={invoiceNumber}
                   onChange={(e) => setInvoiceNumber(e.target.value)}
+                  onBlur={() => (setBlur(true))}
                   type='number'
                   variant='standard'
                   sx={{
@@ -377,6 +349,7 @@ export default function InvoicePage({token}) {
                 value={currency}
                 options={currencyOptions}
                 setValue={setCurrency}
+                setBlur={setBlur}
               />     
               <TextField
                 id='notes'
@@ -417,14 +390,8 @@ export default function InvoicePage({token}) {
 
 
 
-
-
-
-
-
-
-
               <InvoiceItemTable rows={invoiceItems} setRows={setInvoiceItems} setSubtotal={setSubtotal} currency={currency}/>
+              <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Options</Typography>
               <InvoiceDiscountDialog setWideDiscount={setWideDiscount}/>
               <ShippingCostDialog shippingCostDetails={shippingCostDetails} setShippingCostDetails={setShippingCostDetails}/>
               <TaxDialog setTax={setTax}/>
@@ -509,7 +476,41 @@ export default function InvoicePage({token}) {
         </Box>
         <Box sx={{width: '100%'}}>
           <Box> 
-            <PDFpreview></PDFpreview>
+            <PDFpreview 
+              invoiceId={invoiceId} 
+              token={token}
+              customer={customer}
+              customerEmail={customerEmail}
+              billingAddress1={billingAddress1}
+              billingAddress2={billingAddress2}
+              billingSuburb={billingSuburb}
+              billingState={billingState}
+              billingPostCode={billingPostCode}
+              billingCountry={billingCountry}
+              shippingAddress1={shippingAddress1}
+              shippingAddress2={shippingAddress2}
+              shippingSuburb={shippingSuburb}
+              shippingState={shippingState}
+              shippingPostCode={shippingPostCode}
+              shippingCountry={shippingCountry}
+              invoiceNumber={invoiceNumber}
+              bankNum={bankNum}
+              bankName={bankName}
+              shippingChecked={shippingChecked}
+              shippingCostDetails={shippingCostDetails}
+              issueDate={issueDate}
+              dueDate={dueDate}
+              notes={notes}
+              currency={currency}
+              wideDiscount={wideDiscount}
+              tax={tax}
+              subTotal={subTotal}
+              total={calculateTotal()}
+              invoiceItems={invoiceItems}
+              format={format}
+              blur={blur} 
+              setBlur={setBlur}>  
+            </PDFpreview>
           </Box>
         </Box>
       </Box>
