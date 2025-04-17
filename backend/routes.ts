@@ -2,6 +2,8 @@ import { Express, NextFunction, Request, Response } from "express";
 import * as users from './users';
 import * as companies from './companies';
 import * as invoices from './invoices';
+import * as customers from './customers';
+import * as items from './items';
 import { validateLocation, validateToken } from "./validationHelpers";
 import { Invoice, Location } from "./interface";
 // import { InvoiceConverter } from "./InvoiceConverter";
@@ -273,6 +275,16 @@ function routes(app: Express) {
     }
   });
 
+  app.get('/v3/user/details', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const response = await validateToken(token)
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
   app.get('/v3/company/:companyId/invoices', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization'].split(' ')[1];
@@ -284,20 +296,20 @@ function routes(app: Express) {
     }
   });
 
-
   //// Invoices 
   app.post('/v3/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {invoiceDetails} = req.body;
+      const {invoiceDetails, isDraft } = req.body;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const response = await invoices.createInvoice(token, invoiceDetails); 
+      const response = await invoices.createInvoiceV3(token, invoiceDetails, isDraft); 
       res.status(200).json(response);
     } catch(err) {
       next(err);
     }
   });
   
-  app.get('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+
+  app.get('/v3/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const contentType = req.headers['accept'].split(' ')[0] || "application/JSON";
       const invoiceId = req.params.invoiceId;
@@ -315,18 +327,19 @@ function routes(app: Express) {
     }
   });
 
-  app.put('/v1/invoice/:invoiceId/edit', async (req: Request, res: Response, next: NextFunction) => {
-      try {
-        const token = req.headers['authorization']?.split(' ')[1] || undefined;
-        const { invoiceId, edits } = req.body;
-        const response = await invoices.editInvoiceDetails(token, invoiceId, edits);
-        res.status(200).json(response);
-      } catch(err) {
-        next(err);
-      }
-    });
+  
+  app.put('/v3/invoice/:invoiceId/edit', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const { invoiceId, edits } = req.body;
+      const response = await invoices.editInvoiceDetailsV3(token, invoiceId, edits);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
 
-  app.post('/v1/invoice/validate', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/v3/invoice/validate', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { ublInvoice } = req.body;
       const response = validateUBL(ublInvoice);
@@ -337,7 +350,7 @@ function routes(app: Express) {
   });
   
 
-  app.delete('/v1/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
+  app.delete('/v3/invoice/:invoiceId', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const invoiceId  = req.params.invoiceId;
@@ -348,6 +361,28 @@ function routes(app: Express) {
     }
   });
 
+
+  app.post('v3/customer', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const { name, billingAddress, shippingAddress, email, bankName, bankAccount, companyId } = req.body;
+      const response = await customers.registerCustomer(token, name, companyId, billingAddress, shippingAddress, email, bankName, bankAccount);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err);
+    }
+  });
+
+  app.post('v3/item', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const { name, sku, price, description, } = req.body;
+      const response = await items.registerItem(token, name, sku, price, description);
+      res.status(200).json(response); 
+    } catch(err) {
+      next(err);
+    }
+  });
 
   // We indirectly use next but not directly which causes linting errors
   // eslint-disable-next-line 

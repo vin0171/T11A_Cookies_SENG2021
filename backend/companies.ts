@@ -1,6 +1,6 @@
 import { getData } from "./dataStore";
-import { Company, EmptyObject, Location } from "./interface";
-import { createCompany, getCompany, getUserByEmail } from "./interfaceHelpers";
+import { Company, EmptyObject, Location, OldCompany } from "./interface";
+import { createCompany, createCompanyV3, getCompany, getUserByEmail } from "./interfaceHelpers";
 import * as validators from './validationHelpers';
 import HTTPError from 'http-errors';
 
@@ -33,7 +33,7 @@ export async function registerCompany(token: string, companyName: string, compan
     companyEmail: string, contactNumber: string): Promise<string> { 
     const user = await validators.validateToken(token);
     if (user.companyId !== null) throw HTTPError(400, 'Error: User already works at a company'); 
-    const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user.userId);
+    const newCompany: OldCompany = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user.userId);
     const data = getData();
     await data.put({ TableName: "Companies", Item: newCompany});
     await updateUserCompany(user.userId, newCompany.companyId);
@@ -95,7 +95,7 @@ export async function registerCompanyV3(token: string, companyName: string, comp
     companyEmail: string, contactNumber: string): Promise<string> { 
     const user = await validators.validateToken(token);
     if (user.companyId !== null) throw HTTPError(400, 'Error: User already registered a company'); 
-    const newCompany: Company = createCompany(companyName, companyAbn, headquarters, companyEmail, contactNumber, user.userId);
+    const newCompany: Company = createCompanyV3(companyName, companyAbn, headquarters, companyEmail, contactNumber, user.userId);
     const data = getData();
     await data.put({ TableName: "Companies", Item: newCompany});
     await updateUserCompany(user.userId, newCompany.companyId);

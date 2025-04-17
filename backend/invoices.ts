@@ -30,6 +30,8 @@ const printer = new PdfPrinter(fonts);
  * @param {InvoiceDetails} invoiceDetails - contains all invoice details
  * @returns {string}
  */
+
+// ! DEPRECATED
 export async function createInvoice(token: string, invoiceDetails: InvoiceDetails) : Promise<string> {
     const user = await validators.validateToken(token);
     const data = getData();
@@ -56,6 +58,7 @@ export async function createInvoice(token: string, invoiceDetails: InvoiceDetail
  * @param {boolean} isDraft - states whether the invoice is a draft or not
  * @returns {string}
  */
+// ! DEPRECATED
 export async function createInvoiceV2(token: string, invoiceId: string, invoiceDetails: InvoiceDetailsV2, isDraft: boolean) : Promise<string> {
     const user = await validators.validateToken(token);
     const data = getData();
@@ -70,6 +73,20 @@ export async function createInvoiceV2(token: string, invoiceId: string, invoiceD
     return invoiceInfo.invoiceId;
 }
 
+export async function createInvoiceV3(token: string, invoiceDetails: InvoiceDetailsV2, isDraft: boolean) : Promise<string> {
+  const user = await validators.validateToken(token);
+  const data = getData();
+  const invoiceId = uuidv4();
+  const invoiceInfo : InvoiceV2 = generateInvoiceV2(invoiceId, user.userId, user.companyId, invoiceDetails, isDraft);
+  
+  await data.put({ TableName: "Invoices", Item: invoiceInfo });
+  await addInvoiceIdToTable("Users", user.userId, invoiceId);
+
+  if (user.companyId !== null) {
+      await addInvoiceIdToTable("Companies", user.companyId, invoiceId)
+  }
+  return invoiceInfo.invoiceId;
+}
 
 // TODO: fix the two functions below if you want (Hashmap of name to object? idk)
 // and also i dont use this in other functions so um 
@@ -124,6 +141,20 @@ export async function editInvoiceDetails(token: string, invoiceId: string, edits
         ExpressionAttributeValues: { ':invoiceDetailsNew': invoice.details }
     });
     return invoice;
+}
+
+export async function editInvoiceDetailsV3(token: string, invoiceId: string, edits: Partial<InvoiceDetailsV2>) {
+  const user = await validators.validateToken(token);
+const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+  Object.assign(invoice.details, edits);
+  const data = getData();
+  await data.update({
+      TableName: "Invoices",
+      Key: keyIdentifer("Invoices", invoiceId),
+      UpdateExpression: 'SET details = :invoiceDetailsNew',
+      ExpressionAttributeValues: { ':invoiceDetailsNew': invoice.details }
+  });
+  return invoice;
 }
 
 // TODO: This function is very simialr to the insert just so yk
@@ -300,7 +331,7 @@ export async function generateInvoiceXML(token: string, invoiceId: string) {
         .ele('Item')
           .ele('Description').txt(item.description).up()
           .ele('Quantity').txt(item.quantity.toString()).up()
-          .ele('UnitPrice').txt(String(item.unitPrice)).up()
+          .ele('UnitPrice').txt(String(item.itemDetails.unitPrice)).up()
           .ele('Total').txt(String(invoice.total)).up()
         .up();
     }

@@ -22,7 +22,8 @@ export enum Gender {
 }
 
 // TODO: DOUBLE CHECK IMPLEMENTATIONS
-export interface Participant {
+// ! DEPRECATED
+export interface OldParticipant {
   companyName: string,
   address: string,
   country: string,
@@ -38,7 +39,7 @@ export interface Participant {
   notes?: string
 }
 
-// TODO: OLD
+// ! DEPRECATED
 export interface InvoiceItem {
   itemSku: string,
   itemName: string,
@@ -54,25 +55,26 @@ export interface InvoiceItem {
 // TODO: NEW DONE
 export interface Item {
   id: number,
-  isNew: boolean,
   itemSku: string,
   itemName: string,
   description: string,
+  unitPrice: number,
+
 }
 
 // TODO: UPDATED
 export interface InvoiceItemV2 {
   itemDetails: Item,
   quantity: number,
-  unitPrice: number,
   discountAmount: number,
   totalAmount: number
+  description: string,
 }
 
 // TODO: OLD
 export interface InvoiceDetails {
-  sender: Participant,
-  receiver: Participant,
+  sender: OldParticipant,
+  receiver: OldParticipant,
   issueDate: number,
   dueDate: number,
   invoiceNumber: number,
@@ -106,7 +108,8 @@ export interface Address {
 
 // TODO: IS THIS BEING USED?
 export interface ParticipantV2 {
-  companyName: string,
+  customerId: string,
+  name: string,
   billingAddress: Address,
   shippingAddress: Address,
   email: string,
@@ -151,10 +154,13 @@ export interface InvoiceDetailsV2 {
 // TODO: Should be fine
 export interface InvoiceV2 {
   invoiceId: string,
+  //remove?
   userId: string,
   companyId: string,
   details: InvoiceDetailsV2
+  isDraft: boolean,
 }
+
 
 // TODO: UPDATED
 export interface User {
@@ -165,6 +171,23 @@ export interface User {
   nameFirst: string,
   nameLast: string,
   timeCreated: string,
+}
+
+//! DEPRECATED
+export interface OldUser {
+  userId: string,
+  companyId: string,
+  email: string,
+  password: string,
+  nameFirst: string,
+  nameLast: string,
+  timeCreated: string,
+  numSuccessfulLogins: number,
+  numFailedPasswordsSinceLastLogin: number,
+  age: number,
+  gender: string,
+  previousPasswords: string[],
+  invoices: string[]
 }
 
 export interface Location {
@@ -189,6 +212,20 @@ export interface Company {
   customers: string[],
   items: string[],
 }
+
+export interface OldCompany {
+  companyId: string,
+  name: string,
+  abn: string,
+  headquarters: Location,
+  phone: string,
+  email: string,
+  owner: string,
+  admins: string[],
+  members: string[],
+  invoices: string[]
+}
+
 
 export interface companyRequestBody {
   companyName: string,
