@@ -41,10 +41,50 @@ const createUserTable = (): CreateTableCommand => {
   });
 };
 
+const createCustomerTable = (): CreateTableCommand => {
+  return new CreateTableCommand({
+    TableName: "Customers",
+    BillingMode: BillingMode.PAY_PER_REQUEST,
+    KeySchema: [{ AttributeName: "customerId", KeyType: "HASH" }],
+    AttributeDefinitions: [
+      { AttributeName: "customerId", AttributeType: "S" },
+      { AttributeName: "email", AttributeType: "S" } 
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: "EmailIndex", 
+        KeySchema: [{ AttributeName: "email", KeyType: "HASH" }], 
+        Projection: { ProjectionType: "ALL" },
+      },
+    ],
+  });
+};
+
+const createItemTable = (): CreateTableCommand => {
+  return new CreateTableCommand({
+    TableName: "Items",
+    BillingMode: BillingMode.PAY_PER_REQUEST,
+    KeySchema: [{ AttributeName: "itemId", KeyType: "HASH" }],
+    AttributeDefinitions: [
+      { AttributeName: "itemId", AttributeType: "S" },
+      { AttributeName: "sku", AttributeType: "S" } 
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: "SkuIndex", 
+        KeySchema: [{ AttributeName: "sku", KeyType: "HASH" }], 
+        Projection: { ProjectionType: "ALL" },
+      },
+    ],
+  });
+};
+
 const tableCommands: { [key: string]: CreateTableCommand }= {
     Users: createUserTable(),
     Invoices: createTable("Invoices", "invoiceId"),
-    Companies: createTable("Companies", "companyId")
+    Companies: createTable("Companies", "companyId"),
+    Items: createItemTable(),
+    Customers: createCustomerTable()
 };
 
 // This is a local function comment out when deploy
