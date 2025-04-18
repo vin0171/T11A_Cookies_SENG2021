@@ -51,7 +51,7 @@ export function SelectField({
       value={value}
       onBlur={() => setBlur(true)}
       variant="standard"
-      sx={{ mt: 1.875, ...formInputStyle }}
+      sx={{width: '100%'}}
       slotProps={{
         htmlInput: { id: name },
         inputLabel: { htmlFor: name }
@@ -196,5 +196,21 @@ export const makeInvoiceParams = (
     notes: notes
   }
   return invoiceDetails;
+}
+
+export const removeNumberScrollbarStyle = {
+  '& label.Mui-focused': { color: '#41444d' },
+  '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+  '& input[type=number]': {
+    MozAppearance: 'textfield',
+  },
+  '& input[type=number]::-webkit-outer-spin-button': {
+    WebkitAppearance: 'none',
+    margin: 0,
+  },
+  '& input[type=number]::-webkit-inner-spin-button': {
+    WebkitAppearance: 'none',
+    margin: 0,
+  },
 }
 

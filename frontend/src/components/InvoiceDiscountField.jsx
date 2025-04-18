@@ -1,5 +1,5 @@
 import { Fragment, useState } from "react";
-import { SelectField } from "../helper";
+import { removeNumberScrollbarStyle, SelectField } from "../helper";
 import { InputAdornment, TextField } from "@mui/material";
 
 const discountOptions = [
@@ -33,6 +33,8 @@ export default function InvoiceDiscountField({
         variant='standard'
         label='Discount Amount'
         type='number'
+        sx={{...removeNumberScrollbarStyle}}
+        onWheel={(e) => e.target.blur()}
         slotProps={{
           input: {
             ...(discountType === 'Flat')

@@ -71,7 +71,7 @@ export default function CustomerField({
           />
           <Typography 
             onClick={() => setCustomerAdditionalFields(!customerAdditionalFields)}
-            sx={{textDecoration: 'underline', cursor: 'pointer'}}
+            sx={{textDecoration: 'underline', cursor: 'pointer', width: 'fit-content'}}
           >
             {customerAdditonalText}
           </Typography>

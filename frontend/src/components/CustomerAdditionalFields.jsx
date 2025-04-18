@@ -39,31 +39,31 @@ export default function CustomerAdditionalFields({
   return (
     <Fragment>
       {customerAdditionalFields &&
+      <Box>
+        <Box sx={{display: 'flex', flexDirection: 'column', gap: '25px'}}>
+          <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Billing Address</Typography>
+          <AddressFields
+            type='billing'
+            addressLine1={billingAddress1}
+            setAddressLine1={setBillingAddress1}
+            addressLine2={billingAddress2}
+            setAddressLine2={setBillingAddress2}
+            suburb={billingSuburb}
+            setSuburb={setBillingSuburb}
+            state={billingState}
+            setState={setBillingState}
+            postCode={billingPostCode}
+            setPostCode={setBillingPostCode}
+            country={billingCountry}
+            setCountry={setBillingCountry}
+            setBlur={setBlur}
+          />
+        </Box>
         <Box>
-          <Box>
-            <Typography>Billing Address</Typography>
-            <AddressFields
-              type='billing'
-              addressLine1={billingAddress1}
-              setAddressLine1={setBillingAddress1}
-              addressLine2={billingAddress2}
-              setAddressLine2={setBillingAddress2}
-              suburb={billingSuburb}
-              setSuburb={setBillingSuburb}
-              state={billingState}
-              setState={setBillingState}
-              postCode={billingPostCode}
-              setPostCode={setBillingPostCode}
-              country={billingCountry}
-              setCountry={setBillingCountry}
-              setBlur={setBlur}
-            />
-          </Box>
-        <Box>
-          <Typography>
+          <Typography sx={{fontWeight: 'bold', fontSize: '1.5em', mt: 5}}>
             Shipping Address
           </Typography>
-          <Box>
+          <Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
             <Typography>Same as Billing Address</Typography>
             <Checkbox
               checked={shippingChecked}
@@ -74,51 +74,62 @@ export default function CustomerAdditionalFields({
                 input: {'aria-label': 'controlled'}
               }}
             />
-            {
-              !shippingChecked && 
-              <AddressFields
-                type='shipping'
-                addressLine1={shippingAddress1}
-                setAddressLine1={setShippingAddress1}
-                addressLine2={shippingAddress2}
-                setAddressLine2={setShippingAddress2}
-                suburb={shippingSuburb}
-                setSuburb={setShippingSuburb}
-                state={shippingState}
-                setState={setShippingState}
-                postCode={shippingPostCode}
-                setPostCode={setShippingPostCode}
-                country={shippingCountry}
-                setCountry={setShippingCountry}
-                setBlur={setBlur}
-              />
-            }
+          </Box>
+          {!shippingChecked && 
+            <AddressFields
+              type='shipping'
+              addressLine1={shippingAddress1}
+              setAddressLine1={setShippingAddress1}
+              addressLine2={shippingAddress2}
+              setAddressLine2={setShippingAddress2}
+              suburb={shippingSuburb}
+              setSuburb={setShippingSuburb}
+              state={shippingState}
+              setState={setShippingState}
+              postCode={shippingPostCode}
+              setPostCode={setShippingPostCode}
+              country={shippingCountry}
+              setCountry={setShippingCountry}
+              setBlur={setBlur}
+            />
+          }
+        </Box>
+        <Box 
+          sx={{
+            display: 'flex',
+            flexDirection: 'column', 
+            gap: '20px', 
+            ...(!shippingChecked && {mt: 4})
+          }}
+        >
+          <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Bank Information</Typography>
+          <Box sx={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+            <TextField
+              id='bank-name'
+              name='bank-name'
+              label='Bank Name'
+              value={bankName}
+              variant='outlined'
+              autoComplete='on'
+              sx={{ width: '100%' }}
+              onChange={(e) => setBankName(e.target.value)}
+              onBlur={() => (setBlur(true))}
+            />
+            <TextField
+              id='bank-number'
+              name='bank-number'
+              label='Bank Account Number'
+              type='number'
+              value={bankNum}
+              variant='outlined'
+              autoComplete='on'
+              sx={{ width: '100%' }}
+              onChange={(e) => setBankNum(e.target.value)}
+              onBlur={() => (setBlur(true))}
+            />
           </Box>
         </Box>
-          <TextField
-            id='bank-name'
-            name='bank-name'
-            label='Bank Name'
-            value={bankName}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setBankName(e.target.value)}
-            onBlur={() => (setBlur(true))}
-          />
-          <TextField
-            id='bank-number'
-            name='bank-number'
-            label='Bank Account Number'
-            type='number'
-            value={bankNum}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setBankNum(e.target.value)}
-            onBlur={() => (setBlur(true))}
-          />
-        </Box>
+      </Box>
       }
     </Fragment>
   )

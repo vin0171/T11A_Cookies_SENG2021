@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Document, Page } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import axios from 'axios';
@@ -13,35 +13,63 @@ export default function PDFpreview({
   token,
   invoiceId,
   customer,
+  setCustomer,
   customerEmail,
+  setCustomerEmail,
   billingAddress1,
+  setBillingAddress1,
   billingAddress2,
+  setBillingAddress2,
   billingSuburb,
+  setBillingSuburb,
   billingState,
+  setBillingState,
   billingPostCode,
+  setBillingPostCode,
   billingCountry,
+  setBillingCountry,
   shippingAddress1,
+  setShippingAddress1,
   shippingAddress2,
+  setShippingAddress2,
   shippingSuburb,
+  setShippingSuburb,
   shippingState,
+  setShippingState,
   shippingPostCode,
+  setShippingPostCode,
   shippingCountry,
+  setShippingCountry,
   invoiceNumber,
+  setInvoiceNumber,
   bankNum,
+  setBankNum,
   bankName,
+  setBankName,
   shippingChecked,
+  setShippingChecked,
   shippingCostDetails,
+  setShippingCostDetails,
   issueDate,
+  setIssueDate,
   dueDate,
+  setDueDate,
   notes,
+  setNotes,
   currency,
+  setCurrency,
   wideDiscount,
+  setWideDiscount,
   tax,
+  setTax,
   subTotal,
+  setSubtotal,
   total,
   invoiceItems,
+  setInvoiceItems,
   format,
-  blur, 
+  setFormat,
+  blur,
   setBlur
 }) {
   const [numPages, setNumPages] = useState();
@@ -135,6 +163,62 @@ export default function PDFpreview({
       >
         <Page pageNumber={pageNumber} />
       </Document>
+        <Box 
+          sx={{mt: 5, display: 'flex', justifyContent: 'space-between'}}
+          component='form'
+        >
+          <Button
+            sx={{width: '150px'}}
+            variant='contained'
+            onClick={() => {
+              setCustomer('');
+              setCustomerEmail('')
+              setBillingAddress1('');
+              setBillingAddress2('');
+              setBillingSuburb('');
+              setBillingState('');
+              setBillingPostCode('');
+              setBillingCountry('');
+              setShippingAddress1('');
+              setShippingAddress2('');
+              setShippingSuburb('');
+              setShippingState('');
+              setShippingPostCode('');
+              setShippingCountry('');
+              setBankNum('');
+              setBankName('');
+              setShippingChecked(false);
+              setShippingCostDetails({});
+              setIssueDate(null);
+              setDueDate(null);
+              setNotes('');
+              setCurrency('$');
+              setWideDiscount({});
+              setTax({});
+              setSubtotal(0);
+              setInvoiceItems([]);
+              setFormat('PDF');
+            }}
+          >
+            Reset Invoice
+          </Button>
+          <Button
+            sx={{width: '150px'}}
+            variant='contained'
+            type='submit'
+            name='save'
+          >
+            Save
+          </Button>
+          <Button
+            sx={{width: '150px'}}
+            variant='contained'
+            type='submit'
+            name='download'
+          >
+            Download
+          </Button>
+      </Box>
     </Box>
   );
 }
