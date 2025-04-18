@@ -4,9 +4,8 @@ import { Grid } from '@mui/system';
 import SessionsChart from "../components/SessionChart";
 import LineGraph from "../components/LineGraph";
 import { Typography } from "@mui/material";
-import { Line } from "recharts";
 
-const InvoicePage = () => {
+const DataGraph = () => {
   return (
     // mt is margin top which is the distance from the top of the page
     <Container sx={{ mt: 20 }}>
@@ -48,4 +47,4 @@ const InvoicePage = () => {
   );
 };
 
-export default InvoicePage;
+export default DataGraph;

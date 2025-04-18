@@ -7,7 +7,8 @@ import RegisterPage from './pages/RegisterPage';
 import LoginBtn from './components/LoginBtn';
 import LogoutBtn from './components/LogoutBtn';
 import DashboardPage from './pages/DashboardPage';
-import InvoicePage from './pages/InvoicePage';
+import InvoicePage from './pages/DataSummary';
+import DataGraph from './pages/DataSummary';
 
 
 export default function Router () {
@@ -42,6 +43,7 @@ export default function Router () {
         <Route path='user/register' element={<RegisterPage setToken={setToken}/>}/>
         <Route path='/dashboard' element={<DashboardPage token={token}/>}/>
         <Route path='/:company/invoices/:invoiceId/create' element={<InvoicePage token={token}/>}/>
+        <Route path="/summary" element={<DataGraph/>} />
       </Routes>
     </>
   )
