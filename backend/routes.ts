@@ -299,7 +299,7 @@ function routes(app: Express) {
   //// Invoices 
   app.post('/v3/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {invoiceDetails, isDraft } = req.body;
+      const {invoiceDetails, isDraft} = req.body;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const response = await invoices.createInvoiceV3(token, invoiceDetails, isDraft); 
       res.status(200).json(response);

@@ -44,7 +44,7 @@ export default function DashboardPage({token}) {
         </Typography>
         <Button 
           variant='contained' 
-          onClick={() => navigate(`/${company.name}/invoices/${uuidv4()}/create`)}
+          onClick={() => navigate(`/${company.name}/invoices/create`)}
           sx={{
             bgcolor: '#9ccde1', 
             height: 50,

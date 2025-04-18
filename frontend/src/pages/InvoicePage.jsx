@@ -56,42 +56,44 @@ export default function InvoicePage({token}) {
   const [update, setUpdate] = useState(true);
 
   useEffect(() => {
-    axios.get(`${API_URL}/v1/invoice/${invoiceId}`, {headers: {Authorization: `Bearer ${token}`}})
-    .then((res) => {
-      setCustomer(res.data.details.receiver.companyName);
-      setCustomerEmail(res.data.details.receiver.email);
-
-      setBillingAddress1(res.data.details.receiver.billingAddress.addressLine1);
-      setBillingAddress2(res.data.details.receiver.billingAddress.addressLine2);
-      setBillingSuburb(res.data.details.receiver.billingAddress.suburb);
-      setBillingState(res.data.details.receiver.billingAddress.state);
-      setBillingPostCode(res.data.details.receiver.billingAddress.postcode);
-      setBillingCountry(res.data.details.receiver.billingAddress.country);
-
-      setShippingAddress1(res.data.details.receiver.shippingAddress.addressLine1);
-      setShippingAddress2(res.data.details.receiver.shippingAddress.addressLine2);
-      setShippingSuburb(res.data.details.receiver.shippingAddress.suburb);
-      setShippingState(res.data.details.receiver.shippingAddress.state);
-      setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
-      setShippingCountry(res.data.details.receiver.shippingAddress.country);  
-      setShippingChecked(res.data.details.shippingChecked);
-      setShippingCostDetails(res.data.details.shippingCostDetails)
-      
-      setInvoiceNumber(res.data.details.invoiceNumber);
-      setBankNum(res.data.details.receiver.bankAccount);
-      setBankName(res.data.details.receiver.bankName);
-      if (res.data.details.issueDate !== null) setIssueDate(dayjs(res.data.details.issueDate));
-      if (res.data.details.dueDate !== null) setDueDate(dayjs(res.data.details.dueDate));
-      setNotes(res.data.details.notes);
-      setCurrency(res.data.details.currency);
-      setWideDiscount(res.data.details.wideDiscount);
-      setTax(res.data.details.tax);
-      setInvoiceItems(res.data.details.items);
-      setFormat(res.data.details.format);
-      setSubtotal(res.data.details.subtotal);
-    }).catch((error) => {
-      if (error.response.data.error === 'Error: Invoice does not exist') setUpdate(false)
-    }) 
+    if (invoiceId) {
+      axios.get(`${API_URL}/v3/invoice/${invoiceId}`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((res) => {
+        setCustomer(res.data.details.receiver.companyName);
+        setCustomerEmail(res.data.details.receiver.email);
+  
+        setBillingAddress1(res.data.details.receiver.billingAddress.addressLine1);
+        setBillingAddress2(res.data.details.receiver.billingAddress.addressLine2);
+        setBillingSuburb(res.data.details.receiver.billingAddress.suburb);
+        setBillingState(res.data.details.receiver.billingAddress.state);
+        setBillingPostCode(res.data.details.receiver.billingAddress.postcode);
+        setBillingCountry(res.data.details.receiver.billingAddress.country);
+  
+        setShippingAddress1(res.data.details.receiver.shippingAddress.addressLine1);
+        setShippingAddress2(res.data.details.receiver.shippingAddress.addressLine2);
+        setShippingSuburb(res.data.details.receiver.shippingAddress.suburb);
+        setShippingState(res.data.details.receiver.shippingAddress.state);
+        setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
+        setShippingCountry(res.data.details.receiver.shippingAddress.country);  
+        setShippingChecked(res.data.details.shippingChecked);
+        setShippingCostDetails(res.data.details.shippingCostDetails)
+        
+        setInvoiceNumber(res.data.details.invoiceNumber);
+        setBankNum(res.data.details.receiver.bankAccount);
+        setBankName(res.data.details.receiver.bankName);
+        if (res.data.details.issueDate !== null) setIssueDate(dayjs(res.data.details.issueDate));
+        if (res.data.details.dueDate !== null) setDueDate(dayjs(res.data.details.dueDate));
+        setNotes(res.data.details.notes);
+        setCurrency(res.data.details.currency);
+        setWideDiscount(res.data.details.wideDiscount);
+        setTax(res.data.details.tax);
+        setInvoiceItems(res.data.details.items);
+        setFormat(res.data.details.format);
+        setSubtotal(res.data.details.subtotal);
+      }).catch((error) => console.log(error.response.data.error))
+    } else {
+      setUpdate(false)
+    }
   }, [])
 
   const calculateTotal = () => {
@@ -126,6 +128,8 @@ export default function InvoicePage({token}) {
     return total
   }
 
+
+  // ONLY PRESS THIS BUTTON IF YOU HAVE A REGISTERED CUSTOMER AND ITEM
   const handleSubmit = (event) => {
     event.preventDefault();
     const button = event.nativeEvent.submitter.name
@@ -160,40 +164,41 @@ export default function InvoicePage({token}) {
       format
     );
     const params = {
-      invoiceId: invoiceId,
-      ...(update
-        ? { edits: invoiceDetails }
+      ...(update 
+        ? {invoiceId: invoiceId, edits: invoiceDetails} 
         : {isDraft: true, invoiceDetails: invoiceDetails}
       )
     }
     if (button === 'save') {
-      const url = update ? `${API_URL}/v1/invoice/${invoiceId}/edit` : `${API_URL}/v2/invoice`
+      const url = update ? `${API_URL}/v3/invoice/${invoiceId}/edit` : `${API_URL}/v3/invoice`
       const method = update ? axios.put : axios.post;
       method(url, params, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}`}
       })
       .then(() => {navigate('/dashboard')})
       .catch(error => console.log(error.response.data.error))
     } else if (button === 'download') {
-      if (format === 'PDF') {
-        axios.post(`${API_URL}/v1/invoice/${invoiceId}/pdf`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((doc) => {
-          pdfMake.createPdf(doc.data).download(`invoice-${invoiceNumber}.pdf`);
-        })
-        .catch(error => console.log(error?.response?.data?.error || error.message));
-      } else {
-        // download as ubl
-        axios.get(`${API_URL}/v1/invoice/${invoiceId}/`, {
-          headers: { Authorization: `Bearer ${token}`,  'Accept': 'application/xml' },
-        })
-        .then((res) => {
-          const blob = new Blob([res.data], { type: 'application/xml' });
-          saveAs(blob, `invoice-${invoiceNumber}.xml`);
-        })
-        .catch(error => console.log(error.response.data.error))
-      }
+      axios.post(`${API_URL}/v3/invoice`, params, {
+        headers: { Authorization: `Bearer ${token}`}
+      }).then(() => {
+        if (format === 'PDF') {
+          axios.post(`${API_URL}/v1/invoice/${invoiceId}/pdf`, {}, {
+            headers: { Authorization: `Bearer ${token}`},
+          })
+          .then((doc) => {
+            pdfMake.createPdf(doc.data).download(`invoice-${invoiceNumber}.pdf`);
+          }).catch(error => console.log(error?.response?.data?.error || error.message));
+        } else {
+          // download as ubl
+          axios.get(`${API_URL}/v3/invoice/${invoiceId}/`, {
+            headers: { Authorization: `Bearer ${token}`,  'Accept': 'application/xml' },
+          })
+          .then((res) => {
+            const blob = new Blob([res.data], { type: 'application/xml' });
+            saveAs(blob, `invoice-${invoiceNumber}.xml`);
+          }).catch(error => console.log(error.response.data.error))
+        }
+      }).catch(error => console.log(error.response.data.error))
     } 
   }
 

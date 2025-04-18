@@ -145,7 +145,7 @@ export async function editInvoiceDetails(token: string, invoiceId: string, edits
 
 export async function editInvoiceDetailsV3(token: string, invoiceId: string, edits: Partial<InvoiceDetailsV2>) {
   const user = await validators.validateToken(token);
-const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+  const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
   Object.assign(invoice.details, edits);
   const data = getData();
   await data.update({
@@ -329,7 +329,7 @@ export async function generateInvoiceXML(token: string, invoiceId: string) {
     for (const item of invoice.items) {
       xml
         .ele('Item')
-          .ele('Description').txt(item.description).up()
+          .ele('Description').txt(item.itemDetails.description).up()
           .ele('Quantity').txt(item.quantity.toString()).up()
           .ele('UnitPrice').txt(String(item.itemDetails.unitPrice)).up()
           .ele('Total').txt(String(invoice.total)).up()

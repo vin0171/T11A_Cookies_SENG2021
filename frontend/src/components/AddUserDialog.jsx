@@ -13,7 +13,7 @@ export default function AddUserDialog({token, companyId}) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const email = formData.get('user-email');
-    axios.post(`${API_URL}/v1/company/userAdd`, {companyId: companyId, userEmailToAdd: email},
+    axios.post(`${API_URL}/v3/company/userAdd`, {companyId: companyId, userEmailToAdd: email},
       {headers: {Authorization: `Bearer ${token}`}
     }).then(() => handleClose())
     .catch(error => console.log(error.response.data.error))

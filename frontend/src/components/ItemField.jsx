@@ -55,7 +55,7 @@ export default function ItemField({
     const price = formData.get('new-item-cost');
     const sku = formData.get('item-sku');
     const description = formData.get('description');
-    // SAVE ITEM
+    
     
     handleClose();
   }

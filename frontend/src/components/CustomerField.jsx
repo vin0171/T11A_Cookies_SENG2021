@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { SelectField, clickableTextStyle } from "../helper";
-import { Autocomplete, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, TextField, Typography } from "@mui/material";
 
 const customerTypeOptions = [
   {label: 'Create a New Customer'},
@@ -69,12 +69,19 @@ export default function CustomerField({
             onChange={(e) => setCustomerEmail(e.target.value)}
             onBlur={() => (setBlur(true))}
           />
-          <Typography 
-            onClick={() => setCustomerAdditionalFields(!customerAdditionalFields)}
-            sx={{...clickableTextStyle}}
-          >
-            {customerAdditonalText}
-          </Typography>
+          <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
+            <Typography 
+              onClick={() => setCustomerAdditionalFields(!customerAdditionalFields)}
+              sx={{...clickableTextStyle}}
+            >
+              {customerAdditonalText}
+            </Typography>
+            {customerAdditonalText === 'Add Additional Details' && 
+            <Typography sx={{...clickableTextStyle}}>
+              Confirm
+            </Typography>
+            }
+          </Box>
         </Fragment>
       }
     </Fragment>

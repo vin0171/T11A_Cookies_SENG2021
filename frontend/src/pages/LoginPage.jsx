@@ -59,7 +59,7 @@ export default function LoginPage({ setToken }) {
       password: formData.get('login-password'),
     };
     
-    axios.post(`${API_URL}/v1/user/login`, postParams)
+    axios.post(`${API_URL}/v3/user/login`, postParams)
       .then((response) => {
         setError({ isError: false, msg: '' });
         setToken(response.data);

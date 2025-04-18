@@ -28,7 +28,7 @@ const handleSubmit = (event) => {
     country: formData.get('country'),
   };
 
-  axios.post(`${API_URL}/v1/company/register`, postParams, {headers: {Authorization: `Bearer ${token}`}})
+  axios.post(`${API_URL}/v3/company/register`, postParams, {headers: {Authorization: `Bearer ${token}`}})
   .then(() => {
     setCompanyCreated(true);
     handleClose();

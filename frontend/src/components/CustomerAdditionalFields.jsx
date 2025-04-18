@@ -1,6 +1,7 @@
 import { Box, Checkbox, TextField, Typography } from "@mui/material"
 import { Fragment } from "react"
 import AddressFields from "./AddressFields"
+import { clickableTextStyle } from "../helper"
 
 export default function CustomerAdditionalFields({
   customerAdditionalFields,
@@ -128,6 +129,11 @@ export default function CustomerAdditionalFields({
               onBlur={() => (setBlur(true))}
             />
           </Box>
+        </Box>
+        <Box sx={{mt: 3, width: '100%', display: 'flex', justifyContent: 'end'}}>
+          <Typography sx={{...clickableTextStyle, width: 'fit-content'}}>
+            Confirm
+          </Typography>
         </Box>
       </Box>
       }

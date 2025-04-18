@@ -1,14 +1,7 @@
 // Helper Functions
-import hljs from 'highlight.js/lib/core';
-import javascript from 'highlight.js/lib/languages/javascript';
-import python from 'highlight.js/lib/languages/python';
-import c from 'highlight.js/lib/languages/cpp'
 import styled from "styled-components";
+import {v4 as uuidv4} from 'uuid';
 import { MenuItem, TextField } from '@mui/material';
-
-hljs.registerLanguage('javascript', javascript);
-hljs.registerLanguage('python', python);
-hljs.registerLanguage('c', c);
 
 export const formInputStyle = {
   '& label.Mui-focused': {
@@ -151,7 +144,8 @@ export const makeInvoiceParams = (
   };
 
   const participant = {
-    companyName: customer,
+    customerId: uuidv4(),
+    name: customer,
     billingAddress: billingAddress,
     shippingAddress: shippingAddress,
     email: customerEmail,
@@ -160,20 +154,22 @@ export const makeInvoiceParams = (
   }
 
   const items = invoiceItems.map((item) => {
+    const itemDetails = {
+      id: 'hello',
+      itemSku: item.itemSku,
+      itemName: item.itemName,
+      description: item.description,
+      unitPrice: unitPrice, 
+    }
     const itemQuantity = parseInt(item.quantity || 0);
     const unitPrice = parseInt(item.unitPrice || 0);
     const discountAmount = parseInt(item.discountAmount || 0);
     const total = itemQuantity * unitPrice
     return {
-      id: item.id,
-      isNew: false,
-      itemSku: item.itemSku,
-      itemName: item.itemName,
-      description: item.description,
+      itemDetails: itemDetails,
       quantity: itemQuantity,
-      unitPrice: unitPrice, 
       discountAmount: discountAmount,
-      totalAmount: total * (1 - discountAmount / 100)
+      totalAmount: total * (1 - discountAmount / 100),
     };
   });
 

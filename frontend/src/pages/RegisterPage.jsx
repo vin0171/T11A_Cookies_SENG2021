@@ -11,6 +11,7 @@ import axios from 'axios';
 import AuthPageTemplate from '../components/AuthPageTemplate';
 import ErrorMessage from '../components/ErrorMessage';
 import DefaultButton from '../components/LoginRegisterButton';
+import dayjs from 'dayjs';
 
 const Form = loginRegisterFormStyle;
 
@@ -157,10 +158,10 @@ export default function RegisterPage({ setToken }) {
       password: password,
       nameFirst: firstName,
       nameLast: lastName,
-      age: age
+      age: dayjs().diff(dayjs(age), 'year')
     };  
 
-    axios.post(`${API_URL}/v1/user/register`, postParams)
+    axios.post(`${API_URL}/v3/user/register`, postParams)
       .then((response) => {
         setError({ isError: false, msg: '' });
         setToken(response.data);

@@ -59,7 +59,6 @@ export interface Item {
   itemName: string,
   description: string,
   unitPrice: number,
-
 }
 
 // TODO: UPDATED
@@ -68,7 +67,6 @@ export interface InvoiceItemV2 {
   quantity: number,
   discountAmount: number,
   totalAmount: number
-  description: string,
 }
 
 // TODO: OLD

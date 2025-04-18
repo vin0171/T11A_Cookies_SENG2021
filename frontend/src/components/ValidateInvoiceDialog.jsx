@@ -18,7 +18,7 @@ export default function ValidateInvoiceDialog({token, companyId}) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const invoice = formData.get('ubl-invoice');
-    axios.post(`${API_URL}/v1/invoice/validate`, {ublInvoice: invoice})
+    axios.post(`${API_URL}/v3/invoice/validate`, {ublInvoice: invoice})
     .then((res) => {
       if (!res.data) {
         console.log('error')
