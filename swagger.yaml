@@ -569,7 +569,7 @@ components:
       name: companyId
       required: true
       schema:
-        type: integer
+        type: string
     Token:
       in: path
       description: User Token
@@ -1456,7 +1456,329 @@ paths:
           $ref: '#/components/responses/InvoiceListSuccess'
         401:
           $ref: '#/components/responses/InvoiceListError401'
-        
+
+  # ===================================================================
+# Iteration 3 Endpoints
+# ===================================================================
+
+  /v3/user/register:
+    post:
+      summary: Register a new user account (V3)
+      description: Takes in user information and registers them
+      tags:
+        - "Iteration 3"
+      requestBody:
+        $ref: '#/components/requestBodies/UserRegister'
+      responses:
+        200:
+          $ref: '#/components/responses/TokenResponse'
+        400:
+          $ref: '#/components/responses/RegisterErrorResponse'
+
+  /v3/user/login:
+    post:
+      summary: Log in a user (V3)
+      description: Verifies login credentials
+      tags:
+        - "Iteration 3"
+      requestBody:
+        $ref: '#/components/requestBodies/UserLogin'
+      responses:
+        200:
+          $ref: '#/components/responses/TokenResponse'
+        400:
+          $ref: '#/components/responses/LoginErrorResponse'
+
+  /v3/company/register:
+    post:
+      summary: Register a company (V3)
+      description: Registers a new company with address info
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      requestBody:
+        $ref: '#/components/requestBodies/CompanyRequestBody'
+      responses:
+        200:
+          $ref: '#/components/responses/CompanyRegisterSuccess'
+        400:
+          $ref: '#/components/responses/CompanyRegisterError400'
+        401:
+          $ref: '#/components/responses/CompanyRegisterError401'
+
+  /v3/company/userAdd:
+    post:
+      summary: Add a user to a company (V3)
+      description: Adds a user to an existing company
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      requestBody:
+        $ref: '#/components/requestBodies/CompanyAddUser'
+      responses:
+        200:
+          $ref: '#/components/responses/CompanyUserAddSuccess'
+        400:
+          $ref: '#/components/responses/CompanyUserAddError400'
+        401:
+          $ref: '#/components/responses/CompanyUserAddError401'
+        403:
+          $ref: '#/components/responses/CompanyUserAddError403'
+
+  /v3/company/{companyId}:
+    get:
+      summary: Get company info (V3)
+      description: Retrieve company details
+      tags:
+        - "Iteration 3"
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      responses:
+        200:
+          $ref: '#/components/responses/CompanyGetSuccess'
+        400:
+          $ref: '#/components/responses/CompanyGet400'
+        401:
+          $ref: '#/components/responses/CompanyGet401'
+
+  /v3/user/details:
+    get:
+      summary: Get user details (V3)
+      description: Retrieves user details via token
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      parameters:
+        - $ref: '#/components/parameters/Token'
+      responses:
+        200:
+          $ref: '#/components/responses/UserRetrievalSuccess'
+        400:
+          $ref: '#/components/responses/UserRetrievalError400'
+        401:
+          $ref: '#/components/responses/UserRetrievalError401'
+
+  /v3/company/{companyId}/invoices:
+    get:
+      summary: List invoices of company (V3)
+      description: Retrieves invoices by company
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceListSuccess'
+        401:
+          $ref: '#/components/responses/InvoiceListError401'
+
+  /v3/invoice:
+    post:
+      summary: Create invoice (V3)
+      description: Create invoice with optional draft status
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      requestBody:
+        $ref: '#/components/requestBodies/InvoiceCreationRequestBodyV2'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceCreationSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceCreationError400'
+
+  /v3/invoice/{invoiceId}:
+    get:
+      summary: Retrieve invoice (V3)
+      description: Gets invoice JSON or UBL format
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      parameters:
+        - $ref: '#/components/parameters/InvoiceId'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceRetrievalSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceRetrievalError400'
+        401:
+          $ref: '#/components/responses/InvoiceRetrievalError401'
+        403:
+          $ref: '#/components/responses/InvoiceRetrievalError403'
+    delete:
+      summary: Delete invoice (V3)
+      description: Deletes an invoice
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      parameters:
+        - $ref: '#/components/parameters/InvoiceId'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceDeleteSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceDeleteError400'
+        401:
+          $ref: '#/components/responses/InvoiceDeleteError401'
+        403:
+          $ref: '#/components/responses/InvoiceDeleteError403'
+
+  /v3/invoice/{invoiceId}/edit:
+    put:
+      summary: Edit invoice (V3)
+      description: Edit invoice content using invoice ID
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      parameters:
+        - $ref: '#/components/parameters/InvoiceId'
+      requestBody:
+        $ref: '#/components/requestBodies/InvoiceCreationRequestBodyV2'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceEditSuccess'
+        400:
+          $ref: '#/components/responses/InvoiceEditError400'
+        401:
+          $ref: '#/components/responses/InvoiceEditError401'
+        403:
+          $ref: '#/components/responses/InvoiceEditError403'
+
+  /v3/invoice/validate:
+    post:
+      summary: Validate UBL Invoice (V3)
+      description: Validates UBL invoice
+      tags:
+        - "Iteration 3"
+      requestBody:
+        $ref: '#/components/requestBodies/UBLRequestBody'
+      responses:
+        200:
+          $ref: '#/components/responses/InvoiceValidationSuccess'
+
+  /v3/customer:
+    post:
+      summary: Register a customer (V3)
+      description: Registers a new customer under a company
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - billingAddress
+                - shippingAddress
+                - email
+                - bankName
+                - bankAccount
+                - companyId
+              properties:
+                name:
+                  $ref: '#/components/schemas/Name'
+                billingAddress:
+                  $ref: '#/components/schemas/AddressInterface'
+                shippingAddress:
+                  $ref: '#/components/schemas/AddressInterface'
+                email:
+                  $ref: '#/components/schemas/Email'
+                bankName:
+                  $ref: '#/components/schemas/BankName'
+                bankAccount:
+                  $ref: '#/components/schemas/BankAccount'
+                companyId:
+                  $ref: '#/components/schemas/CompanyID'
+      responses:
+        200:
+          $ref: '#/components/responses/EmptyResponse'
+
+  /v3/item:
+    post:
+      summary: Register an item (V3)
+      description: Registers a new item for a company
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - sku
+                - price
+                - description
+                - companyId
+              properties:
+                name:
+                  $ref: '#/components/schemas/ItemName'
+                sku:
+                  $ref: '#/components/schemas/ItemSku'
+                price:
+                  $ref: '#/components/schemas/UnitPrice'
+                description:
+                  $ref: '#/components/schemas/Description'
+                companyId:
+                  $ref: '#/components/schemas/CompanyID'
+      responses:
+        200:
+          $ref: '#/components/responses/EmptyResponse'
+
+  /v3/company/{companyId}/customers:
+    get:
+      summary: List customers of a company (V3)
+      description: Retrieves all customers associated with a company
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      responses:
+        200:
+          description: A list of customers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ParticipantV2'
+
+  /v3/company/{companyId}/items:
+    get:
+      summary: List items of a company (V3)
+      description: Retrieves all items listed under a company
+      tags:
+        - "Iteration 3"
+      security:
+        - Token: []
+      parameters:
+        - $ref: '#/components/parameters/CompanyId'
+      responses:
+        200:
+          description: A list of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/InvoiceItem'
+
     
       
   
