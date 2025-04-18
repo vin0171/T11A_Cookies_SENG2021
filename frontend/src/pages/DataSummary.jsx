@@ -4,6 +4,7 @@ import { Grid } from '@mui/system';
 import SessionsChart from "../components/SessionChart";
 import LineGraph from "../components/LineGraph";
 import { Typography } from "@mui/material";
+import StatCard from "../components/DataTag";
 
 const DataGraph = () => {
   return (
@@ -22,7 +23,8 @@ const DataGraph = () => {
       <Box display="flex" justifyContent="left">
         <hr style={{ width: '100%', borderColor: 'white' }} />
       </Box>
-      <Box display="flex" gap={2} width="100%" sx={{ flexWrap: 'nowrap', marginTop: 2, marginBottom: 20 }}>
+      
+      <Box display="flex" gap={2} width="100%" sx={{ flexWrap: 'nowrap', marginTop: 2 }}>
         <Box sx={{ flex: 1 }}>
           <BarGraph 
             title="Customer" 
@@ -41,6 +43,44 @@ const DataGraph = () => {
             rawValues={[4000, 3000, 2000, 1000, 5000, 6000, 7000]} 
           />
         </Box>
+      </Box>
+
+      <Box display="flex" gap={2} width="100%" sx={{ flexWrap: 'nowrap', marginTop: 2, marginBottom: 20 }}>
+        <StatCard
+          icon="📄"
+          value={0}
+          title="Total Invoices"
+          subtitle="From all accounts"
+          growth={12}
+          color="#f44336" 
+        />
+
+        <StatCard
+          icon="✅"
+          value={0}
+          title="Validated Invoices"
+          subtitle="Successfully processed"
+          growth={8}
+          color="#4caf50" 
+        />
+
+        <StatCard
+          icon="⏱️"
+          value={0}
+          title="Invoices Pending Validation"
+          subtitle="Awaiting processing"
+          growth={-3}
+          color="#ffb300" 
+        />
+
+        <StatCard
+          icon="💲"
+          value={"$0.00"}
+          title="Total Revenue"
+          subtitle="Across all invoices"
+          growth={15}
+          color="#2196f3" 
+        />
       </Box>
 
     </Container>
