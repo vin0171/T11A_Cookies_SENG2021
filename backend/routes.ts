@@ -2,6 +2,7 @@ import { Express, NextFunction, Request, Response } from "express";
 import * as users from './users';
 import * as companies from './companies';
 import * as invoices from './invoices';
+import * as emailService from './emailService';
 import { validateLocation, validateToken } from "./validationHelpers";
 import { Invoice, Location } from "./interface";
 // import { InvoiceConverter } from "./InvoiceConverter";
@@ -211,6 +212,17 @@ function routes(app: Express) {
       const response = await validateToken(token)
       res.status(200).json(response);
     } catch(err) {
+      next(err)
+    }
+  });
+
+  app.post('/v3/company/sendEmailReminder', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const emailTo = req.body.emailTo;
+      const response = emailService.sendPaymentRequestEmail(token, emailTo);
+      res.status(200).json(response);
+    } catch (err) {
       next(err)
     }
   });
