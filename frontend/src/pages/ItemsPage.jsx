@@ -1,21 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Select, MenuItem
 } from '@mui/material';
-
-const dummyItems = [
-  { name: 'Laptop Pro 15"', sku: 'LP-015', price: 1800, stock: 12 },
-  { name: 'Wireless Mouse', sku: 'WM-001', price: 45, stock: 58 },
-  { name: 'Mechanical Keyboard', sku: 'MK-201', price: 120, stock: 34 },
-  { name: 'Monitor 27"', sku: 'MN-270', price: 350, stock: 8 },
-];
+import axios from 'axios';
 
 export default function ItemsPage() {
   const [sort, setSort] = useState('');
+  const [items, setItems] = useState([]);
 
-  const sortedItems = [...dummyItems].sort((a, b) => {
-    if (sort === 'name') return a.name.localeCompare(b.name);
+  useEffect(() => {
+    const fetchItems = async () => {
+      try {
+        const token = localStorage.getItem('token');
+
+        // Get companyId from user details
+        const userDetails = await axios.get('http://localhost:5005/v3/user/details', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const companyId = userDetails.data.companyId;
+
+        // Use companyId to get items
+        const response = await axios.get(`http://localhost:5005/v3/company/${companyId}/items`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setItems(response.data.items);
+      } catch (err) {
+        console.error('Failed to fetch items:', err);
+      }
+    };
+
+    fetchItems();
+  }, []);
+
+  const sortedItems = [...items].sort((a, b) => {
+    if (sort === 'name') return a.itemName.localeCompare(b.itemName);
     if (sort === 'price') return b.price - a.price;
     if (sort === 'stock') return b.stock - a.stock;
     return 0;
@@ -60,8 +81,8 @@ export default function ItemsPage() {
           <TableBody>
             {sortedItems.map((item, i) => (
               <TableRow key={i}>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.sku}</TableCell>
+                <TableCell>{item.itemName}</TableCell>
+                <TableCell>{item.itemSku}</TableCell>
                 <TableCell>{item.price}</TableCell>
                 <TableCell>{item.stock}</TableCell>
               </TableRow>

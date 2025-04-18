@@ -1,22 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper,
-  Select, MenuItem, Button
+  Select, MenuItem
 } from '@mui/material';
-
-const dummyInvoices = [
-  { number: 'INV-001', client: 'Alice', amount: 2200, date: '2024-11-01' },
-  { number: 'INV-002', client: 'Bob', amount: 450, date: '2024-11-10' },
-  { number: 'INV-003', client: 'Charlie', amount: 890, date: '2024-12-02' },
-];
+import axios from 'axios';
 
 export default function InvoicesPage() {
   const [sort, setSort] = useState('');
+  const [invoices, setInvoices] = useState([]);
 
-  const sortedInvoices = [...dummyInvoices].sort((a, b) => {
-    if (sort === 'number') return a.number.localeCompare(b.number);
-    if (sort === 'amount') return b.amount - a.amount;
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const token = localStorage.getItem('token');
+
+        // Step 1: Fetch companyId using token
+        const userDetailsRes = await axios.get('http://localhost:5005/v3/user/details', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const companyId = userDetailsRes.data.companyId;
+
+        // Step 2: Fetch invoices using companyId
+        const response = await axios.get(`http://localhost:5005/v3/company/${companyId}/invoices`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setInvoices(response.data.invoices);
+      } catch (err) {
+        console.error('Failed to fetch invoices:', err);
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
+  const sortedInvoices = [...invoices].sort((a, b) => {
+    if (sort === 'number') return a.invoiceId.localeCompare(b.invoiceId);
+    if (sort === 'amount') return b.details?.totalAmount - a.details?.totalAmount;
     return 0;
   });
 
@@ -26,13 +48,15 @@ export default function InvoicesPage() {
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Invoices
         </Typography>
-        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
             displayEmpty
             sx={{
-              bgcolor: '#e3f2fd', height: '36px', borderRadius: '6px',
+              bgcolor: '#e3f2fd',
+              height: '36px',
+              borderRadius: '6px',
               '.MuiOutlinedInput-notchedOutline': { border: '1px solid #90caf9' },
               '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#42a5f5' }
             }}
@@ -43,7 +67,6 @@ export default function InvoicesPage() {
           </Select>
         </Box>
       </Box>
-
 
       <TableContainer component={Paper}>
         <Table>
@@ -58,10 +81,10 @@ export default function InvoicesPage() {
           <TableBody>
             {sortedInvoices.map((inv, i) => (
               <TableRow key={i}>
-                <TableCell>{inv.number}</TableCell>
-                <TableCell>{inv.client}</TableCell>
-                <TableCell>{inv.amount}</TableCell>
-                <TableCell>{new Date(inv.date).toLocaleDateString()}</TableCell>
+                <TableCell>{inv.invoiceId}</TableCell>
+                <TableCell>{inv.details?.receiver?.name || '—'}</TableCell>
+                <TableCell>{inv.details?.totalAmount ?? '-'}</TableCell>
+                <TableCell>{new Date(inv.details?.issueDate).toLocaleDateString()}</TableCell>
               </TableRow>
             ))}
           </TableBody>
