@@ -108,11 +108,11 @@ export interface Address {
 export interface ParticipantV2 {
   customerId: string,
   name: string,
-  billingAddress: Address,
-  shippingAddress: Address,
+  billingAddress: Address | null,
+  shippingAddress: Address | null,
   email: string,
-  bankName: string,
-  bankAccount: string,
+  bankName: string | null,
+  bankAccount: string | null,
 }
 
 // these should be parsed as a float/ int when used

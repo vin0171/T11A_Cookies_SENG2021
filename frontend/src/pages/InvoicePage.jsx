@@ -25,8 +25,10 @@ pdfMake.addVirtualFileSystem(pdfFonts);
 export default function InvoicePage({token}) {
   const navigate = useNavigate();
   const invoiceId =  useParams().invoiceId;
+  const [userDetails, setUserDetails] = useState({})
   const [customer, setCustomer] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
+  const [customerList, setCustomerList] = useState({})
   const [billingAddress1, setBillingAddress1] = useState('');
   const [billingAddress2, setBillingAddress2] = useState('');
   const [billingSuburb, setBillingSuburb] = useState('');
@@ -54,8 +56,25 @@ export default function InvoicePage({token}) {
   const [invoiceItems, setInvoiceItems] = useState([]);
   const [format, setFormat] = useState('PDF');
   const [update, setUpdate] = useState(true);
+  const [customerType, setCustomerType] = useState('Create a New Customer');
+  const [customerAdditionalFields, setCustomerAdditionalFields] = useState(false);
+  const [customerAdditonalText, setCustomerAdditionalText] = useState('Add Additional Details');
+  const [invoiceNumberOption, setInvoiceNumberOption] = useState('Custom');
+  const [itemType, setItemType] = useState('Add Existing Item');
+  const [blur, setBlur] = useState(false);
+  const [discountType, setDiscountType] = useState('Flat');
+  const [discountAmount, setDiscountAmount] = useState('');
 
   useEffect(() => {
+    axios.get(`${API_URL}/v3/user/details`, {headers: {Authorization: `Bearer ${token}`}})
+    .then((res) => {
+      setUserDetails(res.data)
+      axios.get(`${API_URL}/v3/company/${res.data.companyId}/customers`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((res) => {
+        setCustomerList(res.data);
+      }).catch(error => console.log(error.response.data.error))
+    }).catch(error => console.log(error.response.data.error))
+
     if (invoiceId) {
       axios.get(`${API_URL}/v3/invoice/${invoiceId}`, {headers: {Authorization: `Bearer ${token}`}})
       .then((res) => {
@@ -76,7 +95,7 @@ export default function InvoicePage({token}) {
         setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
         setShippingCountry(res.data.details.receiver.shippingAddress.country);  
         setShippingChecked(res.data.details.shippingChecked);
-        setShippingCostDetails(res.data.details.shippingCostDetails)
+        setShippingCostDetails(res.data.details.shippingCostDetails);
         
         setInvoiceNumber(res.data.details.invoiceNumber);
         setBankNum(res.data.details.receiver.bankAccount);
@@ -95,6 +114,34 @@ export default function InvoicePage({token}) {
       setUpdate(false)
     }
   }, [])
+
+  useEffect(() => {
+    setBlur(true)
+  }, [dueDate, issueDate])
+
+  useEffect(() => {
+    if (Object.keys(userDetails).length != 0) {
+      axios.get(`${API_URL}/v3/company/${userDetails.companyId}/customers`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((res) => {
+        const currentCustomer = res.data.find((c) => c.name === customer);
+        setCustomerEmail(currentCustomer.email);
+        setBillingAddress1(currentCustomer.billingAddress.addressLine1);
+        setBillingAddress2(currentCustomer.billingAddress.addressLine2);
+        setBillingSuburb(currentCustomer.billingAddress.suburb);
+        setBillingState(currentCustomer.billingAddress.state);
+        setBillingPostCode(currentCustomer.billingAddress.postcode);
+        setBillingCountry(currentCustomer.billingAddress.country);
+        setShippingAddress1(currentCustomer.shippingAddress.addressLine1);
+        setShippingAddress2(currentCustomer.shippingAddress.addressLine2);
+        setShippingSuburb(currentCustomer.shippingAddress.suburb);
+        setShippingState(currentCustomer.shippingAddress.state);
+        setShippingPostCode(currentCustomer.shippingAddress.postcode);
+        setShippingCountry(currentCustomer.shippingAddress.country);  
+        setBankNum(currentCustomer.bankAccount);
+        setBankName(currentCustomer.bankName);
+      }).catch(error => error.response.data.error)
+    }
+  }, [customer])
 
   const calculateTotal = () => {
     let total = 0
@@ -128,6 +175,44 @@ export default function InvoicePage({token}) {
     return total
   }
 
+  const handleCreateCustomer = (event) => {
+    event.preventDefault();
+    const customerDetails = {
+      name: customer,
+      billingAddress: {
+        addressLine1: billingAddress1,
+        addressLine2: billingAddress2,
+        suburb: billingSuburb,
+        state: billingState,
+        postcode: billingPostCode,
+        country: billingCountry,
+      },
+      shippingAddress: {
+        addressLine1: shippingAddress1,
+        addressLine2: shippingAddress2,
+        suburb: shippingSuburb,
+        state: shippingState,
+        postcode: shippingPostCode,
+        country: shippingCountry,
+      },
+      email: customerEmail,
+      bankName: bankName,
+      bankAccount: bankNum,
+      companyId: userDetails.companyId
+    }
+    axios.post(`${API_URL}/v3/customer`, customerDetails, {
+      headers: { Authorization: `Bearer ${token}`}
+    }).then(() => {
+      axios.get(`${API_URL}/v3/company/${userDetails.companyId}/customers`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((res) => {
+        setCustomerList(res.data);
+        setCustomerType('Existing Customer');
+        setCustomerAdditionalFields(false);
+      })
+      .catch(error => console.log(error.response.data.error))
+    })
+    .catch(error => console.log(error.response.data.error))
+  }
 
   // ONLY PRESS THIS BUTTON IF YOU HAVE A REGISTERED CUSTOMER AND ITEM
   const handleSubmit = (event) => {
@@ -219,15 +304,6 @@ export default function InvoicePage({token}) {
     {label: 'Custom'}
   ];
 
-  const [customerType, setCustomerType] = useState('Create a New Customer');
-  const [customerAdditionalFields, setCustomerAdditionalFields] = useState(false);
-  const [customerAdditonalText, setCustomerAdditionalText] = useState('Add Additional Details');
-  const [invoiceNumberOption, setInvoiceNumberOption] = useState('Custom');
-  const [itemType, setItemType] = useState('Add Existing Item');
-  const [blur, setBlur] = useState(false);
-  const [discountType, setDiscountType] = useState('Flat');
-  const [discountAmount, setDiscountAmount] = useState('');
-
   useEffect(() => {
     if (customerAdditionalFields){
       setCustomerAdditionalText('Cancel');
@@ -268,6 +344,8 @@ export default function InvoicePage({token}) {
                       setCustomerAdditionalFields={setCustomerAdditionalFields}
                       customerAdditonalText={customerAdditonalText}
                       setBlur={setBlur}
+                      handleCreateCustomer={handleCreateCustomer}
+                      customerList={customerList}
                     />
                     <CustomerAdditionalFields
                       customerAdditionalFields={customerAdditionalFields}
@@ -302,6 +380,7 @@ export default function InvoicePage({token}) {
                       bankNum={bankNum}
                       setBankNum={setBankNum}
                       setBlur={setBlur}
+                      handleCreateCustomer={handleCreateCustomer}
                     />
                   </Box>
                 </Box>
@@ -314,7 +393,6 @@ export default function InvoicePage({token}) {
                         name='issue-date'
                         value={issueDate}
                         onChange={(newValue) => setIssueDate(newValue)}
-                        onBlur={() => (setBlur(true))}
                         
                       />
                     </LocalizationProvider>
@@ -324,7 +402,6 @@ export default function InvoicePage({token}) {
                         name='due-date'
                         value={dueDate}
                         onChange={(newValue) => setDueDate(newValue)}
-                        onBlur={() => (setBlur(true))}
                       />
                     </LocalizationProvider>
                   </Box>

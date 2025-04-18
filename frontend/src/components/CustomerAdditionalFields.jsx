@@ -35,7 +35,8 @@ export default function CustomerAdditionalFields({
   setBankName,
   bankNum,
   setBankNum,
-  setBlur
+  setBlur,
+  handleCreateCustomer
 }) {
   return (
     <Fragment>
@@ -131,7 +132,11 @@ export default function CustomerAdditionalFields({
           </Box>
         </Box>
         <Box sx={{mt: 3, width: '100%', display: 'flex', justifyContent: 'end'}}>
-          <Typography sx={{...clickableTextStyle, width: 'fit-content'}}>
+          <Typography 
+            sx={{...clickableTextStyle, width: 'fit-content'}}
+            onClick={handleCreateCustomer}
+            type='submit'
+          >
             Confirm
           </Typography>
         </Box>

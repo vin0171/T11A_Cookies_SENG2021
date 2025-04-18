@@ -7,13 +7,6 @@ const customerTypeOptions = [
   {label: 'Existing Customer'}
 ];
 
-// wait for backend to store the customers and change this 
-const existingCustomersOptions = [
-  {label: 'ann jade luong'},
-  {label: 'chiikawa'},
-  {label: 'ann usagi luong'}
-];
-
 export default function CustomerField({
   customerType,
   setCustomerType,
@@ -25,7 +18,14 @@ export default function CustomerField({
   setCustomerAdditionalFields,
   customerAdditonalText,
   setBlur,
+  customerList,
+  handleCreateCustomer
 }) {
+
+  const existingCustomersOptions = Object.values(customerList).map((c) => ({
+    label: c.name
+  }));
+
   return (
     <Fragment>
       <SelectField
@@ -42,6 +42,7 @@ export default function CustomerField({
           options={existingCustomersOptions}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label='Customer' />}
+          onChange={(event, newValue) => setCustomer(newValue.label)}
           onBlur={() => (setBlur(true))}
         />
         :
@@ -55,7 +56,6 @@ export default function CustomerField({
             autoComplete='on'
             sx={{ width: '100%' }}
             onChange={(e) => setCustomer(e.target.value)}
-            onBlur={() => (setBlur(true))}
           />
           <TextField
             id='customer-email'
@@ -67,7 +67,6 @@ export default function CustomerField({
             autoComplete='on'
             sx={{ width: '100%' }}
             onChange={(e) => setCustomerEmail(e.target.value)}
-            onBlur={() => (setBlur(true))}
           />
           <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
             <Typography 
@@ -77,7 +76,11 @@ export default function CustomerField({
               {customerAdditonalText}
             </Typography>
             {customerAdditonalText === 'Add Additional Details' && 
-            <Typography sx={{...clickableTextStyle}}>
+            <Typography 
+              sx={{...clickableTextStyle}}
+              onClick={handleCreateCustomer}
+              type='submit'
+            >
               Confirm
             </Typography>
             }

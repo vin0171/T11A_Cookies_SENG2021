@@ -135,12 +135,12 @@ export const makeInvoiceParams = (
   };
 
   const shippingAddress = {
-    addressLine1: shippingAddress1,
-    addressLine2: shippingAddress2,
-    suburb: shippingSuburb,
-    state: shippingState,
-    postcode: shippingPostCode,
-    country: shippingCountry,
+    addressLine1: shippingChecked ? billingAddress1 : shippingAddress1,
+    addressLine2: shippingChecked ? billingAddress2 : shippingAddress2,
+    suburb: shippingChecked ? billingSuburb : shippingSuburb,
+    state: shippingChecked ? billingState : shippingState,
+    postcode: shippingChecked ? billingPostCode : shippingPostCode,
+    country: shippingChecked ? billingCountry : shippingCountry,
   };
 
   const participant = {

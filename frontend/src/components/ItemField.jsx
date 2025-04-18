@@ -56,7 +56,6 @@ export default function ItemField({
     const sku = formData.get('item-sku');
     const description = formData.get('description');
     
-    
     handleClose();
   }
 

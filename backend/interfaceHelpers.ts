@@ -270,7 +270,7 @@ export async function getInvoice(invoiceId: string) {
 }
 
 
-export async function createCustomerV3(name: string, billingAddress: Address, shippingAddress: Address, email: string, bankName: string, bankAccount: string) : Promise<ParticipantV2> {
+export async function createCustomerV3(name: string, billingAddress: Address | null, shippingAddress: Address | null, email: string, bankName: string | null, bankAccount: string | null) : Promise<ParticipantV2> {
     if (!validators.isValidName(name)) {
 		throw HTTPError(400, 'Error: Invalid Name');
 	}
@@ -278,12 +278,7 @@ export async function createCustomerV3(name: string, billingAddress: Address, sh
     if (!validators.isValidEmail(email)) {
         throw HTTPError(400, 'Error: Invalid Email');
     }
-
-    const customerExistsAlready: ParticipantV2 = await getCustomerByEmailV3(email);
-    if (customerExistsAlready !== undefined) {
-        return customerExistsAlready;
-    }
-
+    
     return {
         customerId: uuidv4(),
         name: name,

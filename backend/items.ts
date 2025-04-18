@@ -5,7 +5,6 @@ import * as validators from "./validationHelpers"
 import HTTPError from 'http-errors';
 
 
-
 export async function registerItem(token: string, companyId: string,  name: string, sku: string, unitPrice: string, description: string) {
     const user = await validators.validateToken(token);
 
