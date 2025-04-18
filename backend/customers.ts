@@ -31,10 +31,10 @@ export async function listCompanyCustomers(token: string, companyId: string) {
     if (user.companyId != company.companyId) {
         throw HTTPError(403, 'Error: User is not authorised')
     }
-    return getInvoiceList(company.customers);
+    return getCustomerList(company.customers);
 }
 
-async function getInvoiceList(cusList: number[]) {
+async function getCustomerList(cusList: number[]) {
     const cusMap = cusList.map((cus: number) => ({ customerId: cus }));
     if (cusList.length === 0) return cusList;
     const data = getData();

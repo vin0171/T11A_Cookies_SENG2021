@@ -6,20 +6,21 @@ import HTTPError from 'http-errors';
 
 
 
-export async function registerItem(token: string, companyId: string,  name: string, sku: string, price: string, description: string) {
+export async function registerItem(token: string, companyId: string,  name: string, sku: string, unitPrice: string, description: string) {
     const user = await validators.validateToken(token);
+
     if (user.companyId !== companyId) throw HTTPError(403, 'Error: User is not a part of this company');
     
-    const newItem = await createItemV3(name, sku, price, description);
+    const newItem = await createItemV3(name, sku, unitPrice, description);
 
     const data = getData();
     await data.put({TableName: "Items", Item: newItem});
-    const updateExpression = 'SET items = list_append(items, :itemId)';
+    const updateExpression = 'SET itemsList = list_append(itemsList, :itemsList)';
     await data.update({
         TableName: "Companies",
         Key: { companyId: companyId },
         UpdateExpression: updateExpression,
-        ExpressionAttributeValues: { ':itemId': [newItem.itemId], },
+        ExpressionAttributeValues: { ':itemsList': [newItem.itemId], },
     });
 }
 
@@ -31,10 +32,10 @@ export async function listCompanyItems(token: string, companyId: string) {
     if (user.companyId != company.companyId) {
         throw HTTPError(403, 'Error: User is not authorised')
     }
-    return getInvoiceList(company.items);
+    return getItemList(company.itemsList);
 }
 
-async function getInvoiceList(itemList: number[]) {
+async function getItemList(itemList: number[]) {
     const itemMap = itemList.map((item: number) => ({ itemId: item }));
     if (itemList.length === 0) return itemList;
     const data = getData();

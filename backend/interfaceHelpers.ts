@@ -177,7 +177,7 @@ export function createCompanyV3(companyName: string, companyAbn: string, headqua
         members: [userId],
         invoices: [],
         customers: [],
-        items: []
+        itemsList: []
     }
 }
     
@@ -329,6 +329,7 @@ export async function createItemV3(name: string, sku: string, description: strin
     }
 
     const itemExistsAlready = await getItemBySkuV3(sku);
+    console.log(itemExistsAlready);
     if (itemExistsAlready !== undefined) {
         throw HTTPError(400, 'Error: Item already exists');
     }
@@ -359,7 +360,7 @@ export async function getItemBySkuV3(sku: string) {
         IndexName: "SkuIndex",
         KeyConditionExpression: 'sku = :sku', 
         ExpressionAttributeValues: {
-            ':email': sku
+            ':sku': sku
         }
     });
 

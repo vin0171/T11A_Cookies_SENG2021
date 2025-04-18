@@ -362,7 +362,7 @@ function routes(app: Express) {
   });
 
 
-  app.post('v3/customer', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/v3/customer', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const { name, billingAddress, shippingAddress, email, bankName, bankAccount, companyId } = req.body;
@@ -373,14 +373,36 @@ function routes(app: Express) {
     }
   });
 
-  app.post('v3/item', async (req: Request, res: Response, next: NextFunction) => {
+  app.post('/v3/item', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const { name, sku, price, description, } = req.body;
-      const response = await items.registerItem(token, name, sku, price, description);
+      const { name, sku, price, description, companyId} = req.body;
+      const response = await items.registerItem(token, companyId, name, sku, price, description);
       res.status(200).json(response); 
     } catch(err) {
       next(err);
+    }
+  });
+
+  app.get('/v3/company/:companyId/customers', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization'].split(' ')[1];
+      const companyId = req.params.companyId;
+      const response = await customers.listCompanyCustomers(token, companyId);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
+    }
+  });
+
+  app.get('/v3/company/:companyId/items', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization'].split(' ')[1];
+      const companyId = req.params.companyId;
+      const response = await items.listCompanyItems(token, companyId);
+      res.status(200).json(response);
+    } catch(err) {
+      next(err)
     }
   });
 

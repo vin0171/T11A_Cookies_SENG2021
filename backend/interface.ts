@@ -210,7 +210,7 @@ export interface Company {
   members: string[],
   invoices: string[]
   customers: string[],
-  items: string[],
+  itemsList: string[],
 }
 
 export interface OldCompany {
