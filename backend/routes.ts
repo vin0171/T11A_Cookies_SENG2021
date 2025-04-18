@@ -12,6 +12,7 @@ import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
 import { getCompany, getInvoice } from "./interfaceHelpers";
 import { validateUBL } from "./validation";
+import { SyntaxKind } from "typescript";
 
 function routes(app: Express) {
 // ========================================================================= //
@@ -400,6 +401,7 @@ function routes(app: Express) {
       const token = req.headers['authorization'].split(' ')[1];
       const companyId = req.params.companyId;
       const response = await items.listCompanyItems(token, companyId);
+      console.log(response);
       res.status(200).json(response);
     } catch(err) {
       next(err)

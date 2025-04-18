@@ -64,20 +64,31 @@ export default function InvoicePage({token}) {
   const [blur, setBlur] = useState(false);
   const [discountType, setDiscountType] = useState('Flat');
   const [discountAmount, setDiscountAmount] = useState('');
+  const [addedItems, setAddedItems] = useState([]);
 
   useEffect(() => {
-    axios.get(`${API_URL}/v3/user/details`, {headers: {Authorization: `Bearer ${token}`}})
+    axios.get(`${API_URL}/v3/user/details`, { headers: { Authorization: `Bearer ${token}` } })
     .then((res) => {
-      setUserDetails(res.data)
-      axios.get(`${API_URL}/v3/company/${res.data.companyId}/customers`, {headers: {Authorization: `Bearer ${token}`}})
-      .then((res) => {
-        setCustomerList(res.data);
-      }).catch(error => console.log(error.response.data.error))
-    }).catch(error => console.log(error.response.data.error))
+      setUserDetails(res.data);
+      const companyId = res.data.companyId;
+      return Promise.all([
+        axios.get(`${API_URL}/v3/company/${companyId}/items`, {headers: { Authorization: `Bearer ${token}`}}),
+        axios.get(`${API_URL}/v3/company/${companyId}/customers`, {headers: { Authorization: `Bearer ${token}`}})
+      ]);
+    })
+    .then(([itemsRes, customersRes]) => {
+      setInvoiceItems(itemsRes.data);
+      setCustomerList(customersRes.data);
+    })
+    .catch(error => {
+      console.log(error.response.data.error);
+    });
 
+    // THIS IS BUGGED!!!!!!!!!!!!!
     if (invoiceId) {
       axios.get(`${API_URL}/v3/invoice/${invoiceId}`, {headers: {Authorization: `Bearer ${token}`}})
       .then((res) => {
+
         setCustomer(res.data.details.receiver.companyName);
         setCustomerEmail(res.data.details.receiver.email);
   
@@ -216,8 +227,10 @@ export default function InvoicePage({token}) {
 
   // ONLY PRESS THIS BUTTON IF YOU HAVE A REGISTERED CUSTOMER AND ITEM
   const handleSubmit = (event) => {
+    console.log('what??')
     event.preventDefault();
     const button = event.nativeEvent.submitter.name
+    console.log(button);
     const invoiceDetails = makeInvoiceParams(
       customer,
       customerEmail,
@@ -511,10 +524,16 @@ export default function InvoicePage({token}) {
                     itemType={itemType} 
                     setItemType={setItemType} 
                     setBlur={setBlur}
+                    setInvoiceItems={setInvoiceItems}
+                    invoiceItems={invoiceItems}
+                    setAddedItems={setAddedItems}
+                    addedItems={addedItems}
                     discountType={discountType}
                     setDiscountType={setDiscountType}
                     discountAmount={discountAmount}
                     setDiscountAmount={setDiscountAmount}
+                    companyId={userDetails.companyId}
+                    token={token}
                   />
                 </Box>
             </Box>
@@ -576,8 +595,8 @@ export default function InvoicePage({token}) {
               subTotal={subTotal}
               setSubtotal={setSubtotal}
               total={calculateTotal()}
-              invoiceItems={invoiceItems}
-              setInvoiceItems={setInvoiceItems}
+              addedItems={addedItems}
+              setAddedItems={setAddedItems}
               format={format}
               setFormat={setFormat}
               blur={blur} 

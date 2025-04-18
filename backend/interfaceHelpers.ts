@@ -319,6 +319,7 @@ export async function getCustomerByEmailV3(email: string): Promise<ParticipantV2
 
 
 export async function createItemV3(name: string, sku: string, description: string, unitPrice: string) {
+    console.log(name, sku, description, unitPrice)
     if (!validators.isValidName(name)) {
         throw HTTPError(400, 'Error: Invalid Name');
     }

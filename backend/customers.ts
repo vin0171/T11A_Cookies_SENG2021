@@ -41,6 +41,5 @@ async function getCustomerList(cusList: number[]) {
     const response = await data.batchGet({
         RequestItems: { Customers: { Keys: cusMap } }
     });
-    console.log('hello')
     return response.Responses.Customers;
 }

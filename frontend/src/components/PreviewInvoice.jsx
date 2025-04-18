@@ -70,6 +70,8 @@ export default function PreviewInvoice({
   total,
   invoiceItems,
   setInvoiceItems,
+  addedItems,
+  setAddedItems,
   format,
   setFormat,
   blur,
@@ -98,7 +100,7 @@ export default function PreviewInvoice({
       })
     }).catch(error => console.log(error.data.response.error))
   }, [])
-  
+
   const renderPdf = () => {
     const receiverAddress = [
       billingAddress1, 
@@ -108,7 +110,7 @@ export default function PreviewInvoice({
       billingPostCode,
       billingCountry
     ].filter(part => part).join(', ');
-    
+
     const docDefinition = {
       content: [
         { text: 'Invoice', style: 'header' },
@@ -127,11 +129,11 @@ export default function PreviewInvoice({
             widths: ['*', 'auto', 'auto', 'auto'],
             body: [
               ['Description', 'Qty', 'Unit Price', 'Total'],
-              ...invoiceItems.map((i) => [
+              ...addedItems.map((i) => [
                 i.description,
-                i.quantity,
-                `${currency} ${i.unitPrice}`,
-                `${currency} ${i.quantity * i.unitPrice}`
+                i.qty,
+                `${currency} ${i.price}`,
+                `${currency} ${i.qty * i.price}`
               ]),
               [
                 { text: 'Total', colSpan: 3, alignment: 'right' }, {}, {},

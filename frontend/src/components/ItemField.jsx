@@ -8,24 +8,12 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import axios from "axios";
+import { API_URL } from "../App";
 
 const itemTypeOptions = [
   {label: 'Add New Item'},
   {label: 'Add Existing Item'}
-]
-
-// replace with real data after backend implements allat
-const dummyExistingItems = [
-  {label: 'test1'},
-  {label: 'test2'},
-  {label: 'test3'}
-]
-
-// replace with real data
-const existingItems = [
-  {name: 'item1', quantity: '1'},
-  {name: 'item2', quantity: '2'},
-  {name: 'item3', quantity: '3'}
 ]
 
 export default function ItemField({
@@ -34,28 +22,60 @@ export default function ItemField({
   setBlur, 
   setInvoiceItems, 
   invoiceItems,
+  setAddedItems,
+  addedItems,
   discountType,
   setDiscountType,
   discountAmount,
-  setDiscountAmount
+  setDiscountAmount,
+  companyId, 
+  token
 }) {
   const [open, setOpen] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [moreDetails, setMoreDetails] = useState(false);
+  const [name, setName] = useState('');
+  const [qty, setQty] = useState('');
+  const [price, setPrice] = useState('');
+  const [sku, setSku] = useState('');
+  const [description, setDescription] = useState('');
   const handleClickOpen = () => (setOpen(true));
   const handleClose = () => (setOpen(false));
+
+  const existingItems =  Object.values(invoiceItems).map((i) => ({
+    label: i.name,
+  }));
 
   const handleSubmit = (event) => {
     event.preventDefault();
     setButtonClicked(false);
-    setBlur(true);
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get('new-item-name');
-    const qty = formData.get('new-item-qty');
-    const price = formData.get('new-item-cost');
-    const sku = formData.get('item-sku');
-    const description = formData.get('description');
-    
+    console.log(name,sku,price,description,qty)
+    const itemDetails = {
+      name: name,
+      sku: sku,
+      price: price,
+      description: description,
+      companyId: companyId
+    };
+
+    const addedDetails = {
+      name: name,
+      sku: sku,
+      price: price,
+      description: description,
+      qty: qty
+    }
+
+    axios.post(`${API_URL}/v3/item`, itemDetails, {headers: {Authorization: `Bearer ${token}`}})
+    .then(() => {
+      axios.get(`${API_URL}/v3/company/${companyId}/items`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((res) => {
+        setInvoiceItems(res.data);
+        setAddedItems(prev => [...prev, addedDetails]);
+        setItemType('Add Existing Item');
+        setBlur(true);
+      }).catch(error => console.log(error.response.data.error))
+    }).catch(error => console.log(error.response.data.error))
     handleClose();
   }
 
@@ -71,13 +91,14 @@ export default function ItemField({
       handleClickOpen();
     }
   }, [buttonClicked, itemType])
+  console.log(addedItems, invoiceItems);
   return (
     <Fragment> 
-      {!(JSON.stringify(existingItems) === '[{}]') &&
+      {!(addedItems.length === 0) &&
       <Box sx={{mb: 2}}>
-        {existingItems.map((item) => (
+        {addedItems.map((item) => (
           <Box key={item.name} sx={{display: 'flex', alignItems: 'center', gap: 3}}>
-            <Typography>{item.name} × {item.quantity}</Typography>
+            <Typography>{item.name} × {item.qty}</Typography>
             <Box>
               {/* on click, edit the item (backend)*/}
               <IconButton>
@@ -113,8 +134,22 @@ export default function ItemField({
         {itemType === 'Add Existing Item' && 
         <Autocomplete
           disablePortal
-          options={dummyExistingItems}
-          onChange={() => {setButtonClicked(false); setBlur(true)}}
+          options={existingItems}
+          onChange={(event, newValue) => {
+            setButtonClicked(false); 
+            console.log(invoiceItems)
+            const existingItem = invoiceItems.find((i) => i.name === newValue.label);
+            console.log(existingItem);
+            const existingItemDetails = {
+              name: existingItem.name,
+              sku: existingItem.sku,
+              price: existingItem.unitPrice,
+              description: existingItem.description,
+              qty: 1
+            };
+            setAddedItems(prev => [...prev, existingItemDetails]);
+            setBlur(true);
+          }}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label='Find Item' />}
         /> 
@@ -145,41 +180,47 @@ export default function ItemField({
           <DialogContent dividers>
             <Box sx={{display: 'flex', flexDirection: 'column'}}>
               <TextField
-                id={'new-item-name-id'}
-                name={'new-item-name'}
-                margin='dense'
-                variant='standard'
-                label='Item'
+                id="new-item-name-id"
+                name="new-item-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                margin="dense"
+                variant="standard"
+                label="Item"
                 required
               />
               <TextField
-                id={'new-item-qty-id'}
-                name={'new-item-qty'}
-                margin='dense'
-                variant='standard'
-                label='Quantity'
-                type='number'
+                id="new-item-qty-id"
+                name="new-item-qty"
+                value={qty}
+                onChange={(e) => setQty(e.target.value)}
+                margin="dense"
+                variant="standard"
+                label="Quantity"
+                type="number"
                 required
-                sx={{...removeNumberScrollbarStyle}}
+                sx={{ ...removeNumberScrollbarStyle }}
                 onWheel={(e) => e.target.blur()}
               />
               <TextField
-                id={'new-item-cost-id'}
-                name={'new-item-cost'}
-                margin='dense'
-                variant='standard'
-                label='Price'
-                type='number'
+                id="new-item-cost-id"
+                name="new-item-cost"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                margin="dense"
+                variant="standard"
+                label="Price"
+                type="number"
                 required
-                sx={{...removeNumberScrollbarStyle}}
+                sx={{ ...removeNumberScrollbarStyle }}
                 onWheel={(e) => e.target.blur()}
                 slotProps={{
                   input: {
-                    startAdornment: <InputAdornment position='start'>$</InputAdornment>
+                    startAdornment: <InputAdornment position="start">$</InputAdornment>,
                   },
-                  htmlInput : {
-                    step: .01
-                  }
+                  htmlInput: {
+                    step: 0.01,
+                  },
                 }}
               />
               <Box sx={{display: 'flex', alignItems: 'center'}}>
@@ -207,20 +248,24 @@ export default function ItemField({
               {moreDetails && 
                 <Box sx={{display: 'flex', flexDirection: 'column'}}>
                   <TextField
-                    id='item-sku-id'
-                    name='item-sku'
-                    label='Item Sku'
-                    variant='standard'
-                    type='number'
-                    sx={{...removeNumberScrollbarStyle}}
+                    id="item-sku-id"
+                    name="item-sku"
+                    value={sku}
+                    onChange={(e) => setSku(e.target.value)}
+                    label="Item Sku"
+                    variant="standard"
+                    type="number"
+                    sx={{ ...removeNumberScrollbarStyle }}
                     onWheel={(e) => e.target.blur()}
                   />
                   <TextField
-                    id='description-id'
-                    name='description'
-                    label='Description'
-                    variant='standard'
-                    sx={{mb: 2}}
+                    id="description-id"
+                    name="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    label="Description"
+                    variant="standard"
+                    sx={{ mb: 2 }}
                   />
                   <InvoiceDiscountField 
                     type={'item'} 
@@ -235,7 +280,7 @@ export default function ItemField({
           </DialogContent>
           <DialogActions sx={{justifyContent:'space-around'}}>
             <Button onClick={handleClose} sx={{fontSize: '1em', color:'#41444d'}}>Cancel</Button>
-            <Button type='submit' sx={{fontSize: '1em',color:'#27548A'}}>Confirm</Button>
+            <Button onClick={handleSubmit} sx={{fontSize: '1em',color:'#27548A'}}>Confirm</Button>
           </DialogActions>
         </Dialog>
       </Box>
