@@ -88,7 +88,6 @@ export default function Navbar({token, loggedIn, children}) {
         slotProps = {{
           paper: {
             sx: {
-              bgcolor: '#e2dacd'
             }
           }
         }}

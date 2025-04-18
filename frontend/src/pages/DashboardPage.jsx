@@ -140,7 +140,6 @@ export default function DashboardPage({token}) {
       <Box component='section' sx={{display: 'grid', gridTemplateRows: '3fr 7fr', height: '100%', overflow:'hidden'}}>
         <Box component='section' 
           sx={{
-            bgcolor: '#e2dacd',
             display: 'flex',
             justifyContent: 'center'
           }}>
@@ -160,7 +159,6 @@ export default function DashboardPage({token}) {
             },
             '&::-webkit-scrollbar-thumb': {
               borderRadius: '5px',
-              bgcolor: '#e2dacd',
             },
           }}>
           <Box sx={{height: '100%', width: '80%', color: 'white'}}>

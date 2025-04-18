@@ -6,6 +6,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import InvoiceDiscountField from "./InvoiceDiscountField";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 
 const itemTypeOptions = [
   {label: 'Add New Item'},
@@ -26,12 +28,20 @@ const existingItems = [
   {name: 'item3', quantity: '3'}
 ]
 
-export default function ItemField({itemType, setItemType, setBlur, setInvoiceItems, invoiceItems}) {
+export default function ItemField({
+  itemType, 
+  setItemType, 
+  setBlur, 
+  setInvoiceItems, 
+  invoiceItems,
+  discountType,
+  setDiscountType,
+  discountAmount,
+  setDiscountAmount
+}) {
   const [open, setOpen] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [moreDetails, setMoreDetails] = useState(false);
-  const [discountType, setDiscountType] = useState('Flat');
-  const [discountAmount, setDiscountAmount] = useState('');
   const handleClickOpen = () => (setOpen(true));
   const handleClose = () => (setOpen(false));
 
@@ -67,23 +77,26 @@ export default function ItemField({itemType, setItemType, setBlur, setInvoiceIte
       {!(JSON.stringify(existingItems) === '[{}]') &&
       <Box sx={{mb: 2}}>
         {existingItems.map((item) => (
-          <Box key={item.name} sx={{display: 'flex', alignItems: 'center'}}>
+          <Box key={item.name} sx={{display: 'flex', alignItems: 'center', gap: 3}}>
             <Typography>{item.name} × {item.quantity}</Typography>
-            {/* on click, edit the item (backend)*/}
-            <IconButton>
-              <EditIcon/>
-            </IconButton>
-            {/* on click, delete the item (backend)*/}
-            <IconButton>
-              <DeleteIcon/>
-            </IconButton>
+            <Box>
+              {/* on click, edit the item (backend)*/}
+              <IconButton>
+                <EditIcon/>
+              </IconButton>
+              {/* on click, delete the item (backend)*/}
+              <IconButton>
+                <DeleteIcon/>
+              </IconButton>
+            </Box>
           </Box>
         ))}
       </Box>
       }
       <Button 
-        sx={{width: 'fit-content'}} 
+        sx={{width: 'fit-content', bgcolor: 'cornflowerblue', textTransform: 'none', fontSize: '1.15em'}} 
         variant='contained' 
+        endIcon={buttonClicked ? <CloseIcon/> : <AddIcon/>}
         onClick={() => setButtonClicked(!buttonClicked)}
       >
         {buttonClicked ? 'Cancel' : 'Add Item'}
@@ -117,7 +130,6 @@ export default function ItemField({itemType, setItemType, setBlur, setInvoiceIte
           sx={{
             '& .MuiDialog-container': {
               '& .MuiPaper-root': {
-                bgcolor:'#e2dacd',
                 width: 550,
                 height: 335,
               },
@@ -186,8 +198,8 @@ export default function ItemField({itemType, setItemType, setBlur, setInvoiceIte
                   display: 'flex',
                   alignItems: 'center',
                   '&:hover': {
-                    color: 'primary.main', 
-                  },
+                    color: 'cornflowerblue',
+                  }
                 }}
               >
                 Add Additional Details

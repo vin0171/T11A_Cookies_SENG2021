@@ -214,3 +214,12 @@ export const removeNumberScrollbarStyle = {
   },
 }
 
+export const clickableTextStyle = {
+  textDecoration: 'underline', 
+  cursor: 'pointer', 
+  width: 'fit-content',
+  '&:hover': {
+    color: 'cornflowerblue',
+  }
+}
+

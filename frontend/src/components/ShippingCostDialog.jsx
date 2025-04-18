@@ -1,12 +1,12 @@
-import { Button, Dialog, DialogContent, DialogTitle, TextField, DialogActions, InputAdornment } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, TextField, DialogActions, InputAdornment, Typography, Box } from '@mui/material';
 import { Fragment, useState } from 'react';
-import { SelectField } from '../helper';
+import { clickableTextStyle, removeNumberScrollbarStyle, SelectField } from '../helper';
 
 /**
  * This component sets up the dialog that pops up when the user clicks on the create
  * company button on the dashboard.
  */
-export default function ShippingCostDialog({setShippingCostDetails}) {
+export default function ShippingCostDialog({setShippingCostDetails, setBlur}) {
 const [open, setOpen] = useState(false);
 const handleClickOpen = () => (setOpen(true));
 const handleClose = () => (setOpen(false));
@@ -21,24 +21,17 @@ const handleSubmit = (event) => {
     shippingCost: formData.get('shipping-cost-name'),
     shippingTax: formData.get('shipping-tax-name')
   })
+  setBlur(true)
   handleClose();
 }
 
 return (
   <Fragment>
-    <Button 
-      variant='contained' 
+    <Typography 
       onClick={handleClickOpen}
-      sx= {{
-        textTransform: 'none',
-        height: 50,
-        width: 200,
-        fontSize: '1em',
-        fontWeight: 'bold',
-        bgcolor: '#41444d'
-      }}>
+      sx= {{...clickableTextStyle}}>
         Add Shipping Cost
-    </Button>
+    </Typography>
     <Dialog
       open={open}
       onClose={handleClose}
@@ -49,7 +42,6 @@ return (
       sx={{
         '& .MuiDialog-container': {
           '& .MuiPaper-root': {
-            bgcolor:'#e2dacd',
             width: 550,
             height: 335,
           },
@@ -64,42 +56,48 @@ return (
           Enter Shipping Costs
       </DialogTitle>
       <DialogContent>
-        <TextField
-          id={'shipping-cost'}
-          name={'shipping-cost-name'}
-          margin='dense'
-          variant='standard'
-          label='Shipping Cost'
-          value={shippingCost}
-          onChange={(e) => setShippingCost(e.target.value)}
-          type='number'
-          slotProps={{
-            input: {
-              startAdornment: <InputAdornment position='start'>$</InputAdornment>
-            },
-            htmlInput : {
-              step: .01
-            }
-          }}
-        />
-        <TextField
-          id={'shipping-tax'}
-          name={'shipping-tax-name'}
-          margin='dense'
-          variant='standard'
-          label='Shipping Tax'
-          value={shippingTax}
-          onChange={(e) => setShippingTax(e.target.value)}
-          type='number'
-          slotProps={{
-            input: {
-              startAdornment: <InputAdornment position='start'>$</InputAdornment>
-            },
-            htmlInput : {
-              step: .01
-            }
-          }}
-        />
+        <Box sx={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+          <TextField
+            id={'shipping-cost'}
+            name={'shipping-cost-name'}
+            margin='dense'
+            variant='standard'
+            label='Shipping Cost'
+            value={shippingCost}
+            onChange={(e) => setShippingCost(e.target.value)}
+            onWheel={(e) => e.target.blur()}
+            sx={{...removeNumberScrollbarStyle}}
+            type='number'
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position='start'>$</InputAdornment>
+              },
+              htmlInput : {
+                step: .01
+              }
+            }}
+          />
+          <TextField
+            id={'shipping-tax'}
+            name={'shipping-tax-name'}
+            margin='dense'
+            variant='standard'
+            label='Shipping Tax'
+            value={shippingTax}
+            onChange={(e) => setShippingTax(e.target.value)}
+            onWheel={(e) => e.target.blur()}
+            sx={{...removeNumberScrollbarStyle}}
+            type='number'
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position='start'>$</InputAdornment>
+              },
+              htmlInput : {
+                step: .01
+              }
+            }}
+          />
+        </Box>
       </DialogContent>
       <DialogActions sx={{justifyContent:'space-around'}}>
         <Button onClick={handleClose} sx={{fontSize: '1em', color:'#41444d'}}>Cancel</Button>

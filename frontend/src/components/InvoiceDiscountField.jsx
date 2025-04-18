@@ -33,7 +33,7 @@ export default function InvoiceDiscountField({
         variant='standard'
         label='Discount Amount'
         type='number'
-        sx={{...removeNumberScrollbarStyle}}
+        sx={{...removeNumberScrollbarStyle, width: '100%'}}
         onWheel={(e) => e.target.blur()}
         slotProps={{
           input: {

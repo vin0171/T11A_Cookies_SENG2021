@@ -60,7 +60,6 @@ return (
       sx={{
         '& .MuiDialog-container': {
           '& .MuiPaper-root': {
-            bgcolor:'#e2dacd',
             width: 550,
             height: 335,
           },

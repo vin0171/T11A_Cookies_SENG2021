@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { SelectField } from "../helper";
+import { SelectField, clickableTextStyle } from "../helper";
 import { Autocomplete, TextField, Typography } from "@mui/material";
 
 const customerTypeOptions = [
@@ -71,7 +71,7 @@ export default function CustomerField({
           />
           <Typography 
             onClick={() => setCustomerAdditionalFields(!customerAdditionalFields)}
-            sx={{textDecoration: 'underline', cursor: 'pointer', width: 'fit-content'}}
+            sx={{...clickableTextStyle}}
           >
             {customerAdditonalText}
           </Typography>
