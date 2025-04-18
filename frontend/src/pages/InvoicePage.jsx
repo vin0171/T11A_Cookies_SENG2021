@@ -17,6 +17,8 @@ import dayjs from "dayjs";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import PDFpreview from "../components/PDFpreview";
+import FileUploadButton from '../components/UploadFileButton'; 
+import { set } from "yaml/dist/schema/yaml-1.1/set";
 pdfMake.addVirtualFileSystem(pdfFonts);
 
 export default function InvoicePage({token}) {
@@ -243,6 +245,22 @@ export default function InvoicePage({token}) {
       <Box sx={{display: 'flex', height: '100%', width: '100%'}}>
         <Box sx={{bgcolor: '#e2dacd', width: '50%'}}>
           <Button> Upload Order Document </Button>
+          <FileUploadButton
+            onUpload={(parsed) => {
+        
+              if (parsed?.customer?.name) {
+                setCustomer(parsed.customer.name);
+              }
+      
+              setIssueDate(dayjs(parsed.invoicePeriod.startDate)); 
+              setDueDate(dayjs(parsed.invoicePeriod.endDate));
+              setCurrency(parsed.currencyID || '$');
+              setInvoiceNumber(parsed.invoiceId || '');
+              setInvoiceItems(parsed.items || []);
+            }}
+          />
+
+    
           <Typography>New Invoice</Typography>
           <Box sx={{height: '100%'}}>
             <form onSubmit={handleSubmit}>
