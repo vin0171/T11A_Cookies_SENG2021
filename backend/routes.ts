@@ -390,6 +390,7 @@ function routes(app: Express) {
       const token = req.headers['authorization'].split(' ')[1];
       const companyId = req.params.companyId;
       const response = await customers.listCompanyCustomers(token, companyId);
+      console.log(response);
       res.status(200).json(response);
     } catch(err) {
       next(err)
@@ -401,7 +402,6 @@ function routes(app: Express) {
       const token = req.headers['authorization'].split(' ')[1];
       const companyId = req.params.companyId;
       const response = await items.listCompanyItems(token, companyId);
-      console.log(response);
       res.status(200).json(response);
     } catch(err) {
       next(err)

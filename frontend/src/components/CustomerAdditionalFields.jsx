@@ -35,7 +35,6 @@ export default function CustomerAdditionalFields({
   setBankName,
   bankNum,
   setBankNum,
-  setBlur,
   handleCreateCustomer
 }) {
   return (
@@ -58,7 +57,6 @@ export default function CustomerAdditionalFields({
             setPostCode={setBillingPostCode}
             country={billingCountry}
             setCountry={setBillingCountry}
-            setBlur={setBlur}
           />
         </Box>
         <Box>
@@ -92,7 +90,6 @@ export default function CustomerAdditionalFields({
               setPostCode={setShippingPostCode}
               country={shippingCountry}
               setCountry={setShippingCountry}
-              setBlur={setBlur}
             />
           }
         </Box>
@@ -115,7 +112,6 @@ export default function CustomerAdditionalFields({
               autoComplete='on'
               sx={{ width: '100%' }}
               onChange={(e) => setBankName(e.target.value)}
-              onBlur={() => (setBlur(true))}
             />
             <TextField
               id='bank-number'
@@ -127,7 +123,6 @@ export default function CustomerAdditionalFields({
               autoComplete='on'
               sx={{ width: '100%' }}
               onChange={(e) => setBankNum(e.target.value)}
-              onBlur={() => (setBlur(true))}
             />
           </Box>
         </Box>

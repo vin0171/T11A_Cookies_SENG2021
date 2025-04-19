@@ -16,6 +16,7 @@ export default function PreviewInvoice({
   token,
   invoiceId,
   customer,
+  setSelectedCustomer,
   setCustomer,
   customerEmail,
   setCustomerEmail,
@@ -82,6 +83,7 @@ export default function PreviewInvoice({
   const [pageNumber, setPageNumber] = useState(1);
   const [pdf, setPDF] =  useState('');
   const [company, setCompany] = useState(null);
+
   useEffect(() => {
     if (company) {
       renderPdf();
@@ -179,6 +181,7 @@ export default function PreviewInvoice({
           variant='contained'
           onClick={() => {
             setCustomer('');
+            setSelectedCustomer(''),
             setCustomerEmail('')
             setBillingAddress1('');
             setBillingAddress2('');

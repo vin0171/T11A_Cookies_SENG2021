@@ -15,7 +15,6 @@ export default function AddressFields({
   setPostCode,
   country,
   setCountry,
-  setBlur,
 }) {
   return (
     <Fragment>
@@ -29,7 +28,6 @@ export default function AddressFields({
           autoComplete="on"
           sx={{ width: '100%' }}
           onChange={(e) => setAddressLine1(e.target.value)}
-          onBlur={() => (setBlur(true))}
         />
         <TextField
           id={`${type}-address-line2`}
@@ -40,7 +38,6 @@ export default function AddressFields({
           autoComplete="on"
           sx={{ width: '100%' }}
           onChange={(e) => setAddressLine2(e.target.value)}
-          onBlur={() => (setBlur(true))}
         />
         <TextField
           id={`${type}-suburb`}
@@ -51,7 +48,6 @@ export default function AddressFields({
           autoComplete="on"
           sx={{ width: '100%' }}
           onChange={(e) => setSuburb(e.target.value)}
-          onBlur={() => (setBlur(true))}
         />
         <TextField
           id={`${type}-state`}
@@ -62,7 +58,6 @@ export default function AddressFields({
           autoComplete="on"
           sx={{ width: '100%' }}
           onChange={(e) => setState(e.target.value)}
-          onBlur={() => (setBlur(true))}
         />
         <TextField
           id={`${type}-postcode`}
@@ -73,7 +68,6 @@ export default function AddressFields({
           autoComplete="on"
           sx={{ width: '100%' }}
           onChange={(e) => setPostCode(e.target.value)}
-          onBlur={() => (setBlur(true))}
         />
         <TextField
           id={`${type}-country`}
@@ -84,7 +78,6 @@ export default function AddressFields({
           autoComplete="on"
           sx={{ width: '100%' }}
           onChange={(e) => setCountry(e.target.value)}
-          onBlur={() => (setBlur(true))}
         />
       </Box>
     </Fragment>

@@ -11,6 +11,7 @@ export async function registerCustomer(token: string, name: string, companyId: s
 
     const newCustomer = await createCustomerV3(name, billingAddress, shippingAddress, email, bankName, bankAccount);
     const data = getData();
+    await data.put({TableName: "Customers", Item: newCustomer});
     const updateExpression = 'SET customers = list_append(customers, :customerId)';
     await data.update({
         TableName: "Companies",

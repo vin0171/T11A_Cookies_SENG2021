@@ -1,6 +1,6 @@
 import { Button, Dialog, DialogContent, DialogTitle, TextField, DialogActions, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useState } from 'react';
 import { removeNumberScrollbarStyle } from '../helper';
 
 export default function ExistingItemDialog({
@@ -22,7 +22,6 @@ export default function ExistingItemDialog({
     const updatedItems = addedItems.map((i) => 
       i.id === currentItem.id ? { ...i, qty: addedItemQty } : i
   );
-    console.log(updatedItems);
     setAddedItems(updatedItems);
     handleClose();
     setBlur(true);

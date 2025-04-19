@@ -16,10 +16,9 @@ const [shippingTax, setShippingTax] = useState('');
 
 const handleSubmit = (event) => {
   event.preventDefault();
-  const formData = new FormData(event.currentTarget);
   setShippingCostDetails({
-    shippingCost: formData.get('shipping-cost-name'),
-    shippingTax: formData.get('shipping-tax-name')
+    shippingCost: shippingCost,
+    shippingTax: shippingTax,
   })
   setBlur(true)
   handleClose();
@@ -101,7 +100,7 @@ return (
       </DialogContent>
       <DialogActions sx={{justifyContent:'space-around'}}>
         <Button onClick={handleClose} sx={{fontSize: '1em', color:'#41444d'}}>Cancel</Button>
-        <Button type='submit' sx={{fontSize: '1em',color:'#27548A'}}>Confirm</Button>
+        <Button onClick={handleSubmit} sx={{fontSize: '1em',color:'#27548A'}}>Confirm</Button>
       </DialogActions>
     </Dialog>
   </Fragment>

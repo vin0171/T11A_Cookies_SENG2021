@@ -91,6 +91,7 @@ export const makeInvoiceParams = (
   tax,
   subTotal,
   invoiceItems,
+  addedItems,
   format
 ) => {
   const calculateTotal = () => {
@@ -155,21 +156,24 @@ export const makeInvoiceParams = (
 
   const items = invoiceItems.map((item) => {
     const itemDetails = {
-      id: 'hello',
-      itemSku: item.itemSku,
-      itemName: item.itemName,
+      id: item.itemId,
+      itemSku: item.sku,
+      itemName: item.name,
       description: item.description,
-      unitPrice: unitPrice, 
+      unitPrice: item.unitPrice
     }
-    const itemQuantity = parseInt(item.quantity || 0);
-    const unitPrice = parseInt(item.unitPrice || 0);
-    const discountAmount = parseInt(item.discountAmount || 0);
-    const total = itemQuantity * unitPrice
+
+    const addedItem = addedItems.find(a => a.id === item.itemId);
+    let quantity = 0;
+    if (addedItem !== undefined) {
+      quantity = parseInt(addedItem.qty);
+    }
+
     return {
       itemDetails: itemDetails,
-      quantity: itemQuantity,
-      discountAmount: discountAmount,
-      totalAmount: total * (1 - discountAmount / 100),
+      quantity: quantity,
+      discountAmount: 0,
+      totalAmount: item.unitPrice
     };
   });
 

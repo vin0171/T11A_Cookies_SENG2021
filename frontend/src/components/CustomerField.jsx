@@ -11,6 +11,7 @@ export default function CustomerField({
   customerType,
   setCustomerType,
   customer,
+  setSelectedCustomer,
   setCustomer,
   customerEmail,
   setCustomerEmail,
@@ -42,7 +43,7 @@ export default function CustomerField({
           options={existingCustomersOptions}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label='Customer' />}
-          onChange={(event, newValue) => setCustomer(newValue.label)}
+          onChange={(event, newValue) => setSelectedCustomer(newValue.label)}
           onBlur={() => (setBlur(true))}
         />
         :

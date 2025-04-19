@@ -27,17 +27,15 @@ const customOptions = [
 
 const handleSubmit = (event) => {
   event.preventDefault();
-  const formData = new FormData(event.currentTarget);
-  const taxType = formData.get('tax-type-name')
   if (taxType !== 'Custom') {
     setTax({
-      taxType: formData.get('tax-type-name'),
+      taxType: taxType,
     })
   } else {
     setTax({
       taxType: 'Custom',
-      taxOption: formData.get('custom-tax-type-name'),
-      taxAmount: formData.get('custom-tax-amount-name')
+      taxOption: customTax,
+      taxAmount: taxAmount
     })
   }
   setBlur(true)
@@ -122,7 +120,7 @@ return (
       </DialogContent>
       <DialogActions sx={{justifyContent:'space-around'}}>
         <Button onClick={handleClose} sx={{fontSize: '1em', color:'#41444d'}}>Cancel</Button>
-        <Button type='submit' sx={{fontSize: '1em',color:'#27548A'}}>Confirm</Button>
+        <Button onClick={handleSubmit} sx={{fontSize: '1em',color:'#27548A'}}>Confirm</Button>
       </DialogActions>
     </Dialog>
   </Fragment>

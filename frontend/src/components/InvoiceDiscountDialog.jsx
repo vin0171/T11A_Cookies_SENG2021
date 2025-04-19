@@ -20,10 +20,9 @@ const handleClose = () => (setOpen(false));
 
 const handleSubmit = (event) => {
   event.preventDefault();
-  const formData = new FormData(event.currentTarget);
   setWideDiscount({
-    discountType: formData.get('wide-discount-type'),
-    discountAmount: formData.get('wide-discount-amount')
+    discountType: discountType,
+    discountAmount: discountAmount
   })  
   handleClose();
 }
@@ -69,7 +68,7 @@ return (
       </DialogContent>
       <DialogActions sx={{justifyContent:'space-around'}}>
         <Button onClick={handleClose} sx={{fontSize: '1em', color:'#41444d'}}>Cancel</Button>
-        <Button type='submit' sx={{fontSize: '1em',color:'#27548A'}}>Confirm</Button>
+        <Button onClick={handleSubmit} sx={{fontSize: '1em',color:'#27548A'}}>Confirm</Button>
       </DialogActions>
     </Dialog>
   </Fragment>
