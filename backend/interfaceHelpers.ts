@@ -214,6 +214,7 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
 };
 
 const validateInvoiceDetailsV2 = (invoiceDetails: InvoiceDetailsV2) => {
+    console.log(invoiceDetails);
     invoiceDetails.items.forEach((item: InvoiceItemV2) => {
         const fieldsToCheck: (keyof InvoiceItemV2)[] = [
             'quantity',
@@ -231,6 +232,7 @@ const validateInvoiceDetailsV2 = (invoiceDetails: InvoiceDetailsV2) => {
             }
         });
     });
+    console.log('hello mate');
 };
     
 
@@ -250,6 +252,7 @@ export function generateInvoiceV2(invoiceId: string, userId: string, companyId: 
     if (!isDraft) {
         validateInvoiceDetailsV2(invoiceDetails);
     }
+    
     const invoice: InvoiceV2 = {
         invoiceId: invoiceId, 
         userId: userId,

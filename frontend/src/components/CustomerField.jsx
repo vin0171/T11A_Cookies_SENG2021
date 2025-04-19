@@ -11,6 +11,7 @@ export default function CustomerField({
   customerType,
   setCustomerType,
   customer,
+  selectedCustomer,
   setSelectedCustomer,
   setCustomer,
   customerEmail,
@@ -24,7 +25,8 @@ export default function CustomerField({
 }) {
 
   const existingCustomersOptions = Object.values(customerList).map((c) => ({
-    label: c.name
+    label: c.name,
+    id: c.customerId
   }));
 
   return (
@@ -41,9 +43,10 @@ export default function CustomerField({
         <Autocomplete
           disablePortal
           options={existingCustomersOptions}
+          value={selectedCustomer.name || null}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label='Customer' />}
-          onChange={(event, newValue) => setSelectedCustomer(newValue.label)}
+          onChange={(event, newValue) => setSelectedCustomer(customerList.find(c => c.customerId === newValue.id))}
           onBlur={() => (setBlur(true))}
         />
         :

@@ -65,7 +65,6 @@ export function SelectField({
 
 export const makeInvoiceParams = (
   customer,
-  customerEmail,
   billingAddress1,
   billingAddress2,
   billingSuburb,
@@ -145,11 +144,11 @@ export const makeInvoiceParams = (
   };
 
   const participant = {
-    customerId: uuidv4(),
-    name: customer,
+    customerId: customer.customerId,
+    name: customer.name,
     billingAddress: billingAddress,
     shippingAddress: shippingAddress,
-    email: customerEmail,
+    email: customer.email,
     bankName: bankName,
     bankAccount: bankNum
   }
@@ -188,9 +187,9 @@ export const makeInvoiceParams = (
     items: items,
     wideDiscount: wideDiscount,
     tax: tax,
+    shippingCostDetails: shippingCostDetails,
     format: format,
     currency: currency,
-    shippingCostDetails: shippingCostDetails,
     subtotal: subTotal,
     total: calculateTotal(),
     notes: notes

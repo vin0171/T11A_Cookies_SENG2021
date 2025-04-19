@@ -119,7 +119,7 @@ export default function PreviewInvoice({
         {
           columns: [
             { text: `From:\n${company.name}\n${company.headquarters.address}`, width: '50%' },
-            { text: `To:\n${customer}\n${receiverAddress}`, width: '50%', alignment: 'right' },
+            { text: `To:\n${customer.name || ''}\n${receiverAddress}`, width: '50%', alignment: 'right' },
           ]
         },
         { text: `Invoice #: ${invoiceNumber}`, margin: [0, 10] },
@@ -181,7 +181,7 @@ export default function PreviewInvoice({
           variant='contained'
           onClick={() => {
             setCustomer('');
-            setSelectedCustomer(''),
+            setSelectedCustomer({}),
             setCustomerEmail('')
             setBillingAddress1('');
             setBillingAddress2('');
@@ -208,6 +208,7 @@ export default function PreviewInvoice({
             setSubtotal(0);
             setInvoiceNumber('');
             setInvoiceItems([]);
+            setAddedItems([]);
             setFormat('PDF');
           }}
         >

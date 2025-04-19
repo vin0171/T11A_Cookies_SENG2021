@@ -76,7 +76,6 @@ export default function ItemField({
 
     axios.post(`${API_URL}/v3/item`, itemDetails, {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => {
-      console.log(response.data)
       axios.get(`${API_URL}/v3/company/${companyId}/items`, {headers: {Authorization: `Bearer ${token}`}})
       .then((res) => {
         setInvoiceItems(res.data);

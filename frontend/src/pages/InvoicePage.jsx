@@ -28,9 +28,9 @@ export default function InvoicePage({token}) {
   const invoiceId =  useParams().invoiceId;
   const [userDetails, setUserDetails] = useState({})
   const [customer, setCustomer] = useState('');
-  const [selectedCustomer, setSelectedCustomer] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState({});
   const [customerEmail, setCustomerEmail] = useState('');
-  const [customerList, setCustomerList] = useState({})
+  const [customerList, setCustomerList] = useState([])
   const [billingAddress1, setBillingAddress1] = useState('');
   const [billingAddress2, setBillingAddress2] = useState('');
   const [billingSuburb, setBillingSuburb] = useState('');
@@ -86,42 +86,49 @@ export default function InvoicePage({token}) {
       console.log(error.response.data.error);
     });
 
-    // THIS IS BUGGED!!!!!!!!!!!!!
     if (invoiceId) {
       axios.get(`${API_URL}/v3/invoice/${invoiceId}`, {headers: {Authorization: `Bearer ${token}`}})
       .then((res) => {
-        console.log(res.data)
-        // setCustomer(res.data.details.receiver.companyName);
-        // setCustomerEmail(res.data.details.receiver.email);
+        setSelectedCustomer(res.data.details.receiver)
+        setBillingAddress1(res.data.details.receiver.billingAddress.addressLine1);
+        setBillingAddress2(res.data.details.receiver.billingAddress.addressLine2);
+        setBillingSuburb(res.data.details.receiver.billingAddress.suburb);
+        setBillingState(res.data.details.receiver.billingAddress.state);
+        setBillingPostCode(res.data.details.receiver.billingAddress.postcode);
+        setBillingCountry(res.data.details.receiver.billingAddress.country);
   
-        // setBillingAddress1(res.data.details.receiver.billingAddress.addressLine1);
-        // setBillingAddress2(res.data.details.receiver.billingAddress.addressLine2);
-        // setBillingSuburb(res.data.details.receiver.billingAddress.suburb);
-        // setBillingState(res.data.details.receiver.billingAddress.state);
-        // setBillingPostCode(res.data.details.receiver.billingAddress.postcode);
-        // setBillingCountry(res.data.details.receiver.billingAddress.country);
-  
-        // setShippingAddress1(res.data.details.receiver.shippingAddress.addressLine1);
-        // setShippingAddress2(res.data.details.receiver.shippingAddress.addressLine2);
-        // setShippingSuburb(res.data.details.receiver.shippingAddress.suburb);
-        // setShippingState(res.data.details.receiver.shippingAddress.state);
-        // setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
-        // setShippingCountry(res.data.details.receiver.shippingAddress.country);  
-        // setShippingChecked(res.data.details.shippingChecked);
-        // setShippingCostDetails(res.data.details.shippingCostDetails);
+        setShippingAddress1(res.data.details.receiver.shippingAddress.addressLine1);
+        setShippingAddress2(res.data.details.receiver.shippingAddress.addressLine2);
+        setShippingSuburb(res.data.details.receiver.shippingAddress.suburb);
+        setShippingState(res.data.details.receiver.shippingAddress.state);
+        setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
+        setShippingCountry(res.data.details.receiver.shippingAddress.country);  
+        setShippingChecked(res.data.details.shippingChecked);
+        setShippingCostDetails(res.data.details.shippingCostDetails);
         
-        // setInvoiceNumber(res.data.details.invoiceNumber);
-        // setBankNum(res.data.details.receiver.bankAccount);
-        // setBankName(res.data.details.receiver.bankName);
-        // if (res.data.details.issueDate !== null) setIssueDate(dayjs(res.data.details.issueDate));
-        // if (res.data.details.dueDate !== null) setDueDate(dayjs(res.data.details.dueDate));
-        // setNotes(res.data.details.notes);
-        // setCurrency(res.data.details.currency);
-        // setWideDiscount(res.data.details.wideDiscount);
-        // setTax(res.data.details.tax);
-        // setInvoiceItems(res.data.details.items);
-        // setFormat(res.data.details.format);
-        // setSubtotal(res.data.details.subtotal);
+        setInvoiceNumber(res.data.details.invoiceNumber);
+        setBankNum(res.data.details.receiver.bankAccount);
+        setBankName(res.data.details.receiver.bankName);
+        if (res.data.details.issueDate !== null) setIssueDate(dayjs(res.data.details.issueDate));
+        if (res.data.details.dueDate !== null) setDueDate(dayjs(res.data.details.dueDate));
+        setNotes(res.data.details.notes);
+        setCurrency(res.data.details.currency);
+        setWideDiscount(res.data.details.wideDiscount);
+        setTax(res.data.details.tax);
+        setInvoiceItems(res.data.details.items);
+        
+        const filtered = res.data.details.items.filter(item => item.quantity !== 0);
+        const addedItems = filtered.map(i => ({
+          description: i.itemDetails.description,
+          id: i.itemDetails.id,
+          name: i.itemDetails.itemName,
+          price: i.itemDetails.unitPrice,
+          qty: i.quantity,
+          sku: i.itemDetails.itemSku,
+        }));
+        setAddedItems(addedItems);
+        setFormat(res.data.details.format);
+        setSubtotal(res.data.details.subtotal);
       }).catch((error) => console.log(error.response.data.error))
     } else {
       setUpdate(false)
@@ -169,7 +176,7 @@ export default function InvoicePage({token}) {
   }, [addedItems])
 
   useEffect(() => {
-    if (selectedCustomer === '') {
+    if (Object.keys(selectedCustomer).length === 0) {
       setCustomer('');
       setCustomerEmail('');
       setBillingAddress1('');
@@ -186,11 +193,12 @@ export default function InvoicePage({token}) {
       setShippingCountry('');
       setBankNum('');
       setBankName('');
-    } else if (Object.keys(userDetails).length != 0 && selectedCustomer !== '') {
+    } else if (Object.keys(userDetails).length != 0 && Object.keys(selectedCustomer).length !== 0) {
+      setCustomerType('Existing Customer');
       axios.get(`${API_URL}/v3/company/${userDetails.companyId}/customers`, {headers: {Authorization: `Bearer ${token}`}})
       .then((res) => {
-        console.log(res.data);
-        const currentCustomer = res.data.find((c) => c.name === selectedCustomer);
+        const currentCustomer = res.data.find((c) => c.customerId === selectedCustomer.customerId);
+        setCustomer(currentCustomer.name);
         setCustomerEmail(currentCustomer.email);
         setBillingAddress1(currentCustomer.billingAddress.addressLine1);
         setBillingAddress2(currentCustomer.billingAddress.addressLine2);
@@ -207,30 +215,13 @@ export default function InvoicePage({token}) {
         setBankNum(currentCustomer.bankAccount);
         setBankName(currentCustomer.bankName);
       }).catch(error => error.response.data.error)
-    }
+    } 
   }, [selectedCustomer, blur])
 
   useEffect(() => {
     if (customerType === 'Existing Customer') {
       setCustomerAdditionalFields(false);
-    } else {
-      setCustomer('');
-      setCustomerEmail('');
-      setBillingAddress1('');
-      setBillingAddress2('');
-      setBillingSuburb('');
-      setBillingState('');
-      setBillingPostCode('');
-      setBillingCountry('');
-      setShippingAddress1('');
-      setShippingAddress2('');
-      setShippingSuburb('');
-      setShippingState('');
-      setShippingPostCode('');
-      setShippingCountry('');
-      setBankNum('');
-      setBankName('');
-    }
+    } 
   }, [customerType])
 
   const calculateTotal = () => {
@@ -296,7 +287,7 @@ export default function InvoicePage({token}) {
       axios.get(`${API_URL}/v3/company/${userDetails.companyId}/customers`, {headers: {Authorization: `Bearer ${token}`}})
       .then((res) => {
         setBlur(true);
-        setSelectedCustomer('');
+        setSelectedCustomer({});
         setCustomerList(res.data);
         setCustomerType('Existing Customer');
         setCustomerAdditionalFields(false);
@@ -311,8 +302,7 @@ export default function InvoicePage({token}) {
     event.preventDefault();
     const button = event.nativeEvent.submitter.name
     const invoiceDetails = makeInvoiceParams(
-      customer,
-      customerEmail,
+      selectedCustomer,
       billingAddress1,
       billingAddress2,
       billingSuburb,
@@ -347,16 +337,17 @@ export default function InvoicePage({token}) {
         : {isDraft: true, invoiceDetails: invoiceDetails}
       )
     }
+    
+    const url = update ? `${API_URL}/v3/invoice/${invoiceId}/edit` : `${API_URL}/v3/invoice`
+    const method = update ? axios.put : axios.post;
     if (button === 'save') {
-      const url = update ? `${API_URL}/v3/invoice/${invoiceId}/edit` : `${API_URL}/v3/invoice`
-      const method = update ? axios.put : axios.post;
       method(url, params, {
         headers: { Authorization: `Bearer ${token}`}
       })
       .then(() => {navigate('/dashboard')})
       .catch(error => console.log(error.response.data.error))
     } else if (button === 'download') {
-      axios.post(`${API_URL}/v3/invoice`, params, {
+      method(url, params, {
         headers: { Authorization: `Bearer ${token}`}
       }).then(() => {
         if (format === 'PDF') {
@@ -422,6 +413,7 @@ export default function InvoicePage({token}) {
                       customerType={customerType}
                       setCustomerType={setCustomerType}
                       customer={customer}
+                      selectedCustomer={selectedCustomer}
                       setSelectedCustomer={setSelectedCustomer}
                       setCustomer={setCustomer}
                       customerEmail={customerEmail}
@@ -668,6 +660,7 @@ export default function InvoicePage({token}) {
               subTotal={subTotal}
               setSubtotal={setSubtotal}
               total={calculateTotal()}
+              setInvoiceItems={setInvoiceItems}
               addedItems={addedItems}
               setAddedItems={setAddedItems}
               format={format}
