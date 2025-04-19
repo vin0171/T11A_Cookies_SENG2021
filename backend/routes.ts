@@ -377,7 +377,7 @@ function routes(app: Express) {
   app.post('/v3/item', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const { name, sku, price, description, companyId} = req.body;
+      const {name, sku, price, description, companyId} = req.body;
       const response = await items.registerItem(token, companyId, name, sku, price, description);
       res.status(200).json(response); 
     } catch(err) {

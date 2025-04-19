@@ -227,10 +227,8 @@ export default function InvoicePage({token}) {
 
   // ONLY PRESS THIS BUTTON IF YOU HAVE A REGISTERED CUSTOMER AND ITEM
   const handleSubmit = (event) => {
-    console.log('what??')
     event.preventDefault();
     const button = event.nativeEvent.submitter.name
-    console.log(button);
     const invoiceDetails = makeInvoiceParams(
       customer,
       customerEmail,

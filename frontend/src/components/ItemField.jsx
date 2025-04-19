@@ -4,12 +4,14 @@ import { Autocomplete, Box, Button, Checkbox, Dialog, DialogActions, DialogConte
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import InvoiceDiscountField from "./InvoiceDiscountField";
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 import { API_URL } from "../App";
+import ExistingItemDialog from "./ExistingItemDialog";
+import {v4 as uuidv4} from 'uuid';
+
 
 const itemTypeOptions = [
   {label: 'Add New Item'},
@@ -36,6 +38,7 @@ export default function ItemField({
   const [moreDetails, setMoreDetails] = useState(false);
   const [name, setName] = useState('');
   const [qty, setQty] = useState('');
+  const [addedItemQty, setAddedItemQty] = useState(1);
   const [price, setPrice] = useState('');
   const [sku, setSku] = useState('');
   const [description, setDescription] = useState('');
@@ -46,10 +49,23 @@ export default function ItemField({
     label: i.name,
   }));
 
+  const handleExistingItemAdd = (event, newValue) => {
+    setButtonClicked(false); 
+    const existingItem = invoiceItems.find((i) => i.name === newValue.label);
+    const existingItemDetails = {
+      id: existingItem.itemId,
+      name: existingItem.name,
+      sku: existingItem.sku,
+      price: existingItem.unitPrice,
+      description: existingItem.description,
+      qty: addedItemQty
+    };
+    setAddedItems(prev => [...prev, existingItemDetails]);
+    setBlur(true);
+  }
   const handleSubmit = (event) => {
     event.preventDefault();
     setButtonClicked(false);
-    console.log(name,sku,price,description,qty)
     const itemDetails = {
       name: name,
       sku: sku,
@@ -58,19 +74,21 @@ export default function ItemField({
       companyId: companyId
     };
 
-    const addedDetails = {
-      name: name,
-      sku: sku,
-      price: price,
-      description: description,
-      qty: qty
-    }
-
     axios.post(`${API_URL}/v3/item`, itemDetails, {headers: {Authorization: `Bearer ${token}`}})
-    .then(() => {
+    .then((response) => {
+      console.log(response.data)
       axios.get(`${API_URL}/v3/company/${companyId}/items`, {headers: {Authorization: `Bearer ${token}`}})
       .then((res) => {
         setInvoiceItems(res.data);
+        const newlyAddedItem = res.data.find(i => i.itemId === response.data);
+        const addedDetails = {
+          id: newlyAddedItem.itemId,
+          name: name,
+          sku: sku,
+          price: price,
+          description: description,
+          qty: qty
+        }
         setAddedItems(prev => [...prev, addedDetails]);
         setItemType('Add Existing Item');
         setBlur(true);
@@ -91,23 +109,37 @@ export default function ItemField({
       handleClickOpen();
     }
   }, [buttonClicked, itemType])
-  console.log(addedItems, invoiceItems);
+
   return (
     <Fragment> 
       {!(addedItems.length === 0) &&
       <Box sx={{mb: 2}}>
-        {addedItems.map((item) => (
-          <Box key={item.name} sx={{display: 'flex', alignItems: 'center', gap: 3}}>
-            <Typography>{item.name} × {item.qty}</Typography>
+        {addedItems.map((item, index) => (
+          <Box key={index} sx={{display: 'flex', alignItems: 'center', gap: 3}}>
+            <Typography sx={{fontSize: '1.15em'}}>{item.name} × {item.qty}</Typography>
             <Box>
-              {/* on click, edit the item (backend)*/}
-              <IconButton>
-                <EditIcon/>
-              </IconButton>
-              {/* on click, delete the item (backend)*/}
-              <IconButton>
-                <DeleteIcon/>
-              </IconButton>
+              <ExistingItemDialog
+                addedItemQty={addedItemQty}
+                setAddedItemQty={setAddedItemQty}
+                setBlur={setBlur}
+                addedItems={addedItems}
+                setAddedItems={setAddedItems}
+                currentItem={item}
+              />
+              <IconButton 
+                onClick={() => {
+                  const idx = [...addedItems].reverse().findIndex(i => i.name === item.name);
+                  if (idx !== -1) {
+                    const indexFromStart = addedItems.length - 1 - idx;
+                    const newItems = [...addedItems];
+                    newItems.splice(indexFromStart, 1);
+                    setAddedItems(newItems);
+                    setBlur(true);
+                  }
+                }}
+              >
+              <DeleteIcon/>
+            </IconButton>
             </Box>
           </Box>
         ))}
@@ -135,21 +167,7 @@ export default function ItemField({
         <Autocomplete
           disablePortal
           options={existingItems}
-          onChange={(event, newValue) => {
-            setButtonClicked(false); 
-            console.log(invoiceItems)
-            const existingItem = invoiceItems.find((i) => i.name === newValue.label);
-            console.log(existingItem);
-            const existingItemDetails = {
-              name: existingItem.name,
-              sku: existingItem.sku,
-              price: existingItem.unitPrice,
-              description: existingItem.description,
-              qty: 1
-            };
-            setAddedItems(prev => [...prev, existingItemDetails]);
-            setBlur(true);
-          }}
+          onChange={handleExistingItemAdd}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label='Find Item' />}
         /> 

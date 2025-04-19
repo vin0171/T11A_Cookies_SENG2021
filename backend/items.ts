@@ -8,9 +8,7 @@ import HTTPError from 'http-errors';
 export async function registerItem(token: string, companyId: string,  name: string, sku: string, unitPrice: string, description: string) {
     const user = await validators.validateToken(token);
     if (user.companyId !== companyId) throw HTTPError(403, 'Error: User is not a part of this company');
-    ``
     const newItem = await createItemV3(name, sku, description, unitPrice);
-    console.log(newItem)
 
     const data = getData();
     await data.put({TableName: "Items", Item: newItem});
@@ -21,6 +19,7 @@ export async function registerItem(token: string, companyId: string,  name: stri
         UpdateExpression: updateExpression,
         ExpressionAttributeValues: { ':itemsList': [newItem.itemId], },
     });
+    return newItem.itemId;
 }
 
 export async function listCompanyItems(token: string, companyId: string) {
