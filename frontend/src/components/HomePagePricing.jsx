@@ -83,10 +83,10 @@ export default function HomePagePricing() {
                 justifyContent: 'space-between',
                 gap: 4,
                 bgcolor: tier.title === 'Professional'
-                  ? '#60a5fa' // Same blue as Logout button
+                  ? '#60a5fa'
                   : '#e8f1fc',
-                boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)', // drop shadow
-                borderRadius: '12px', // rounded corners for a modern look
+                boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
+                borderRadius: '12px',
                 minHeight: 580,
                 color: tier.title === 'Professional' ? 'white' : 'black',
               }}
