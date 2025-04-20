@@ -3,10 +3,7 @@ import axios from 'axios';
 import { Fragment, useState } from 'react';
 import { API_URL } from '../App';
 
-/**
- * This component sets up the dialog that pops up when the user clicks on the create
- * presentation button on the dashboard.
- */
+
 export default function AddUserDialog({token, companyId}) {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => (setOpen(true));
@@ -16,7 +13,7 @@ export default function AddUserDialog({token, companyId}) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const email = formData.get('user-email');
-    axios.post(`${API_URL}/v1/company/userAdd`, {companyId: companyId, userEmailToAdd: email},
+    axios.post(`${API_URL}/v3/company/userAdd`, {companyId: companyId, userEmailToAdd: email},
       {headers: {Authorization: `Bearer ${token}`}
     }).then(() => handleClose())
     .catch(error => console.log(error.response.data.error))
@@ -47,7 +44,6 @@ export default function AddUserDialog({token, companyId}) {
         sx={{
           '& .MuiDialog-container': {
             '& .MuiPaper-root': {
-              bgcolor:'#e2dacd',
               width: 550,
               height: 225,
             },

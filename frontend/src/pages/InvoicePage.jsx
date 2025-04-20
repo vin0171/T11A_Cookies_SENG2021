@@ -3,26 +3,34 @@ import { Fragment, useEffect, useState } from "react";
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { SelectField } from "../helper";
+import { makeInvoiceParams, SelectField, clickableTextStyle } from "../helper";
 import InvoiceItemTable from "../components/InvoiceItemTable";
 import InvoiceDiscountDialog from "../components/InvoiceDiscountDialog";
+import FileUploadIcon from '@mui/icons-material/FileUpload'; 
 import ShippingCostDialog from "../components/ShippingCostDialog";
 import axios from "axios";
 import { API_URL } from "../App";
 import { useNavigate, useParams } from "react-router-dom";
 import { saveAs } from 'file-saver';
 import TaxDialog from "../components/TaxDialog";
-import AddressFields from "../components/AddressFields";
 import dayjs from "dayjs";
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
+import PreviewInvoice from "../components/PreviewInvoice";
+import CustomerField from "../components/CustomerField";
+import CustomerAdditionalFields from "../components/CustomerAdditionalFields";
+import ItemField from "../components/ItemField";
+import { intersection } from "validation.ts";
 pdfMake.addVirtualFileSystem(pdfFonts);
 
 export default function InvoicePage({token}) {
   const navigate = useNavigate();
   const invoiceId =  useParams().invoiceId;
+  const [userDetails, setUserDetails] = useState({})
   const [customer, setCustomer] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState({});
   const [customerEmail, setCustomerEmail] = useState('');
+  const [customerList, setCustomerList] = useState([])
   const [billingAddress1, setBillingAddress1] = useState('');
   const [billingAddress2, setBillingAddress2] = useState('');
   const [billingSuburb, setBillingSuburb] = useState('');
@@ -50,45 +58,171 @@ export default function InvoicePage({token}) {
   const [invoiceItems, setInvoiceItems] = useState([]);
   const [format, setFormat] = useState('PDF');
   const [update, setUpdate] = useState(true);
+  const [customerType, setCustomerType] = useState('Create a New Customer');
+  const [customerAdditionalFields, setCustomerAdditionalFields] = useState(false);
+  const [customerAdditonalText, setCustomerAdditionalText] = useState('Add Additional Details');
+  const [invoiceNumberOption, setInvoiceNumberOption] = useState('Custom');
+  const [itemType, setItemType] = useState('Add Existing Item');
+  const [blur, setBlur] = useState(false);
+  const [discountType, setDiscountType] = useState('Flat');
+  const [discountAmount, setDiscountAmount] = useState('');
+  const [addedItems, setAddedItems] = useState([]);
 
   useEffect(() => {
-    axios.get(`${API_URL}/v1/invoice/${invoiceId}`, {headers: {Authorization: `Bearer ${token}`}})
+    axios.get(`${API_URL}/v3/user/details`, { headers: { Authorization: `Bearer ${token}` } })
     .then((res) => {
-      setCustomer(res.data.details.receiver.companyName);
-      setCustomerEmail(res.data.details.receiver.email);
+      setUserDetails(res.data);
+      const companyId = res.data.companyId;
+      return Promise.all([
+        axios.get(`${API_URL}/v3/company/${companyId}/items`, {headers: { Authorization: `Bearer ${token}`}}),
+        axios.get(`${API_URL}/v3/company/${companyId}/customers`, {headers: { Authorization: `Bearer ${token}`}})
+      ]);
+    })
+    .then(([itemsRes, customersRes]) => {
+      setInvoiceItems(itemsRes.data);
+      setCustomerList(customersRes.data);
+    })
+    .catch(error => {
+      console.log(error.response.data.error);
+    });
 
-      setBillingAddress1(res.data.details.receiver.billingAddress.addressLine1);
-      setBillingAddress2(res.data.details.receiver.billingAddress.addressLine2);
-      setBillingSuburb(res.data.details.receiver.billingAddress.suburb);
-      setBillingState(res.data.details.receiver.billingAddress.state);
-      setBillingPostCode(res.data.details.receiver.billingAddress.postcode);
-      setBillingCountry(res.data.details.receiver.billingAddress.country);
-
-      setShippingAddress1(res.data.details.receiver.shippingAddress.addressLine1);
-      setShippingAddress2(res.data.details.receiver.shippingAddress.addressLine2);
-      setShippingSuburb(res.data.details.receiver.shippingAddress.suburb);
-      setShippingState(res.data.details.receiver.shippingAddress.state);
-      setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
-      setShippingCountry(res.data.details.receiver.shippingAddress.country);  
-      setShippingChecked(res.data.details.shippingChecked);
-      setShippingCostDetails(res.data.details.shippingCost)
-      
-      setInvoiceNumber(res.data.details.invoiceNumber);
-      setBankNum(res.data.details.receiver.bankAccount);
-      setBankName(res.data.details.receiver.bankName);
-      if (res.data.details.issueDate !== null) setIssueDate(dayjs(res.data.details.issueDate));
-      if (res.data.details.dueDate !== null) setDueDate(dayjs(res.data.details.dueDate));
-      setNotes(res.data.details.notes);
-      setCurrency(res.data.details.currency);
-      setWideDiscount(res.data.details.wideDiscount);
-      setTax(res.data.details.tax);
-      setInvoiceItems(res.data.details.items);
-      setFormat(res.data.details.format);
-      setSubtotal(res.data.details.subtotal);
-    }).catch((error) => {
-      if (error.response.data.error === 'Error: Invoice does not exist') setUpdate(false)
-    }) 
+    if (invoiceId) {
+      axios.get(`${API_URL}/v3/invoice/${invoiceId}`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((res) => {
+        setSelectedCustomer(res.data.details.receiver)
+        setBillingAddress1(res.data.details.receiver.billingAddress.addressLine1);
+        setBillingAddress2(res.data.details.receiver.billingAddress.addressLine2);
+        setBillingSuburb(res.data.details.receiver.billingAddress.suburb);
+        setBillingState(res.data.details.receiver.billingAddress.state);
+        setBillingPostCode(res.data.details.receiver.billingAddress.postcode);
+        setBillingCountry(res.data.details.receiver.billingAddress.country);
+  
+        setShippingAddress1(res.data.details.receiver.shippingAddress.addressLine1);
+        setShippingAddress2(res.data.details.receiver.shippingAddress.addressLine2);
+        setShippingSuburb(res.data.details.receiver.shippingAddress.suburb);
+        setShippingState(res.data.details.receiver.shippingAddress.state);
+        setShippingPostCode(res.data.details.receiver.shippingAddress.postcode);
+        setShippingCountry(res.data.details.receiver.shippingAddress.country);  
+        setShippingChecked(res.data.details.shippingChecked);
+        setShippingCostDetails(res.data.details.shippingCostDetails);
+        
+        setInvoiceNumber(res.data.details.invoiceNumber);
+        setBankNum(res.data.details.receiver.bankAccount);
+        setBankName(res.data.details.receiver.bankName);
+        if (res.data.details.issueDate !== null) setIssueDate(dayjs(res.data.details.issueDate));
+        if (res.data.details.dueDate !== null) setDueDate(dayjs(res.data.details.dueDate));
+        setNotes(res.data.details.notes);
+        setCurrency(res.data.details.currency);
+        setWideDiscount(res.data.details.wideDiscount);
+        setTax(res.data.details.tax);
+        setInvoiceItems(res.data.details.items);
+        
+        const filtered = res.data.details.items.filter(item => item.quantity !== 0);
+        const addedItems = filtered.map(i => ({
+          description: i.itemDetails.description,
+          id: i.itemDetails.id,
+          name: i.itemDetails.itemName,
+          price: i.itemDetails.unitPrice,
+          qty: i.quantity,
+          sku: i.itemDetails.itemSku,
+        }));
+        setAddedItems(addedItems);
+        setFormat(res.data.details.format);
+        setSubtotal(res.data.details.subtotal);
+      }).catch((error) => console.log(error.response.data.error))
+    } else {
+      setUpdate(false)
+    }
   }, [])
+
+  useEffect(() => {
+    setBlur(true)
+  }, [dueDate, issueDate])
+
+
+  useEffect(() => {
+    if (customerAdditionalFields){
+      setCustomerAdditionalText('Cancel');
+    } else {
+      setCustomerAdditionalText('Add Additional Details');
+    }
+  }, [customerAdditionalFields])
+
+  useEffect(() => {
+    if (customerAdditonalText !== 'Cancel') {
+      setBillingAddress1('');
+      setBillingAddress2('');
+      setBillingSuburb('');
+      setBillingState('');
+      setBillingPostCode('');
+      setBillingCountry('');
+      setShippingAddress1('');
+      setShippingAddress2('');
+      setShippingSuburb('');
+      setShippingState('');
+      setShippingPostCode('');
+      setShippingCountry('');
+      setBankNum('');
+      setBankName('');
+    }
+  }, [customerAdditonalText])
+
+  useEffect(() => {
+    let total = 0;
+    addedItems.forEach((i) => {
+      total += (parseFloat(i.price) * parseInt(i.qty));
+    })
+    setSubtotal(total);
+  }, [addedItems])
+
+  useEffect(() => {
+    if (Object.keys(selectedCustomer).length === 0) {
+      setCustomer('');
+      setCustomerEmail('');
+      setBillingAddress1('');
+      setBillingAddress2('');
+      setBillingSuburb('');
+      setBillingState('');
+      setBillingPostCode('');
+      setBillingCountry('');
+      setShippingAddress1('');
+      setShippingAddress2('');
+      setShippingSuburb('');
+      setShippingState('');
+      setShippingPostCode('');
+      setShippingCountry('');
+      setBankNum('');
+      setBankName('');
+    } else if (Object.keys(userDetails).length != 0 && Object.keys(selectedCustomer).length !== 0) {
+      setCustomerType('Existing Customer');
+      axios.get(`${API_URL}/v3/company/${userDetails.companyId}/customers`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((res) => {
+        const currentCustomer = res.data.find((c) => c.customerId === selectedCustomer.customerId);
+        setCustomer(currentCustomer.name);
+        setCustomerEmail(currentCustomer.email);
+        setBillingAddress1(currentCustomer.billingAddress.addressLine1);
+        setBillingAddress2(currentCustomer.billingAddress.addressLine2);
+        setBillingSuburb(currentCustomer.billingAddress.suburb);
+        setBillingState(currentCustomer.billingAddress.state);
+        setBillingPostCode(currentCustomer.billingAddress.postcode);
+        setBillingCountry(currentCustomer.billingAddress.country);
+        setShippingAddress1(currentCustomer.shippingAddress.addressLine1);
+        setShippingAddress2(currentCustomer.shippingAddress.addressLine2);
+        setShippingSuburb(currentCustomer.shippingAddress.suburb);
+        setShippingState(currentCustomer.shippingAddress.state);
+        setShippingPostCode(currentCustomer.shippingAddress.postcode);
+        setShippingCountry(currentCustomer.shippingAddress.country);  
+        setBankNum(currentCustomer.bankAccount);
+        setBankName(currentCustomer.bankName);
+      }).catch(error => error.response.data.error)
+    } 
+  }, [selectedCustomer, blur])
+
+  useEffect(() => {
+    if (customerType === 'Existing Customer') {
+      setCustomerAdditionalFields(false);
+    } 
+  }, [customerType])
 
   const calculateTotal = () => {
     let total = 0
@@ -122,107 +256,118 @@ export default function InvoicePage({token}) {
     return total
   }
 
+  const handleCreateCustomer = (event) => {
+    event.preventDefault();
+    const customerDetails = {
+      name: customer,
+      billingAddress: {
+        addressLine1: billingAddress1,
+        addressLine2: billingAddress2,
+        suburb: billingSuburb,
+        state: billingState,
+        postcode: billingPostCode,
+        country: billingCountry,
+      },
+      shippingAddress: {
+        addressLine1: shippingAddress1,
+        addressLine2: shippingAddress2,
+        suburb: shippingSuburb,
+        state: shippingState,
+        postcode: shippingPostCode,
+        country: shippingCountry,
+      },
+      email: customerEmail,
+      bankName: bankName,
+      bankAccount: bankNum,
+      companyId: userDetails.companyId
+    }
+    axios.post(`${API_URL}/v3/customer`, customerDetails, {
+      headers: { Authorization: `Bearer ${token}`}
+    }).then(() => {
+      axios.get(`${API_URL}/v3/company/${userDetails.companyId}/customers`, {headers: {Authorization: `Bearer ${token}`}})
+      .then((res) => {
+        setBlur(true);
+        setSelectedCustomer({});
+        setCustomerList(res.data);
+        setCustomerType('Existing Customer');
+        setCustomerAdditionalFields(false);
+      })
+      .catch(error => console.log(error.response.data.error))
+    })
+    .catch(error => console.log(error.response.data.error))
+  }
 
+  // ONLY PRESS THIS BUTTON IF YOU HAVE A REGISTERED CUSTOMER AND ITEM
   const handleSubmit = (event) => {
     event.preventDefault();
     const button = event.nativeEvent.submitter.name
-    const formData = new FormData(event.currentTarget);
-    const billingAddress = {
-      addressLine1: formData.get('billing-address-line1') || '',
-      addressLine2: formData.get('billing-address-line2') || '',
-      suburb: formData.get('billing-suburb') || '',
-      state: formData.get('billing-state') || '',
-      postcode: formData.get('billing-postcode') || '',
-      country: formData.get('billing-country') || ''
-    }
-
-    const shippingAddress = {
-      addressLine1: formData.get('shipping-address-line1') || '',
-      addressLine2: formData.get('shipping-address-line2') || '',
-      suburb: formData.get('shipping-suburb') || '',
-      state: formData.get('shipping-state') || '',
-      postcode: formData.get('shipping-postcode') || '',
-      country: formData.get('shipping-country') || '',
-    }
-
-    const participant = {
-      companyName: formData.get('customer-name'),
-      billingAddress: billingAddress,
-      shippingAddress: shippingAddress,
-      email: formData.get('customer-email'),
-      bankName: formData.get('bank-name'),
-      bankAccount: formData.get('bank-number'),
-    }
-    const items = invoiceItems.map((item) => {
-      const itemQuantity = parseInt(item.quantity || 0);
-      const unitPrice = parseInt(item.unitPrice || 0);
-      const discountAmount = parseInt(item.discountAmount || 0);
-      const total = itemQuantity * unitPrice
-      return {
-        id: item.id,
-        isNew: false,
-        itemSku: item.itemSku,
-        itemName: item.itemName,
-        description: item.description,
-        quantity: itemQuantity,
-        unitPrice: unitPrice, 
-        discountAmount: discountAmount,
-        totalAmount: total * (1 - discountAmount / 100)
-      };
-    });
-
-    const invoiceDetails = {
-      receiver: participant,
-      issueDate: issueDate,
-      dueDate: dueDate,
-      invoiceNumber: formData.get('invoice-num'),
-      shippingChecked: shippingChecked,
-      status: 'DRAFT',
-      state: 'MAIN',
-      items: items,
-      wideDiscount: wideDiscount,
-      tax: tax,
-      format: formData.get('format'),
-      currency: formData.get('currency'),
-      shippingCostDetails: shippingCostDetails,
-      subtotal: subTotal,
-      total: calculateTotal(),
-      notes: formData.get('notes')
-    }
+    const invoiceDetails = makeInvoiceParams(
+      selectedCustomer,
+      billingAddress1,
+      billingAddress2,
+      billingSuburb,
+      billingState,
+      billingPostCode,
+      billingCountry,
+      shippingAddress1,
+      shippingAddress2,
+      shippingSuburb,
+      shippingState,
+      shippingPostCode,
+      shippingCountry,
+      invoiceNumber,
+      bankNum,
+      bankName,
+      shippingChecked,
+      shippingCostDetails,
+      issueDate,
+      dueDate,
+      notes,
+      currency,
+      wideDiscount,
+      tax,
+      subTotal,
+      invoiceItems,
+      addedItems,
+      format
+    );
     const params = {
-      invoiceId: invoiceId,
-      ...(update
-        ? { edits: invoiceDetails }
+      ...(update 
+        ? {invoiceId: invoiceId, edits: invoiceDetails} 
         : {isDraft: true, invoiceDetails: invoiceDetails}
       )
     }
+    
+    const url = update ? `${API_URL}/v3/invoice/${invoiceId}/edit` : `${API_URL}/v3/invoice`
+    const method = update ? axios.put : axios.post;
     if (button === 'save') {
-      const url = update ? `${API_URL}/v1/invoice/${invoiceId}/edit` : `${API_URL}/v2/invoice`
-      axios.put(url, params, {
-        headers: { Authorization: `Bearer ${token}` }
+      method(url, params, {
+        headers: { Authorization: `Bearer ${token}`}
       })
-      .then((res) => {console.log(res.data); navigate('/dashboard')})
+      .then(() => {navigate('/dashboard')})
       .catch(error => console.log(error.response.data.error))
     } else if (button === 'download') {
-      if (format === 'PDF') {
-        axios.post(`${API_URL}/v1/invoice/${invoiceId}/pdf`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((doc) => {
-          pdfMake.createPdf(doc.data).download(`invoice-${invoiceNumber}.pdf`);
-        })
-        .catch(error => console.log(error?.response?.data?.error || error.message));
-      } else {
-        // download as ubl
-        axios.get(`${API_URL}/v1/invoice/${invoiceId}/`, {
-          headers: { Authorization: `Bearer ${token}`,  'Accept': 'application/xml' },
-        })
-        .then((res) => {
-          const blob = new Blob([res.data], { type: 'application/xml' });
-          saveAs(blob, `invoice-${invoiceNumber}.xml`);
-        })
-        .catch(error => console.log(error.response.data.error))
-      }
+      method(url, params, {
+        headers: { Authorization: `Bearer ${token}`}
+      }).then(() => {
+        if (format === 'PDF') {
+          axios.post(`${API_URL}/v1/invoice/${invoiceId}/pdf`, {}, {
+            headers: { Authorization: `Bearer ${token}`},
+          })
+          .then((doc) => {
+            pdfMake.createPdf(doc.data).download(`invoice-${invoiceNumber}.pdf`);
+          }).catch(error => console.log(error?.response?.data?.error || error.message));
+        } else {
+          // download as ubl
+          axios.get(`${API_URL}/v3/invoice/${invoiceId}/`, {
+            headers: { Authorization: `Bearer ${token}`,  'Accept': 'application/xml' },
+          })
+          .then((res) => {
+            const blob = new Blob([res.data], { type: 'application/xml' });
+            saveAs(blob, `invoice-${invoiceNumber}.xml`);
+          }).catch(error => console.log(error.response.data.error))
+        }
+      }).catch(error => console.log(error.response.data.error))
     } 
   }
 
@@ -235,260 +380,297 @@ export default function InvoicePage({token}) {
   const formatOptions = [
     {label: 'UBL (PINT A-NZ Billing Profile)'},
     {label: 'PDF'}
-  ]
+  ];
+
+  const invoiceNumberOptions = [
+    {label: 'Invoices sent to this customer'},
+    {label: 'Total number of invoices sent'},
+    {label: 'Custom'}
+  ];
+
   return (
     <Fragment>
-      <Box sx={{p: 10, bgcolor: '#e2dacd'}}>
-        <Typography>New Invoice</Typography>
-        <form onSubmit={handleSubmit}>
-          <TextField
-            id='customer-name'
-            name='customer-name'
-            label='Customer'
-            value={customer}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setCustomer(e.target.value)}
-          />
-          <TextField
-            id='customer-email'
-            name='customer-email'
-            label='Customer Email'
-            value={customerEmail}
-            variant='outlined'
-            type='email'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setCustomerEmail(e.target.value)}
-          />
-          <Box>
-            <Typography>Billing Address</Typography>
-            <AddressFields
-              type='billing'
-              addressLine1={billingAddress1}
-              setAddressLine1={setBillingAddress1}
-              addressLine2={billingAddress2}
-              setAddressLine2={setBillingAddress2}
-              suburb={billingSuburb}
-              setSuburb={setBillingSuburb}
-              state={billingState}
-              setState={setBillingState}
-              postCode={billingPostCode}
-              setPostCode={setBillingPostCode}
-              country={billingCountry}
-              setCountry={setBillingCountry}
-            />
-          </Box>
-          <Box>
-            <Typography>
-              Shipping Address
-            </Typography>
-            <Box>
-              <Typography>Same as Billing Address</Typography>
-              <Checkbox
-                checked={shippingChecked}
-                onChange={(event) => {
-                  setShippingChecked(event.target.checked)
-                }}
-                slotProps={{
-                  input: {'aria-label': 'controlled'}
-                }}
-              />
-              {
-                !shippingChecked && 
-                <AddressFields
-                  type='shipping'
-                  addressLine1={shippingAddress1}
-                  setAddressLine1={setShippingAddress1}
-                  addressLine2={shippingAddress2}
-                  setAddressLine2={setShippingAddress2}
-                  suburb={shippingSuburb}
-                  setSuburb={setShippingSuburb}
-                  state={shippingState}
-                  setState={setShippingState}
-                  postCode={shippingPostCode}
-                  setPostCode={setShippingPostCode}
-                  country={shippingCountry}
-                  setCountry={setShippingCountry}
-                />
-              }
+      <Box sx={{display: 'flex', height: '100%', width: '80%', justifyContent: 'center', alignSelf: 'center'}}>
+        <Box
+          component='form' 
+          onSubmit={handleSubmit} 
+          sx={{display: 'flex', height: '100%', width: '100%'}}
+          onKeyDown={(e) => {if (e.key === 'Enter') {e.preventDefault()}}}
+          >
+          <Box sx={{width: '100%'}}>
+            <Box sx={{height: '100%', p: 3.125}}>
+              <Button 
+                variant='contained' 
+                sx={{mb: 5, bgcolor: 'cornflowerblue', textTransform: 'none', fontSize: '1.15em'}}
+                endIcon={<FileUploadIcon/>}
+              > 
+                Upload Order Document 
+              </Button>
+                <Box sx={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+                  <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Customer</Typography>
+                  <Box sx={{display: 'flex', flexDirection: 'column', gap: '25px'}}>
+                    <CustomerField
+                      customerType={customerType}
+                      setCustomerType={setCustomerType}
+                      customer={customer}
+                      selectedCustomer={selectedCustomer}
+                      setSelectedCustomer={setSelectedCustomer}
+                      setCustomer={setCustomer}
+                      customerEmail={customerEmail}
+                      setCustomerEmail={setCustomerEmail}
+                      customerAdditionalFields={customerAdditionalFields}
+                      setCustomerAdditionalFields={setCustomerAdditionalFields}
+                      customerAdditonalText={customerAdditonalText}
+                      setBlur={setBlur}
+                      handleCreateCustomer={handleCreateCustomer}
+                      customerList={customerList}
+                    />
+                    <CustomerAdditionalFields
+                      customerAdditionalFields={customerAdditionalFields}
+                      billingAddress1={billingAddress1}
+                      setBillingAddress1={setBillingAddress1}
+                      billingAddress2={billingAddress2}
+                      setBillingAddress2={setBillingAddress2}
+                      billingSuburb={billingSuburb}
+                      setBillingSuburb={setBillingSuburb}
+                      billingState={billingState}
+                      setBillingState={setBillingState}
+                      billingPostCode={billingPostCode}
+                      setBillingPostCode={setBillingPostCode}
+                      billingCountry={billingCountry}
+                      setBillingCountry={setBillingCountry}
+                      shippingChecked={shippingChecked}
+                      setShippingChecked={setShippingChecked}
+                      shippingAddress1={shippingAddress1}
+                      setShippingAddress1={setShippingAddress1}
+                      shippingAddress2={shippingAddress2}
+                      setShippingAddress2={setShippingAddress2}
+                      shippingSuburb={shippingSuburb}
+                      setShippingSuburb={setShippingSuburb}
+                      shippingState={shippingState}
+                      setShippingState={setShippingState}
+                      shippingPostCode={shippingPostCode}
+                      setShippingPostCode={setShippingPostCode}
+                      shippingCountry={shippingCountry}
+                      setShippingCountry={setShippingCountry}
+                      bankName={bankName}
+                      setBankName={setBankName}
+                      bankNum={bankNum}
+                      setBankNum={setBankNum}
+                      handleCreateCustomer={handleCreateCustomer}
+                    />
+                  </Box>
+                </Box>
+                <Box sx={{display: 'flex', flexDirection: 'column', gap: '20px', mt: 2}}>
+                  <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Date</Typography>
+                  <Box sx={{display: 'flex', flexDirection: 'column', gap: '25px'}}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker 
+                        label='Issue Date'
+                        name='issue-date'
+                        value={issueDate}
+                        onChange={(newValue) => setIssueDate(newValue)}
+                        
+                      />
+                    </LocalizationProvider>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker 
+                        label='Due Date'
+                        name='due-date'
+                        value={dueDate}
+                        onChange={(newValue) => setDueDate(newValue)}
+                      />
+                    </LocalizationProvider>
+                  </Box>
+                </Box>
+                <Typography 
+                  sx={{
+                    fontWeight: 'bold', 
+                    fontSize: '1.5em',
+                    mt: 3
+                  }}
+                >
+                  Invoice Details
+                </Typography>
+                <Box sx={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+                  <Box sx={{display: 'flex', alignItems: 'center', mt: 1}}>
+                    <Typography>Recurring</Typography>
+                    <Checkbox
+                      slotProps={{
+                        input: {'aria-label': 'controlled'}
+                      }}
+                    />
+                  </Box>
+                  <SelectField
+                    id={'invoice-number-option-id'}
+                    name={'invoice-number-option'}
+                    label={'Invoice Number'}
+                    value={invoiceNumberOption}
+                    options={invoiceNumberOptions}
+                    setValue={setInvoiceNumberOption}
+                    setBlur={setBlur}
+                  />
+                  {invoiceNumberOption === 'Custom' && 
+                    <TextField
+                      required
+                      fullWidth
+                      margin='dense'
+                      id='invoice-num'
+                      name='invoice-num'
+                      label='Invoice Number'
+                      value={invoiceNumber}
+                      onChange={(e) => setInvoiceNumber(e.target.value)}
+                      onBlur={() => (setBlur(true))}
+                      type='number'
+                      variant='standard'
+                      sx={{
+                        '& label.Mui-focused': { color: '#41444d' },
+                        '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
+                        '& input[type=number]': {
+                          MozAppearance: 'textfield',
+                        },
+                        '& input[type=number]::-webkit-outer-spin-button': {
+                          WebkitAppearance: 'none',
+                          margin: 0,
+                        },
+                        '& input[type=number]::-webkit-inner-spin-button': {
+                          WebkitAppearance: 'none',
+                          margin: 0,
+                        },
+                      }}
+                    />
+                  }
+                  <SelectField
+                    id={'currency-id'}
+                    name={'currency'}
+                    label={'Currency'}
+                    value={currency}
+                    options={currencyOptions}
+                    setValue={setCurrency}
+                    setBlur={setBlur}
+                  />     
+                  <SelectField
+                    id={'format-id'}
+                    name={'format'}
+                    label={'Format'}
+                    value={format}
+                    options={formatOptions}
+                    setValue={setFormat}
+                    setBlur={setBlur}
+                  />     
+                  <TextField
+                    id='notes'
+                    name='notes'
+                    label='Notes'
+                    multiline
+                    maxRows={4}
+                    value={notes}
+                    variant='outlined'
+                    sx={{width: '100%', mt: 1}}
+                    onChange={(e) => setNotes(e.target.value)}
+                    onBlur={() => setBlur(true)}
+                  />
+                  <Box sx={{display: 'flex', gap: '20px'}}>
+                    <InvoiceDiscountDialog 
+                      setWideDiscount={setWideDiscount}
+                      discountType={discountType}
+                      setDiscountType={setDiscountType}
+                      discountAmount={discountAmount}
+                      setDiscountAmount={setDiscountAmount}
+                    />
+                    <ShippingCostDialog setBlur={setBlur} setShippingCostDetails={setShippingCostDetails}/>
+                    <TaxDialog setTax={setTax} setBlur={setBlur}/>
+                  </Box>
+                </Box>
+                <Box sx={{mt: 3, display: 'flex', flexDirection: 'column', pb: '30px'}}>
+                  <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Items</Typography>
+                  <ItemField 
+                    itemType={itemType} 
+                    setItemType={setItemType} 
+                    setBlur={setBlur}
+                    setInvoiceItems={setInvoiceItems}
+                    invoiceItems={invoiceItems}
+                    setAddedItems={setAddedItems}
+                    addedItems={addedItems}
+                    discountType={discountType}
+                    setDiscountType={setDiscountType}
+                    discountAmount={discountAmount}
+                    setDiscountAmount={setDiscountAmount}
+                    companyId={userDetails.companyId}
+                    token={token}
+                  />
+                </Box>
             </Box>
           </Box>
-          <TextField
-            id='bank-name'
-            name='bank-name'
-            label='Bank Name'
-            value={bankName}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setBankName(e.target.value)}
-          />
-          <TextField
-            id='bank-number'
-            name='bank-number'
-            label='Bank Account Number'
-            type='number'
-            value={bankNum}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setBankNum(e.target.value)}
-          />
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker 
-              label='Issue Date'
-              name='issue-date'
-              value={issueDate}
-              onChange={(newValue) => setIssueDate(newValue)}
+          <Box sx={{p: 3.125, display: 'flex', justifyContent: 'center', width: '100%'}}>
+            <PreviewInvoice
+              invoiceId={invoiceId} 
+              token={token}
+              customer={selectedCustomer}
+              setSelectedCustomer={setSelectedCustomer}
+              setCustomer={setCustomer}
+              customerEmail={customerEmail}
+              setCustomerEmail={setCustomerEmail}
+              billingAddress1={billingAddress1}
+              setBillingAddress1={setBillingAddress1}
+              billingAddress2={billingAddress2}
+              setBillingAddress2={setBillingAddress2}
+              billingSuburb={billingSuburb}
+              setBillingSuburb={setBillingSuburb}
+              billingState={billingState}
+              setBillingState={setBillingState}
+              billingPostCode={billingPostCode}
+              setBillingPostCode={setBillingPostCode}
+              billingCountry={billingCountry}
+              setBillingCountry={setBillingCountry}
+              shippingAddress1={shippingAddress1}
+              setShippingAddress1={setShippingAddress1}
+              shippingAddress2={shippingAddress2}
+              setShippingAddress2={setShippingAddress2}
+              shippingSuburb={shippingSuburb}
+              setShippingSuburb={setShippingSuburb}
+              shippingState={shippingState}
+              setShippingState={setShippingState}
+              shippingPostCode={shippingPostCode}
+              setShippingPostCode={setShippingPostCode}
+              shippingCountry={shippingCountry}
+              setShippingCountry={setShippingCountry}
+              invoiceNumber={invoiceNumber}
+              setInvoiceNumber={setInvoiceNumber}
+              bankNum={bankNum}
+              setBankNum={setBankNum}
+              bankName={bankName}
+              setBankName={setBankName}
+              shippingChecked={shippingChecked}
+              setShippingChecked={setShippingChecked}
+              shippingCostDetails={shippingCostDetails}
+              setShippingCostDetails={setShippingCostDetails}
+              issueDate={issueDate}
+              setIssueDate={setIssueDate}
+              dueDate={dueDate}
+              setDueDate={setDueDate}
+              notes={notes}
+              setNotes={setNotes}
+              currency={currency}
+              setCurrency={setCurrency}
+              wideDiscount={wideDiscount}
+              setWideDiscount={setWideDiscount}
+              tax={tax}
+              setTax={setTax}
+              subTotal={subTotal}
+              setSubtotal={setSubtotal}
+              total={calculateTotal()}
+              setInvoiceItems={setInvoiceItems}
+              addedItems={addedItems}
+              setAddedItems={setAddedItems}
+              format={format}
+              setFormat={setFormat}
+              blur={blur} 
+              setBlur={setBlur} 
+              handleSubmit={handleSubmit}
             />
-          </LocalizationProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker 
-              label='Due Date'
-              name='due-date'
-              value={dueDate}
-              onChange={(newValue) => setDueDate(newValue)}
-            />
-          </LocalizationProvider>
-          <TextField
-            required
-            fullWidth
-            margin='dense'
-            id='invoice-num'
-            name='invoice-num'
-            label='Invoice Number'
-            value={invoiceNumber}
-            onChange={(e) => setInvoiceNumber(e.target.value)}
-            type='number'
-            variant='standard'
-            autoComplete='off'
-            sx={{
-              '& label.Mui-focused': { color: '#41444d' },
-              '& .MuiInput-underline:after': { borderBottomColor: '#41444d' },
-              '& input[type=number]': {
-                MozAppearance: 'textfield',
-              },
-              '& input[type=number]::-webkit-outer-spin-button': {
-                WebkitAppearance: 'none',
-                margin: 0,
-              },
-              '& input[type=number]::-webkit-inner-spin-button': {
-                WebkitAppearance: 'none',
-                margin: 0,
-              },
-            }}
-          />
-          <SelectField
-            id={'currency-id'}
-            name={'currency'}
-            label={'Currency'}
-            value={currency}
-            options={currencyOptions}
-            setValue={setCurrency}
-          />     
-          <TextField
-            id='notes'
-            name='notes'
-            label='Notes'
-            multiline
-            maxRows={4}
-            value={notes}
-            variant='outlined'
-            autoComplete='on'
-            sx={{ width: '100%' }}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-          <SelectField
-            id={'format-id'}
-            name={'format'}
-            label={'Format'}
-            value={format}
-            options={formatOptions}
-            setValue={setFormat}
-          />     
-          <InvoiceItemTable rows={invoiceItems} setRows={setInvoiceItems} setSubtotal={setSubtotal} currency={currency}/>
-          <InvoiceDiscountDialog setWideDiscount={setWideDiscount}/>
-          <ShippingCostDialog shippingCostDetails={shippingCostDetails} setShippingCostDetails={setShippingCostDetails}/>
-          <TaxDialog setTax={setTax}/>
-          <Typography>
-            subtotal = {currency}{subTotal}
-          </Typography>
-          {Object.keys(wideDiscount).length !== 0 && 
-          (
-            <Fragment>
-              {wideDiscount.discountType === 'Flat' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {currency}{parseFloat(wideDiscount.discountAmount).toFixed(2)}</Typography>}
-              {wideDiscount.discountType === 'Percentage' && wideDiscount.discountAmount !== '' && <Typography>Wide Discount: {currency}{subTotal * (parseFloat(wideDiscount.discountAmount) / 100) + '%'}</Typography>}
-            </Fragment>
-          )}
-          <Typography>
-          </Typography>
-          {Object.keys(shippingCostDetails).length !== 0 && 
-            <Fragment>
-              {shippingCostDetails.shippingCost !== '' && <Typography>Shipping Cost: {currency}{shippingCostDetails.shippingCost}</Typography>}
-              {shippingCostDetails.shippingTax !== '' && <Typography>Shipping Tax: {currency}{shippingCostDetails.shippingTax}</Typography>}
-            </Fragment>
-          }
-          {Object.keys(tax).length !== 0 && 
-            <Fragment>
-              {tax.taxType === 'GST' && <Typography>GST: {subTotal * (0.1)}</Typography>}
-              {tax.taxType === 'Custom' && 
-                <Fragment>
-                  {tax.taxOption === 'Percentage' && tax.taxAmount !== '' &&<Typography>Tax : {currency}{parseFloat(tax.taxAmount).toFixed(2)+ '%'}</Typography>}
-                  {tax.taxOption === 'Flat' && tax.taxAmount !== '' &&<Typography>Tax : {currency}{parseFloat(tax.taxAmount).toFixed(2)}</Typography>}
-                </Fragment>
-              }
-            </Fragment>
-          }
-          <Typography>
-            total = {currency}{calculateTotal().toFixed(2)}
-          </Typography>
-          <Button
-            onClick={() => {
-              setCustomer('');
-              setBillingAddress1('');
-              setBillingAddress2('');
-              setBillingSuburb('');
-              setBillingState('');
-              setBillingPostCode('');
-              setBillingCountry('');
-              setShippingAddress1('');
-              setShippingAddress2('');
-              setShippingSuburb('');
-              setShippingState('');
-              setShippingPostCode('');
-              setShippingCountry('');
-              setBankNum('');
-              setBankName('');
-              setShippingChecked(false);
-              setShippingCostDetails({});
-              setIssueDate(null);
-              setDueDate(null);
-              setNotes('');
-              setCurrency('$');
-              setWideDiscount({});
-              setTax({});
-              setSubtotal(0);
-              setInvoiceItems([]);
-              setFormat('PDF');
-            }}
-          >
-            Reset Invoice
-          </Button>
-          <Button
-            type='submit'
-            name='save'
-          >
-            Save
-          </Button>
-          <Button
-            type='submit'
-            name='download'
-          >
-            Download
-          </Button>
-        </form>
+          </Box>
+        </Box>
       </Box>
     </Fragment>
   )

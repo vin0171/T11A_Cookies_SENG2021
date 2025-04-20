@@ -15,14 +15,14 @@ export default function InvoicesPage() {
       try {
         const token = localStorage.getItem('token');
 
-        // Step 1: Fetch companyId using token
+        // Fetch companyId using token
         const userDetailsRes = await axios.get('http://localhost:5005/v3/user/details', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const companyId = userDetailsRes.data.companyId;
 
-        // Step 2: Fetch invoices using companyId
+        // Fetch invoices using companyId
         const response = await axios.get(`http://localhost:5005/v3/company/${companyId}/invoices`, {
           headers: { Authorization: `Bearer ${token}` },
         });

@@ -2,7 +2,7 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import { useNavigate } from 'react-router-dom';
-import PrestoLogo from './PrestoLogo';
+import CookieLogo from './CookieLogo';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
@@ -24,10 +24,6 @@ export default function Navbar({token, loggedIn, children}) {
   const toggleMenu = (newOpen) => () => {
     setOpenMenu(newOpen)
   }
-
-  useEffect(() => {
-    // use the token to grab the users id and then fetch their details
-  }, [token])
 
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleMenu(false)}>
@@ -51,7 +47,7 @@ export default function Navbar({token, loggedIn, children}) {
   );
 
   let toolbarComponent =  
-  <PrestoLogo
+  <CookieLogo
     styles={{	
       fontSize: '1.5em', 
       width: 110,
@@ -62,6 +58,13 @@ export default function Navbar({token, loggedIn, children}) {
     handleClick={() => {navigate('/')}}
   />
 
+  let navStyle = 
+  <>
+  
+  
+  </>
+
+
   if (loggedIn) { 
     toolbarComponent = 
     <Box sx={{display: 'flex'}}>
@@ -70,7 +73,7 @@ export default function Navbar({token, loggedIn, children}) {
         edge='start'
         color='inherit'
         aria-label='menu'
-        sx={{ mr: 2, p: 0, ml: 0.1 }}
+        sx={{ mr: 2, p: 0, ml: 0.1}}
         onClick={toggleMenu(true)}
       >
         <MenuIcon fontSize='large'/>
@@ -81,7 +84,6 @@ export default function Navbar({token, loggedIn, children}) {
         slotProps = {{
           paper: {
             sx: {
-              bgcolor: '#e2dacd'
             }
           }
         }}
@@ -91,7 +93,6 @@ export default function Navbar({token, loggedIn, children}) {
       {toolbarComponent}
     </Box>
   }
-
 
   return (
     <Box component='nav'>

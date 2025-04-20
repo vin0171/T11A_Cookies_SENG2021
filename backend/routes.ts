@@ -12,6 +12,7 @@ import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
 import { getCompany, getInvoice } from "./interfaceHelpers";
 import { validateUBL } from "./validation";
+import { SyntaxKind } from "typescript";
 
 function routes(app: Express) {
 // ========================================================================= //
@@ -182,7 +183,7 @@ function routes(app: Express) {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const invoiceId = req.params.invoiceId;
-  
+      console.log('hello??')
       // Generate the PDF for the invoice
       const pdfBuffer = await invoices.generateInvoicePDF(token, invoiceId);
   
@@ -299,7 +300,7 @@ function routes(app: Express) {
   //// Invoices 
   app.post('/v3/invoice', async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {invoiceDetails, isDraft } = req.body;
+      const {invoiceDetails, isDraft} = req.body;
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const response = await invoices.createInvoiceV3(token, invoiceDetails, isDraft); 
       res.status(200).json(response);
@@ -376,7 +377,7 @@ function routes(app: Express) {
   app.post('/v3/item', async (req: Request, res: Response, next: NextFunction) => {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
-      const { name, sku, price, description, companyId} = req.body;
+      const {name, sku, price, description, companyId} = req.body;
       const response = await items.registerItem(token, companyId, name, sku, price, description);
       res.status(200).json(response); 
     } catch(err) {

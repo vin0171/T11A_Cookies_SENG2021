@@ -6,7 +6,7 @@ import { SelectField } from '../helper';
 
 /**
  * This component sets up the dialog that pops up when the user clicks on the create
- * presentation button on the dashboard.
+ * company button on the dashboard.
  */
 export default function ValidateInvoiceDialog({token, companyId}) {
   const [open, setOpen] = useState(false);
@@ -18,7 +18,7 @@ export default function ValidateInvoiceDialog({token, companyId}) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const invoice = formData.get('ubl-invoice');
-    axios.post(`${API_URL}/v1/invoice/validate`, {ublInvoice: invoice})
+    axios.post(`${API_URL}/v3/invoice/validate`, {ublInvoice: invoice})
     .then((res) => {
       if (!res.data) {
         console.log('error')
@@ -61,7 +61,6 @@ export default function ValidateInvoiceDialog({token, companyId}) {
         sx={{
           '& .MuiDialog-container': {
             '& .MuiPaper-root': {
-              bgcolor:'#e2dacd',
               width: 550,
               height: 275,
             },

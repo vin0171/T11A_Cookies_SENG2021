@@ -214,6 +214,7 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
 };
 
 const validateInvoiceDetailsV2 = (invoiceDetails: InvoiceDetailsV2) => {
+    console.log(invoiceDetails);
     invoiceDetails.items.forEach((item: InvoiceItemV2) => {
         const fieldsToCheck: (keyof InvoiceItemV2)[] = [
             'quantity',
@@ -231,6 +232,7 @@ const validateInvoiceDetailsV2 = (invoiceDetails: InvoiceDetailsV2) => {
             }
         });
     });
+    console.log('hello mate');
 };
     
 
@@ -250,6 +252,7 @@ export function generateInvoiceV2(invoiceId: string, userId: string, companyId: 
     if (!isDraft) {
         validateInvoiceDetailsV2(invoiceDetails);
     }
+    
     const invoice: InvoiceV2 = {
         invoiceId: invoiceId, 
         userId: userId,
@@ -270,7 +273,7 @@ export async function getInvoice(invoiceId: string) {
 }
 
 
-export async function createCustomerV3(name: string, billingAddress: Address, shippingAddress: Address, email: string, bankName: string, bankAccount: string) : Promise<ParticipantV2> {
+export async function createCustomerV3(name: string, billingAddress: Address | null, shippingAddress: Address | null, email: string, bankName: string | null, bankAccount: string | null) : Promise<ParticipantV2> {
     if (!validators.isValidName(name)) {
 		throw HTTPError(400, 'Error: Invalid Name');
 	}
@@ -278,12 +281,7 @@ export async function createCustomerV3(name: string, billingAddress: Address, sh
     if (!validators.isValidEmail(email)) {
         throw HTTPError(400, 'Error: Invalid Email');
     }
-
-    const customerExistsAlready: ParticipantV2 = await getCustomerByEmailV3(email);
-    if (customerExistsAlready !== undefined) {
-        return customerExistsAlready;
-    }
-
+    
     return {
         customerId: uuidv4(),
         name: name,
@@ -324,6 +322,7 @@ export async function getCustomerByEmailV3(email: string): Promise<ParticipantV2
 
 
 export async function createItemV3(name: string, sku: string, description: string, unitPrice: string) {
+    console.log(name, sku, description, unitPrice)
     if (!validators.isValidName(name)) {
         throw HTTPError(400, 'Error: Invalid Name');
     }

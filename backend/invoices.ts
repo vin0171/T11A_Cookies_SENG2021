@@ -78,9 +78,7 @@ export async function createInvoiceV3(token: string, invoiceDetails: InvoiceDeta
   const data = getData();
   const invoiceId = uuidv4();
   const invoiceInfo : InvoiceV2 = generateInvoiceV2(invoiceId, user.userId, user.companyId, invoiceDetails, isDraft);
-  
   await data.put({ TableName: "Invoices", Item: invoiceInfo });
-  await addInvoiceIdToTable("Users", user.userId, invoiceId);
 
   if (user.companyId !== null) {
       await addInvoiceIdToTable("Companies", user.companyId, invoiceId)
@@ -97,14 +95,13 @@ function keyIdentifer(tableName: string, primaryKeyIdentifer: string) {
 }
 
 async function addInvoiceIdToTable(tableName: string, primaryKeyIdentifer: string, invoiceId: string) {
-    const data = getData();
-    await data.update({
-        TableName: tableName,
-        Key: keyIdentifer(tableName, primaryKeyIdentifer),
-        UpdateExpression: 'SET invoices = list_append(invoices, :invoiceId)',
-        ExpressionAttributeValues: { ':invoiceId': [invoiceId] }
-    });
-
+  const data = getData();
+  await data.update({
+      TableName: tableName,
+      Key: keyIdentifer(tableName, primaryKeyIdentifer),
+      UpdateExpression: 'SET invoices = list_append(invoices, :invoiceId)',
+      ExpressionAttributeValues: { ':invoiceId': [invoiceId] }
+  });
 }
 
 /**
@@ -145,7 +142,7 @@ export async function editInvoiceDetails(token: string, invoiceId: string, edits
 
 export async function editInvoiceDetailsV3(token: string, invoiceId: string, edits: Partial<InvoiceDetailsV2>) {
   const user = await validators.validateToken(token);
-const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+  const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
   Object.assign(invoice.details, edits);
   const data = getData();
   await data.update({
@@ -236,6 +233,7 @@ export async function listUserInvoices(token: string) {
 }
 
 export async function generateInvoicePDF(token: string, invoiceId: string) {
+  console.log('HELLOOOOOOOOOOOO')
   const data = getData();
   const user = await validators.validateToken(token);
   const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
@@ -246,7 +244,6 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
   if (!item1) HTTPError(403, 'Error: Invoice does not exist');
   //const pdf = await generatePDF(item);
   const item = item1.details;
-  console.log(item)
   const receiverAddress = [
     item.receiver.billingAddress.addressLine1, 
     item.receiver.billingAddress.addressLine2, 
@@ -255,13 +252,14 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
     item.receiver.billingAddress.postcode,
     item.receiver.billingAddress.country,
   ].filter(part => part).join(', ');
+  console.log(typeof(item.items[0].quantity));
   const docDefinition: TDocumentDefinitions = {
     content: [
       { text: 'Invoice', style: 'header' },
       {
         columns: [
           { text: `From:\n${company.name}\n${company.headquarters.address}`, width: '50%' },
-          { text: `To:\n${item.receiver.companyName}\n${receiverAddress}`, width: '50%', alignment: 'right' },
+          { text: `To:\n${item.receiver.name}\n${receiverAddress}`, width: '50%', alignment: 'right' },
         ]
       },
       { text: `Invoice #: ${item.invoiceNumber || invoiceId}`, margin: [0, 10] },
@@ -273,11 +271,14 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
           widths: ['*', 'auto', 'auto', 'auto'],
           body: [
             ['Description', 'Qty', 'Unit Price', 'Total'],
-            ...item.items.map((i: any) => [
-              i.description,
+            ...item.items
+            // ?????
+            .filter((i: any) => i.quantity != 0)
+            .map((i: any) => [
+              i.itemDetails.description,
               i.quantity,
-              `${item.currency} ${i.unitPrice}`,
-              `${item.currency} ${i.quantity * i.unitPrice}`
+              `${item.currency} ${i.itemDetails.unitPrice}`,
+              `${item.currency} ${i.quantity * i.itemDetails.unitPrice}`
             ]),
             [
               { text: 'Total', colSpan: 3, alignment: 'right' }, {}, {},
@@ -329,7 +330,7 @@ export async function generateInvoiceXML(token: string, invoiceId: string) {
     for (const item of invoice.items) {
       xml
         .ele('Item')
-          .ele('Description').txt(item.description).up()
+          .ele('Description').txt(item.itemDetails.description).up()
           .ele('Quantity').txt(item.quantity.toString()).up()
           .ele('UnitPrice').txt(String(item.itemDetails.unitPrice)).up()
           .ele('Total').txt(String(invoice.total)).up()
