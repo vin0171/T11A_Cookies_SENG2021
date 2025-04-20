@@ -9,6 +9,9 @@ import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { useEffect, useState } from 'react';
 import {  Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import DescriptionIcon from '@mui/icons-material/Description';
+import InventoryIcon from '@mui/icons-material/Inventory';
 
 /**
  * This component is the navbar that appears when the user is on any page that 
@@ -25,27 +28,20 @@ export default function Navbar({token, loggedIn, children}) {
   const DrawerList = (
     <Box sx={{ width: 250 }} role="presentation" onClick={toggleMenu(false)}>
       <List>
-        {['Stats', 'AI Chat'].map((text) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton onClick={() => navigate('/')}> 
-              <ListItemIcon>
-                {text === 'Stats' && 
-                  <QueryStatsIcon fontSize='large' sx={{ color: '#27548A'}}/>
-                }
-                {text === 'AI Chat' && 
-                  <SmartToyIcon fontSize='large' sx={{ color: '#27548A'}}/>
-                }
-              </ListItemIcon>
-              <ListItemText  
-                slotProps={{
-                  primary: {
-                    style: { fontSize: '1.5em' }
-                  }
-                }}
-                primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+      {['Stats', 'AI Chat', 'Customers', 'Invoices', 'Items'].map((text) => (
+        <ListItem key={text} disablePadding>
+          <ListItemButton onClick={() => navigate(`/${text.toLowerCase()}`)}>
+            <ListItemIcon>
+              {text === 'Stats' && <QueryStatsIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+              {text === 'AI Chat' && <SmartToyIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+              {text === 'Customers' && <PeopleAltIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+              {text === 'Invoices' && <DescriptionIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+              {text === 'Items' && <InventoryIcon fontSize='large' sx={{ color: '#27548A' }}/>}
+            </ListItemIcon>
+            <ListItemText primary={text} sx={{ '& span': { fontSize: '1.5em' } }} />
+          </ListItemButton>
+        </ListItem>
+      ))}
       </List>
     </Box>
   );
@@ -99,45 +95,22 @@ export default function Navbar({token, loggedIn, children}) {
   }
 
   return (
-    <Box component='nav' sx={{flex: 1}}>
-      <AppBar 
-        position={loggedIn ? 'static': 'absolute'}
-        sx ={{
-          ...(loggedIn
-            ? {}
-            : {
-                boxShadow: 0,
-                bgcolor: 'transparent',
-                backgroundImage: 'none',
-                mt: 'calc(var(--template-frame-height, 0px) + 28px)',
-                display: 'flex',
-                alignItems: 'center'
-            }
-          )
-        }}
-      >
-        <Box sx={{...(loggedIn ? {} : {width: '70%', maxWidth: '1400px'})}}>
-          <Toolbar
-            disableGutters
-            variant ='dense' 
-            sx={{
-              display: 'flex',
-              bgcolor: 'cornflowerblue',
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              flexShrink: 0,
-              backdropFilter: loggedIn ? '' : 'blur(24px)',
-              borderRadius: loggedIn ? 0 : 5,
-              borderColor: 'grey',
-              boxShadow: 5,
-              pl: 2.5, 
-              pr: 2.5,
-              minHeight: loggedIn ? 75 :85
-            }}>
-            {toolbarComponent}
-            {children}
-          </Toolbar>
-        </Box>
+    <Box component='nav'>
+      <AppBar position='static'>
+        <Toolbar
+          disableGutters
+          variant ='dense' 
+          sx={{
+            bgcolor: '#27548A',
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            pl: 1.3, 
+            pr: 1.3,
+            minHeight: 75
+          }}>
+          {toolbarComponent}
+          {children}
+        </Toolbar>
       </AppBar>
     </Box>
   );
