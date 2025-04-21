@@ -6,7 +6,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { makeInvoiceParams, SelectField, clickableTextStyle } from "../helper";
 import InvoiceItemTable from "../components/InvoiceItemTable";
 import InvoiceDiscountDialog from "../components/InvoiceDiscountDialog";
-import FileUploadIcon from '@mui/icons-material/FileUpload'; 
 import ShippingCostDialog from "../components/ShippingCostDialog";
 import axios from "axios";
 import { API_URL } from "../App";
@@ -20,7 +19,7 @@ import PreviewInvoice from "../components/PreviewInvoice";
 import CustomerField from "../components/CustomerField";
 import CustomerAdditionalFields from "../components/CustomerAdditionalFields";
 import ItemField from "../components/ItemField";
-import { intersection } from "validation.ts";
+import FileUploadButton from '../components/UploadFileButton'; 
 pdfMake.addVirtualFileSystem(pdfFonts);
 
 export default function InvoicePage({token}) {
@@ -396,71 +395,78 @@ export default function InvoicePage({token}) {
           onSubmit={handleSubmit} 
           sx={{display: 'flex', height: '100%', width: '100%'}}
           onKeyDown={(e) => {if (e.key === 'Enter') {e.preventDefault()}}}
-          >
+        >
           <Box sx={{width: '100%'}}>
             <Box sx={{height: '100%', p: 3.125}}>
-              <Button 
-                variant='contained' 
-                sx={{mb: 5, bgcolor: 'cornflowerblue', textTransform: 'none', fontSize: '1.15em'}}
-                endIcon={<FileUploadIcon/>}
-              > 
-                Upload Order Document 
-              </Button>
-                <Box sx={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
-                  <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Customer</Typography>
-                  <Box sx={{display: 'flex', flexDirection: 'column', gap: '25px'}}>
-                    <CustomerField
-                      customerType={customerType}
-                      setCustomerType={setCustomerType}
-                      customer={customer}
-                      selectedCustomer={selectedCustomer}
-                      setSelectedCustomer={setSelectedCustomer}
-                      setCustomer={setCustomer}
-                      customerEmail={customerEmail}
-                      setCustomerEmail={setCustomerEmail}
-                      customerAdditionalFields={customerAdditionalFields}
-                      setCustomerAdditionalFields={setCustomerAdditionalFields}
-                      customerAdditonalText={customerAdditonalText}
-                      setBlur={setBlur}
-                      handleCreateCustomer={handleCreateCustomer}
-                      customerList={customerList}
-                    />
-                    <CustomerAdditionalFields
-                      customerAdditionalFields={customerAdditionalFields}
-                      billingAddress1={billingAddress1}
-                      setBillingAddress1={setBillingAddress1}
-                      billingAddress2={billingAddress2}
-                      setBillingAddress2={setBillingAddress2}
-                      billingSuburb={billingSuburb}
-                      setBillingSuburb={setBillingSuburb}
-                      billingState={billingState}
-                      setBillingState={setBillingState}
-                      billingPostCode={billingPostCode}
-                      setBillingPostCode={setBillingPostCode}
-                      billingCountry={billingCountry}
-                      setBillingCountry={setBillingCountry}
-                      shippingChecked={shippingChecked}
-                      setShippingChecked={setShippingChecked}
-                      shippingAddress1={shippingAddress1}
-                      setShippingAddress1={setShippingAddress1}
-                      shippingAddress2={shippingAddress2}
-                      setShippingAddress2={setShippingAddress2}
-                      shippingSuburb={shippingSuburb}
-                      setShippingSuburb={setShippingSuburb}
-                      shippingState={shippingState}
-                      setShippingState={setShippingState}
-                      shippingPostCode={shippingPostCode}
-                      setShippingPostCode={setShippingPostCode}
-                      shippingCountry={shippingCountry}
-                      setShippingCountry={setShippingCountry}
-                      bankName={bankName}
-                      setBankName={setBankName}
-                      bankNum={bankNum}
-                      setBankNum={setBankNum}
-                      handleCreateCustomer={handleCreateCustomer}
-                    />
-                  </Box>
-                </Box>
+              <FileUploadButton
+              onUpload={(parsed) => {
+          
+                if (parsed?.customer?.name) {
+                  setCustomer(parsed.customer.name);
+                }
+        
+                setIssueDate(dayjs(parsed.invoicePeriod.startDate)); 
+                setDueDate(dayjs(parsed.invoicePeriod.endDate));
+                setCurrency(parsed.currencyID || '$');
+                setInvoiceNumber(parsed.invoiceId || '');
+                setInvoiceItems(parsed.items || []);
+              }}
+            />
+            <Box sx={{display: 'flex', flexDirection: 'column', gap: '20px'}}>
+              <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Customer</Typography>
+              <Box sx={{display: 'flex', flexDirection: 'column', gap: '25px'}}>
+                <CustomerField
+                  customerType={customerType}
+                  setCustomerType={setCustomerType}
+                  customer={customer}
+                  selectedCustomer={selectedCustomer}
+                  setSelectedCustomer={setSelectedCustomer}
+                  setCustomer={setCustomer}
+                  customerEmail={customerEmail}
+                  setCustomerEmail={setCustomerEmail}
+                  customerAdditionalFields={customerAdditionalFields}
+                  setCustomerAdditionalFields={setCustomerAdditionalFields}
+                  customerAdditonalText={customerAdditonalText}
+                  setBlur={setBlur}
+                  handleCreateCustomer={handleCreateCustomer}
+                  customerList={customerList}
+                />
+                <CustomerAdditionalFields
+                  customerAdditionalFields={customerAdditionalFields}
+                  billingAddress1={billingAddress1}
+                  setBillingAddress1={setBillingAddress1}
+                  billingAddress2={billingAddress2}
+                  setBillingAddress2={setBillingAddress2}
+                  billingSuburb={billingSuburb}
+                  setBillingSuburb={setBillingSuburb}
+                  billingState={billingState}
+                  setBillingState={setBillingState}
+                  billingPostCode={billingPostCode}
+                  setBillingPostCode={setBillingPostCode}
+                  billingCountry={billingCountry}
+                  setBillingCountry={setBillingCountry}
+                  shippingChecked={shippingChecked}
+                  setShippingChecked={setShippingChecked}
+                  shippingAddress1={shippingAddress1}
+                  setShippingAddress1={setShippingAddress1}
+                  shippingAddress2={shippingAddress2}
+                  setShippingAddress2={setShippingAddress2}
+                  shippingSuburb={shippingSuburb}
+                  setShippingSuburb={setShippingSuburb}
+                  shippingState={shippingState}
+                  setShippingState={setShippingState}
+                  shippingPostCode={shippingPostCode}
+                  setShippingPostCode={setShippingPostCode}
+                  shippingCountry={shippingCountry}
+                  setShippingCountry={setShippingCountry}
+                  bankName={bankName}
+                  setBankName={setBankName}
+                  bankNum={bankNum}
+                  setBankNum={setBankNum}
+                  handleCreateCustomer={handleCreateCustomer}
+                />
+              </Box>
+            </Box>
                 <Box sx={{display: 'flex', flexDirection: 'column', gap: '20px', mt: 2}}>
                   <Typography sx={{fontWeight: 'bold', fontSize: '1.5em'}}>Date</Typography>
                   <Box sx={{display: 'flex', flexDirection: 'column', gap: '25px'}}>

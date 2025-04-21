@@ -11,6 +11,8 @@ import InvoicePage from './pages/InvoicePage';
 import CustomersPage from './pages/CustomersPage';
 import InvoicesPage from './pages/InvoicesPage';
 import ItemsPage from './pages/ItemsPage';
+import DataGraph from './pages/DataSummary';
+
 
 export default function Router () {
   const [token, setToken] = useState(localStorage.getItem('token'));
@@ -47,6 +49,7 @@ export default function Router () {
         <Route path="/customers" element={<CustomersPage />} />
         <Route path="/invoices" element={<InvoicesPage />} />
         <Route path="/items" element={<ItemsPage />} />
+        <Route path="/stats" element={<DataGraph/>} />
       </Routes>
     </>
   )
