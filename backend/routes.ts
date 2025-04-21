@@ -12,6 +12,7 @@ import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
 import { getCompany, getInvoice } from "./interfaceHelpers";
 import { validateUBL } from "./validation";
+import { readInvoices } from "./InvoiceReader";
 import { SyntaxKind } from "typescript";
 
 function routes(app: Express) {
@@ -185,7 +186,7 @@ function routes(app: Express) {
       const invoiceId = req.params.invoiceId;
       console.log('hello??v3')
       // Generate the PDF for the invoice
-      const pdfBuffer = await invoices.generateInvoicePDFV3(token, invoiceId);
+      const pdfBuffer = await invoices.generateInvoicePDF(token, invoiceId);
   
       // Set headers for PDF response
       res.setHeader('Content-Type', 'application/pdf');
@@ -218,6 +219,20 @@ function routes(app: Express) {
     }
   });
 
+  app.post('/v1/invoice/read', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { ublInvoice } = req.body;
+  
+      if (!ublInvoice || typeof ublInvoice !== 'string') {
+        throw new HTTPError.BadRequest('UBL invoice must be a valid XML string.');
+      }
+  
+      const parsedInvoice = readInvoices(ublInvoice);
+      res.status(200).json(parsedInvoice);
+    } catch (err) {
+      next(err);
+    }
+  });
 // ========================================================================= //
 // Iteration 3
 // ========================================================================= //
@@ -404,6 +419,24 @@ function routes(app: Express) {
       res.status(200).json(response);
     } catch(err) {
       next(err)
+    }
+  });
+
+  app.post('/v3/invoice/:invoiceId/pdf', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const invoiceId = req.params.invoiceId;
+      console.log('hello??v3')
+      // Generate the PDF for the invoice
+      const pdfBuffer = await invoices.generateInvoicePDFV3(token, invoiceId);
+  
+      // Set headers for PDF response
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoiceId}.pdf`);
+      console.log('PDF generated successfully😅');
+      res.status(200).send(pdfBuffer);
+    } catch (err) {
+      next(err);
     }
   });
 
