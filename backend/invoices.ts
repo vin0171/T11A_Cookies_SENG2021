@@ -10,6 +10,7 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import path from 'path';
 import PdfPrinter from "pdfmake";
 import { create } from 'xmlbuilder2';
+import dayjs from "dayjs";
 
 const fonts = {
     Helvetica: {
@@ -241,6 +242,7 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
   const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
   const item1 = response.Item;
   // idk error code lol
+  console.log(item1);
   if (!item1) HTTPError(403, 'Error: Invoice does not exist');
   //const pdf = await generatePDF(item);
   const item = item1.details;
@@ -301,6 +303,102 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
   };
   return docDefinition;
 } 
+
+
+export async function generateInvoicePDFV3(token: string, invoiceId: string) {
+  const data = getData();
+  const user = await validators.validateToken(token);
+  const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+  const company = await getCompany(user.companyId);
+
+  const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
+  const invoiceItem = response.Item;
+  if (!invoiceItem) throw HTTPError(403, 'Error: Invoice does not exist');
+
+  console.log("😭")
+  console.log(invoiceItem);
+  const item: InvoiceDetailsV2 = invoiceItem.details;
+  const receiver = item.receiver;
+
+  console.log("v3");
+  console.log(item.items[0].itemDetails.description);
+  const receiverAddress = [
+    receiver.billingAddress?.addressLine1, 
+    receiver.billingAddress?.addressLine2, 
+    receiver.billingAddress?.suburb,
+    receiver.billingAddress?.state, 
+    receiver.billingAddress?.postcode,
+    receiver.billingAddress?.country,
+  ].filter(Boolean).join(', ');
+
+  const itemsTable = item.items
+    .filter((i) => i.quantity !== 0)
+    .map((i) => [
+      i.itemDetails.description,
+      i.quantity,
+      `${item.currency} ${i.itemDetails.unitPrice.toFixed(2)}`,
+      `${item.currency} ${(i.quantity * i.itemDetails.unitPrice).toFixed(2)}`
+    ]);
+
+  const totalsSection = [
+    [
+      { text: 'Subtotal', colSpan: 3, alignment: 'right' }, {}, {},
+      `${item.currency} ${item.subtotal.toFixed(2)}`
+    ],
+    item.wideDiscount ? [
+      { text: 'Discount', colSpan: 3, alignment: 'right' }, {}, {},
+      `- ${item.currency} ${item.wideDiscount.toFixed(2)}`
+    ] : null,
+    item.tax?.taxAmount ? [
+      { text: `Tax (${item.tax.taxType})`, colSpan: 3, alignment: 'right' }, {}, {},
+      `${item.currency} ${item.tax.taxAmount}`
+    ] : null,
+    item.shippingCostDetails?.shippingCost ? [
+      { text: 'Shipping', colSpan: 3, alignment: 'right' }, {}, {},
+      `${item.currency} ${item.shippingCostDetails.shippingCost}`
+    ] : null,
+    [
+      { text: 'Total', colSpan: 3, alignment: 'right', bold: true }, {}, {},
+      { text: `${item.currency} ${item.total.toFixed(2)}`, bold: true }
+    ]
+  ].filter(Boolean);
+
+  const docDefinition: TDocumentDefinitions = {
+    content: [
+      { text: 'Invoice', style: 'header' },
+      {
+        columns: [
+          { text: `From:\n${company.name}\n${company.headquarters.address}`, width: '50%' },
+          { text: `To:\n${receiver.name}\n${receiverAddress}`, width: '50%', alignment: 'right' },
+        ]
+      },
+      { text: `Invoice #: ${item.invoiceNumber || invoiceId}`, margin: [0, 10, 0, 2] },
+      { text: `Issue Date: ${dayjs(item.issueDate).format('DD/MM/YYYY')}`},
+      { text: `Due Date: ${dayjs(item.dueDate).format('DD/MM/YYYY')}` },
+      {
+        style: 'tableExample',
+        table: {
+          widths: ['*', 'auto', 'auto', 'auto'],
+          body: [
+            ['Description', 'Qty', 'Unit Price', 'Total'],
+            ...itemsTable,
+            ...totalsSection
+          ]
+        },
+        layout: 'lightHorizontalLines',
+        margin: [0, 20]
+      },
+      { text: `Notes: ${item.notes}`, margin: [0, 10, 0, 0] },
+    ],
+    styles: {
+      header: { fontSize: 22, bold: true, margin: [0, 0, 0, 10] },
+      tableExample: { margin: [0, 5, 0, 15] }
+    }
+  };
+
+  console.log(docDefinition);
+  return docDefinition;
+}
 
 
 export async function generateInvoiceXML(token: string, invoiceId: string) {
