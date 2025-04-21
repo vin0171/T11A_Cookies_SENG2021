@@ -186,7 +186,7 @@ function routes(app: Express) {
       const invoiceId = req.params.invoiceId;
       console.log('hello??v3')
       // Generate the PDF for the invoice
-      const pdfBuffer = await invoices.generateInvoicePDFV3(token, invoiceId);
+      const pdfBuffer = await invoices.generateInvoicePDF(token, invoiceId);
   
       // Set headers for PDF response
       res.setHeader('Content-Type', 'application/pdf');
@@ -419,6 +419,24 @@ function routes(app: Express) {
       res.status(200).json(response);
     } catch(err) {
       next(err)
+    }
+  });
+
+  app.post('/v3/invoice/:invoiceId/pdf', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const invoiceId = req.params.invoiceId;
+      console.log('hello??v3')
+      // Generate the PDF for the invoice
+      const pdfBuffer = await invoices.generateInvoicePDFV3(token, invoiceId);
+  
+      // Set headers for PDF response
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice-${invoiceId}.pdf`);
+      console.log('PDF generated successfully😅');
+      res.status(200).send(pdfBuffer);
+    } catch (err) {
+      next(err);
     }
   });
 
