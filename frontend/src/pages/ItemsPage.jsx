@@ -4,6 +4,7 @@ import {
   TableContainer, TableHead, TableRow, Paper, Select, MenuItem
 } from '@mui/material';
 import axios from 'axios';
+import { API_URL } from '../App';
 
 export default function ItemsPage() {
   const [sort, setSort] = useState('');
@@ -15,18 +16,18 @@ export default function ItemsPage() {
         const token = localStorage.getItem('token');
 
         // Get companyId from user details
-        const userDetails = await axios.get('http://localhost:5005/v3/user/details', {
+        const userDetails = await axios.get(`${API_URL}/v3/user/details`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const companyId = userDetails.data.companyId;
 
         // Use companyId to get items
-        const response = await axios.get(`http://localhost:5005/v3/company/${companyId}/items`, {
+        const response = await axios.get(`${API_URL}/v3/company/${companyId}/items`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        setItems(response.data.items);
+        setItems(response.data);
       } catch (err) {
         console.error('Failed to fetch items:', err);
       }
@@ -36,9 +37,9 @@ export default function ItemsPage() {
   }, []);
 
   const sortedItems = [...items].sort((a, b) => {
-    if (sort === 'name') return a.itemName.localeCompare(b.itemName);
-    if (sort === 'price') return b.price - a.price;
-    if (sort === 'stock') return b.stock - a.stock;
+    if (sort === 'name') return a.name.localeCompare(b.name);
+    if (sort === 'price') return b.unitPrice - a.unitPrice;
+    if (sort === 'description') return a.description.localeCompare(b.description);
     return 0;
   });
 
@@ -63,8 +64,8 @@ export default function ItemsPage() {
         >
           <MenuItem value="">Sort By</MenuItem>
           <MenuItem value="name">Name (A-Z)</MenuItem>
+          <MenuItem value="stock">Description (A-Z)</MenuItem>
           <MenuItem value="price">Price (High → Low)</MenuItem>
-          <MenuItem value="stock">Stock (High → Low)</MenuItem>
         </Select>
       </Box>
 
@@ -75,16 +76,17 @@ export default function ItemsPage() {
               <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>SKU</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Price ($)</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Stock</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Description</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {sortedItems.map((item, i) => (
+
               <TableRow key={i}>
-                <TableCell>{item.itemName}</TableCell>
-                <TableCell>{item.itemSku}</TableCell>
-                <TableCell>{item.price}</TableCell>
-                <TableCell>{item.stock}</TableCell>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>{item.sku}</TableCell>
+                <TableCell>{item.unitPrice}</TableCell>
+                <TableCell>{item.description}</TableCell>
               </TableRow>
             ))}
           </TableBody>

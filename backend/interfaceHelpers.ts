@@ -214,7 +214,6 @@ const validateInvoiceDetails = (invoiceDetails: InvoiceDetails) => {
 };
 
 const validateInvoiceDetailsV2 = (invoiceDetails: InvoiceDetailsV2) => {
-    console.log(invoiceDetails);
     invoiceDetails.items.forEach((item: InvoiceItemV2) => {
         const fieldsToCheck: (keyof InvoiceItemV2)[] = [
             'quantity',
@@ -232,7 +231,6 @@ const validateInvoiceDetailsV2 = (invoiceDetails: InvoiceDetailsV2) => {
             }
         });
     });
-    console.log('hello mate');
 };
     
 
@@ -322,13 +320,11 @@ export async function getCustomerByEmailV3(email: string): Promise<ParticipantV2
 
 
 export async function createItemV3(name: string, sku: string, description: string, unitPrice: string) {
-    console.log(name, sku, description, unitPrice)
     if (!validators.isValidName(name)) {
         throw HTTPError(400, 'Error: Invalid Name');
     }
 
     const itemExistsAlready = await getItemBySkuV3(sku);
-    console.log(itemExistsAlready);
     if (itemExistsAlready !== undefined) {
         throw HTTPError(400, 'Error: Item already exists');
     }

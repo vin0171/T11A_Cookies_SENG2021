@@ -5,6 +5,7 @@ import {
   Select, MenuItem
 } from '@mui/material';
 import axios from 'axios';
+import { API_URL } from '../App';
 
 export default function InvoicesPage() {
   const [sort, setSort] = useState('');
@@ -16,18 +17,19 @@ export default function InvoicesPage() {
         const token = localStorage.getItem('token');
 
         // Fetch companyId using token
-        const userDetailsRes = await axios.get('http://localhost:5005/v3/user/details', {
+        const userDetailsRes = await axios.get(`${API_URL}/v3/user/details`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const companyId = userDetailsRes.data.companyId;
 
         // Fetch invoices using companyId
-        const response = await axios.get(`http://localhost:5005/v3/company/${companyId}/invoices`, {
+        const response = await axios.get(`${API_URL}/v3/company/${companyId}/invoices`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log(response.data)
 
-        setInvoices(response.data.invoices);
+        setInvoices(response.data);
       } catch (err) {
         console.error('Failed to fetch invoices:', err);
       }
@@ -67,7 +69,7 @@ export default function InvoicesPage() {
           </Select>
         </Box>
       </Box>
-
+            
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -81,9 +83,9 @@ export default function InvoicesPage() {
           <TableBody>
             {sortedInvoices.map((inv, i) => (
               <TableRow key={i}>
-                <TableCell>{inv.invoiceId}</TableCell>
-                <TableCell>{inv.details?.receiver?.name || '—'}</TableCell>
-                <TableCell>{inv.details?.totalAmount ?? '-'}</TableCell>
+                <TableCell>{inv.details.invoiceNumber}</TableCell>
+                <TableCell>{inv.details.receiver.name || '—'}</TableCell>
+                <TableCell>{inv.details.total ?? '-'}</TableCell>
                 <TableCell>{new Date(inv.details?.issueDate).toLocaleDateString()}</TableCell>
               </TableRow>
             ))}

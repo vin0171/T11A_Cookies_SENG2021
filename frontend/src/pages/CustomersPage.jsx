@@ -4,35 +4,41 @@ import {
   TableRow, Paper, Select, MenuItem
 } from '@mui/material';
 import axios from 'axios';
+import { API_URL } from '../App';
 
 export default function CustomersPage() {
   const [sort, setSort] = useState('');
   const [customers, setCustomers] = useState([]);
+  const [invoices, setInvoices] = useState([]);
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
     const fetchCustomers = async () => {
       try {
-        const token = localStorage.getItem('token');
-
-        const userDetailsResponse = await axios.get('http://localhost:5005/v3/user/details', {
+        const userDetailsResponse = await axios.get(`${API_URL}/v3/user/details`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         const companyId = userDetailsResponse.data.companyId;
-        const customerResponse = await axios.get(`http://localhost:5005/v3/company/${companyId}/customers`, {
+        const customerResponse = await axios.get(`${API_URL}/v3/company/${companyId}/customers`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        setCustomers(customerResponse.data.customers);
+        setCustomers(customerResponse.data);
+        const invoices = await axios.get(`${API_URL}/v3/company/${companyId}/invoices`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        setInvoices(invoices.data);
       } catch (err) {
-        console.error('Failed to fetch customers:', err);
+        console.log('Failed to fetch customers:', err);
       }
     };
-
     fetchCustomers();
   }, []);
 
@@ -41,6 +47,16 @@ export default function CustomersPage() {
     if (sort === 'amountSpent') return b.amountSpent - a.amountSpent;
     return 0;
   });
+
+  const customerSpend = (customer) => {
+    let total = 0;
+    invoices.map(i => {
+      if (i.details.receiver.customerId === customer.customerId) {
+        total += i.details.total;
+      }
+    })
+    return total;
+  }
 
   return (
     <Box sx={{ fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
@@ -89,8 +105,8 @@ export default function CustomersPage() {
               <TableRow key={i}>
                 <TableCell>{cust.name}</TableCell>
                 <TableCell>{cust.email}</TableCell>
-                <TableCell>{cust.amountSpent ?? '-'}</TableCell>
-                <TableCell>{new Date(cust.createdAt || cust.memberSince).toLocaleDateString()}</TableCell>
+                <TableCell>{customerSpend(cust) ?? '-'}</TableCell>
+                <TableCell>{new Date().toLocaleDateString()}</TableCell>
               </TableRow>
             ))}
           </TableBody>
