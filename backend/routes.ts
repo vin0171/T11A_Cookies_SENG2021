@@ -183,9 +183,9 @@ function routes(app: Express) {
     try {
       const token = req.headers['authorization']?.split(' ')[1] || undefined;
       const invoiceId = req.params.invoiceId;
-      console.log('hello??')
+      console.log('hello??v3')
       // Generate the PDF for the invoice
-      const pdfBuffer = await invoices.generateInvoicePDF(token, invoiceId);
+      const pdfBuffer = await invoices.generateInvoicePDFV3(token, invoiceId);
   
       // Set headers for PDF response
       res.setHeader('Content-Type', 'application/pdf');
