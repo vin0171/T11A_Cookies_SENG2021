@@ -4,10 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import HomePageFeatures from '../components/HomePageFeatures';
 import HomePagePricing from '../components/HomePagePricing';
 import HomePageFooter from '../components/HomePageFooter';
-import dashboard from '../assets/dashboard.jpg';
+import { Typewriter } from 'react-simple-typewriter';
 
 export default function HomePage() {
   const navigate = useNavigate();
+
+  const ublSample = `<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+  <cbc:ID>12345</cbc:ID>
+  <cbc:IssueDate>2025-04-21</cbc:IssueDate>
+</Invoice>`;
 
   return (
     <Fragment>
@@ -118,21 +124,33 @@ export default function HomePage() {
             </Box>
           </Button>
 
-          {/* Dashboard Preview */}
+          {/* Typewriter Animation replacing the dashboard */}
           <Box
             sx={{
               mt: 8,
-              alignSelf: 'center',
               width: '60%',
-              height: 680,
-              outline: '6px solid',
-              outlineColor: 'hsla(220, 25%, 80%, 0.2)',
-              border: '1px solid',
+              minHeight: 300,
+              backgroundColor: '#f8fafc',
+              borderRadius: '1em',
+              padding: 4,
               boxShadow: '0 0 12px 8px hsla(220, 25%, 80%, 0.2)',
-              backgroundImage: `url(${dashboard})`,
-              backgroundSize: 'contain',
+              fontFamily: 'monospace',
+              fontSize: '1.1rem',
+              color: '#111827',
+              whiteSpace: 'pre-wrap',
+              lineHeight: 1.6,
+              border: '1px solid hsla(220, 25%, 80%, 0.5)',
             }}
-          />
+          >
+            <Typewriter
+              words={[ublSample]}
+              loop={1}
+              cursor
+              typeSpeed={25}
+              deleteSpeed={0}
+              delaySpeed={1000}
+            />
+          </Box>
         </Box>
       </Box>
 
