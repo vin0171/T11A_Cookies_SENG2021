@@ -1,122 +1,119 @@
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import DescriptionIcon from '@mui/icons-material/Description';
-import { Box, Button, Card, Typography } from '@mui/material';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import { Box, ButtonBase, Typography, useTheme } from '@mui/material';
 import { useState } from 'react';
 import dummy from '../assets/dummy.jpg';
 
 const items = [
   {
-    icon: <DescriptionIcon />,
+    icon: <DescriptionIcon fontSize="large" />,
     title: 'Intuitive Invoice Creation',
-    description:
-      'Drag and drop xml files',
-    image: `url(${dummy})`
+    description: 'Drag and drop XML files.',
+    image: `url(${dummy})`,
   },
   {
-    icon: <AssessmentIcon />,
+    icon: <AssessmentIcon fontSize="large" />,
     title: 'Accurate Statistics',
-    description:
-      'See accurate statistics of all of your created invoices',
-    image: `url(${dummy})`
+    description: 'View analytics of all your invoices.',
+    image: `url(${dummy})`,
   },
   {
-    icon: <SmartToyIcon />,
-    title: 'Talk with our AI teller',
-    description:
-      'you look lonely', 
-    image: `url(${dummy})`
+    icon: <SmartToyIcon fontSize="large" />,
+    title: 'Talk with our AI Teller',
+    description: 'Let AI handle your queries.',
+    image: `url(${dummy})`,
+  },
+  {
+    icon: <ReceiptLongIcon fontSize="large" />,
+    title: 'Billing Overview',
+    description: 'Manage invoices, payments, and billing history.',
+    image: `url(${dummy})`,
   },
 ];
 
 export default function HomePageFeatures() {
   const [selectedItemIndex, setSelectedItemIndex] = useState(0);
-  const handleItemClick = (index) => {
-    setSelectedItemIndex(index);
-  };
+  const theme = useTheme();
 
   return (
-    <Box sx={{bgcolor: 'aliceblue', pt: 5}}>
-      <Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-        <Box sx={{width: '60%', mb: 2}}>
-          <Typography sx={{fontSize: '3em', fontWeight: 'bold'}}>
-            What We Offer
-          </Typography>
-          <Typography sx={{color: 'grey', fontSize: '1.5em'}}>
-            Fast Invoice Generation!
+    <Box sx={{ bgcolor: 'aliceblue', py: 10 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box sx={{ width: '60%', mb: 4, textAlign: 'left' }}>
+          <Typography sx={{ fontSize: '3em', fontWeight: 'bold' }}>What We Offer</Typography>
+          <Typography sx={{ color: 'grey', fontSize: '1.4em' }}>
+            Fast, Beautiful Invoice Generation
           </Typography>
         </Box>
+
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'row-reverse',
-            gap: 2,
-            width: '60%'
+            justifyContent: 'left',
+            gap: 4,
+            width: '60%',
+            flexWrap: 'wrap',
           }}
         >
-          <Box>
-            <Box sx={{display: 'flex', flexDirection: 'column', gap: 2, height: '100%'}}>
-              {items.map(({ icon, title, description }, index) => (
-                <Box
-                  key={index}
-                  component={Button}
-                  onClick={() => handleItemClick(index)}
-                  sx={{
-                    p: 2,
-                    height: '100%',
-                    width: '100%',
-                    '&:hover': {
-                      backgroundColor: 'grey'
-                    },
-                    ...selectedItemIndex === index && {
-                      backgroundColor: 'action.selected',
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'left',
-                      gap: 1,
-                      color: 'black',
-                      textAlign: 'left',
-                      textTransform: 'none',
-                      ...selectedItemIndex === index && {
-                        color: 'black',
-                      }
-                    }}
-                  >
-                    {icon}
-                    <Typography>{title}</Typography>
-                    <Typography>{description}</Typography>
+          <Box sx={{ flex: 1, minWidth: '100px', display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {items.map(({ icon, title, description }, index) => (
+              <ButtonBase
+                key={index}
+                onClick={() => setSelectedItemIndex(index)}
+                sx={{
+                  width: '100%',
+                  textAlign: 'left',
+                  borderRadius: 4,
+                  px: 10.5,
+                  py: 2.5,
+                  backgroundColor:
+                    selectedItemIndex ===  '#ffffff',
+                  boxShadow:
+                    selectedItemIndex === index
+                      ? '0px 4px 20px rgba(96, 165, 250, 0.3)'
+                      : '0px 2px 10px rgba(0,0,0,0.05)',
+                  transition: 'all 0.3s ease',
+
+                }}
+              >
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+                  <Box sx={{ color: '#60a5fa' }}>{icon}</Box>
+                  <Box>
+                    <Typography sx={{ fontSize: '1.2em', fontWeight: 'bold' }}>{title}</Typography>
+                    <Typography sx={{ fontSize: '1em', color: '#555' }}>{description}</Typography>
                   </Box>
                 </Box>
-              ))}
-            </Box>
+              </ButtonBase>
+            ))}
           </Box>
+
           <Box
             sx={{
+              flex: 1,
+              minWidth: '300px',
               display: 'flex',
-              width: '70%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              px: 2,
             }}
           >
             <Box
               sx={{
-                m: 'auto',
-                // REMOVE ML: 0 WHEN YOU'RE ADDING THE REAL IMAGES
-                ml: 0,
-                width: 420,
-                height: 500,
-                backgroundSize: 'contain',
+                width: '100%',
+                maxWidth: 440,
+                height: 460,
+                borderRadius: 4,
                 backgroundImage: items[selectedItemIndex].image,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
+                transition: 'background-image 0.4s ease',
               }}
             />
           </Box>
         </Box>
       </Box>
     </Box>
-  )
-  
+  );
 }

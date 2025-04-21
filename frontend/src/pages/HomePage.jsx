@@ -5,6 +5,7 @@ import HomePageFeatures from '../components/HomePageFeatures';
 import HomePagePricing from '../components/HomePagePricing';
 import HomePageFooter from '../components/HomePageFooter';
 import { Typewriter } from 'react-simple-typewriter';
+import { HighlightedTypewriter } from '../components/FancyTypeWrite';
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ export default function HomePage() {
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
   <cbc:ID>12345</cbc:ID>
   <cbc:IssueDate>2025-04-21</cbc:IssueDate>
+  <cbc:PartyName>Co-Invoices</cbc:PartyName>
+  ...
 </Invoice>`;
 
   return (
@@ -142,13 +145,10 @@ export default function HomePage() {
               border: '1px solid hsla(220, 25%, 80%, 0.5)',
             }}
           >
-            <Typewriter
-              words={[ublSample]}
-              loop={1}
-              cursor
-              typeSpeed={25}
-              deleteSpeed={0}
-              delaySpeed={1000}
+            <HighlightedTypewriter
+              code={ublSample}
+              language="xml"
+              speed={10}
             />
           </Box>
         </Box>
