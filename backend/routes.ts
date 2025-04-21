@@ -12,6 +12,7 @@ import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
 import { getCompany, getInvoice } from "./interfaceHelpers";
 import { validateUBL } from "./validation";
+import { readInvoices } from "./InvoiceReader";
 import { SyntaxKind } from "typescript";
 
 function routes(app: Express) {
@@ -218,6 +219,17 @@ function routes(app: Express) {
     }
   });
 
+  app.post('/v1/invoice/read', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { ublInvoice } = req.body;
+  
+      if (!ublInvoice || typeof ublInvoice !== 'string') {
+        throw new HTTPError.BadRequest('UBL invoice must be a valid XML string.');
+      }
+  
+      const parsedInvoice = readInvoices(ublInvoice);
+      res.status(200).json(parsedInvoice);
+    } catch (err) {
 // ========================================================================= //
 // Iteration 3
 // ========================================================================= //
