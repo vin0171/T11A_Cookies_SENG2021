@@ -286,23 +286,26 @@ components:
           $ref: '#/components/schemas/TaxRate'
         totalAmount:
           $ref: '#/components/schemas/TotalAmount'
-    InvoiceItemV2:
+    Item:
       type: object
       properties:
         id:
           $ref: '#/components/schemas/Id'
-        isNew:
-          $ref: '#/components/schemas/IsNew'
         itemSku:
           $ref: '#/components/schemas/ItemSku'
         itemName:
           $ref: '#/components/schemas/ItemName'
         description:
           $ref: '#/components/schemas/Description'
-        quantity:
-          $ref: '#/components/schemas/Quantity'
         unitPrice:
           $ref: '#/components/schemas/UnitPrice'
+    InvoiceItemV2:
+      type: object
+      properties:
+        item:
+          $ref: '#/components/schemas/Item'
+        quantity:
+          $ref: '#/components/schemas/Quantity'
         discountAmount:
           $ref: '#/components/schemas/DiscountAmount'
         totalAmount:

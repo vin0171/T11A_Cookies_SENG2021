@@ -10,6 +10,7 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import path from 'path';
 import PdfPrinter from "pdfmake";
 import { create } from 'xmlbuilder2';
+import dayjs from "dayjs";
 
 const fonts = {
     Helvetica: {
@@ -241,6 +242,7 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
   const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
   const item1 = response.Item;
   // idk error code lol
+  console.log(item1);
   if (!item1) HTTPError(403, 'Error: Invoice does not exist');
   //const pdf = await generatePDF(item);
   const item = item1.details;
@@ -301,6 +303,116 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
   };
   return docDefinition;
 } 
+
+function twoDecimal(num: number | string) {
+  if (typeof num === 'string') {
+    num = parseFloat(num);
+  }
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+}
+
+export async function generateInvoicePDFV3(token: string, invoiceId: string) {
+  const data = getData();
+  const user = await validators.validateToken(token);
+  const invoice = await validators.validateAdminPerms(user.userId, user.companyId, invoiceId);
+  const company = await getCompany(user.companyId);
+
+  const response = await data.get({ TableName: "Invoices", Key: { invoiceId: invoice.invoiceId }});
+  const invoiceItem = response.Item;
+  if (!invoiceItem) throw HTTPError(403, 'Error: Invoice does not exist');
+
+  console.log("😭")
+  console.log(invoiceItem);
+  const item: InvoiceDetailsV2 = invoiceItem.details;
+  const receiver = item.receiver;
+
+  console.log("v3");
+  console.log(item.items[0].itemDetails.description);
+  const receiverAddress = [
+    receiver.billingAddress?.addressLine1, 
+    receiver.billingAddress?.addressLine2, 
+  ].filter(Boolean).join(", ");
+
+  const receiverAddress2 = [
+    receiver.billingAddress?.suburb,
+    receiver.billingAddress?.state, 
+    receiver.billingAddress?.postcode,
+  ].filter(Boolean).join(", ");
+
+  const itemsTable = item.items
+    .filter((i) => i.quantity !== 0)
+    .map((i) => [
+      i.itemDetails.itemName,
+      i.itemDetails.description,
+      i.quantity,
+      `${item.currency} ${i.itemDetails.unitPrice}`,
+      `${item.currency} ${(i.quantity * i.itemDetails.unitPrice)}`
+    ]);
+
+  const totalsSection = [
+    [
+      { text: 'Subtotal', colSpan: 4, alignment: 'right' }, {}, {}, {},
+      `${item.currency} ${twoDecimal(item.subtotal)}`
+    ],
+    item.wideDiscount ? [
+      { text: 'Discount', colSpan: 4, alignment: 'right' }, {}, {}, {},
+      // if item.wideDiscount.discountType === 'percentage' then show it as a percentage else show it as a dollar amount
+      { text: `${item.wideDiscount.discountType === 'Percentage' ? item.wideDiscount.discountAmount + "%" : "$" + twoDecimal(item.wideDiscount.discountAmount)}`, alignment: 'right' },
+    ] : null,
+    item.tax?.taxAmount ? [
+      { text: `Tax (${item.tax.taxType})`, colSpan: 4, alignment: 'right' }, {}, {}, {},
+      { text: `${item.tax.taxAmount + "%"}`, alignment: 'right'}
+    ] : null,
+    item.shippingCostDetails?.shippingCost ? [
+      { text: 'Shipping', colSpan: 4, alignment: 'right' }, {}, {}, {},
+      `${item.currency} ${twoDecimal(item.shippingCostDetails.shippingCost)}`
+    ] : null,
+    [
+      { text: 'Total', colSpan: 4, alignment: 'right', bold: true }, {}, {}, {},
+      { text: `${item.currency} ${twoDecimal(item.total)}`, bold: true }
+    ]
+  ].filter(Boolean);
+
+  const docDefinition: TDocumentDefinitions = {
+    content: [
+      { text: 'Invoice', style: 'header' },
+      {
+        columns: [
+          { text: `From:\n${company.name}\n\n${company.headquarters.address}`, width: '50%' },
+          { text: `To:\n${receiver.name}\n\n${receiverAddress}\n${receiverAddress2}\n${receiver.billingAddress?.country}`, width: '50%', alignment: 'right' },
+        ]
+      },
+      { text: `Invoice #: ${item.invoiceNumber || invoiceId}`, margin: [0, 10, 0, 2] },
+      { text: `Issue Date: ${dayjs(item.issueDate).format('DD/MM/YYYY')}`},
+      { text: `Due Date: ${dayjs(item.dueDate).format('DD/MM/YYYY')}` },
+      {
+        style: 'tableExample',
+        table: {
+          widths: ['auto', '*', 'auto', 'auto', 'auto'],
+          body: [
+            ['Name', 'Description', 'Qty', 'Unit Price', 'Total'],
+            ...itemsTable,
+            [{ text: '', colSpan: 4, margin: [0, 10] }, {}, {}, {}, {}],
+            ...totalsSection
+          ]
+        },
+        layout: 'lightHorizontalLines',
+        margin: [0, 20]
+      },
+      { text: `Notes: ${item.notes ? item.notes : ""}`, margin: [0, 10, 0, 0] },
+    ],
+    styles: {
+      header: { fontSize: 22, bold: true, margin: [0, 0, 0, 10] },
+      tableExample: { margin: [0, 5, 0, 15] }
+    }
+  };
+
+  console.log(docDefinition);
+  return docDefinition;
+}
 
 
 export async function generateInvoiceXML(token: string, invoiceId: string) {

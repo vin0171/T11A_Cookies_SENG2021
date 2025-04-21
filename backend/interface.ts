@@ -128,6 +128,10 @@ export interface Tax {
   taxAmount?: string
 }
 
+export interface Discount {
+  discountType: string,
+  discountAmount: string
+}
 // TODO: Should be fine
 export interface InvoiceDetailsV2 {
   receiver: ParticipantV2,
@@ -138,7 +142,7 @@ export interface InvoiceDetailsV2 {
   shippingChecked: boolean,
   state: InvoiceState,
   items: InvoiceItemV2[],
-  wideDiscount: number,
+  wideDiscount: Discount,
   tax: Tax,
   shippingCostDetails: ShippingCostDetails,
   format: string,
