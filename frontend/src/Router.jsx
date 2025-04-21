@@ -45,7 +45,7 @@ export default function Router () {
         <Route path='user/login' element={<LoginPage setToken={setToken} type='user'/>}/>
         <Route path='user/register' element={<RegisterPage setToken={setToken}/>}/>
         <Route path='/dashboard' element={<DashboardPage token={token}/>}/>
-        <Route path='/:company/invoices/:invoiceId/create' element={<InvoicePage token={token}/>}/>
+        <Route path='/:company/invoices/:invoiceId?/create' element={<InvoicePage token={token}/>}/>
         <Route path="/customers" element={<CustomersPage />} />
         <Route path="/invoices" element={<InvoicesPage />} />
         <Route path="/items" element={<ItemsPage />} />
