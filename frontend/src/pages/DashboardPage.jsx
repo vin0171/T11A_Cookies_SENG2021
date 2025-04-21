@@ -9,6 +9,7 @@ import {v4 as uuidv4} from 'uuid';
 import InvoiceCard from '../components/InvoiceCard';
 import AddUserDialog from '../components/AddUserDialog';
 import ValidateInvoiceDialog from '../components/ValidateInvoiceDialog';
+import ChatPopup from '../components/ChatPopup';
 
 /**
  * This page sets up the dashboard page.
@@ -179,6 +180,7 @@ export default function DashboardPage({token}) {
           </Box>
         </Box>
       </Box>
+      <ChatPopup /> 
     </Fragment>
   )
 }

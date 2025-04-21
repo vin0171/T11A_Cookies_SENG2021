@@ -11,7 +11,7 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 const DataGraph = () => {
   return (
     // mt is margin top which is the distance from the top of the page
-    <Container sx={{ mt: 20 }}>
+    <Container sx={{ mt: 2 }}>
       <Grid item xs={12}>
         <Box display="flex" justifyContent="center">
           <SessionsChart />
@@ -47,13 +47,22 @@ const DataGraph = () => {
         </Box>
       </Box>
 
+      <Typography variant="h5" component="p" sx={{ fontWeight: 'bold', marginTop: 3 }}>
+        Invoice summary
+      </Typography>
+
+      <Box display="flex" justifyContent="left">
+        <hr style={{ width: '100%', borderColor: 'white' }} />
+      </Box>
+      
+
       <Box display="flex" gap={2} width="100%" sx={{ flexWrap: 'nowrap', marginTop: 2, marginBottom: 20 }}>
         <StatCard
           icon="📄"
           value={0}
           title="Total Invoices"
           subtitle="From all accounts"
-          growth={12}
+          growth={0}
           color="#f44336" 
         />
 
@@ -62,7 +71,7 @@ const DataGraph = () => {
           value={0}
           title="Validated Invoices"
           subtitle="Successfully processed"
-          growth={8}
+          growth={0}
           color="#4caf50" 
         />
 
@@ -71,7 +80,7 @@ const DataGraph = () => {
           value={0}
           title="Invoices Pending Validation"
           subtitle="Awaiting processing"
-          growth={-3}
+          growth={0}
           color="#ffb300" 
         />
 
@@ -80,8 +89,8 @@ const DataGraph = () => {
           value={"$0.00"}
           title="Total Revenue"
           subtitle="Across all invoices"
-          growth={15}
-          color="#6B24f1" 
+          growth={0}
+          color="#2196f3" 
         />
       </Box>
 
