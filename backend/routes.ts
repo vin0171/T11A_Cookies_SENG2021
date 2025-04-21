@@ -4,6 +4,7 @@ import * as companies from './companies';
 import * as invoices from './invoices';
 import * as customers from './customers';
 import * as items from './items';
+import * as emailService from './emailService';
 import { validateLocation, validateToken } from "./validationHelpers";
 import { Invoice, Location } from "./interface";
 // import { InvoiceConverter } from "./InvoiceConverter";
@@ -12,7 +13,6 @@ import { resetDataStore } from "./dataStore";
 import { InvoiceConverter } from "./InvoiceConverter";
 import { getCompany, getInvoice } from "./interfaceHelpers";
 import { validateUBL } from "./validation";
-import { readInvoices } from "./InvoiceReader";
 import { SyntaxKind } from "typescript";
 
 function routes(app: Express) {
@@ -219,20 +219,6 @@ function routes(app: Express) {
     }
   });
 
-  app.post('/v1/invoice/read', async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { ublInvoice } = req.body;
-  
-      if (!ublInvoice || typeof ublInvoice !== 'string') {
-        throw new HTTPError.BadRequest('UBL invoice must be a valid XML string.');
-      }
-  
-      const parsedInvoice = readInvoices(ublInvoice);
-      res.status(200).json(parsedInvoice);
-    } catch (err) {
-      next(err);
-    }
-  });
 // ========================================================================= //
 // Iteration 3
 // ========================================================================= //
@@ -287,6 +273,17 @@ function routes(app: Express) {
       const response = await getCompany(companyId)
       res.status(200).json(response);
     } catch(err) {
+      next(err)
+    }
+  });
+
+  app.post('/v3/company/sendEmailReminder', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const token = req.headers['authorization']?.split(' ')[1] || undefined;
+      const emailTo = req.body.emailTo;
+      const response = emailService.sendPaymentRequestEmail(token, emailTo);
+      res.status(200).json(response);
+    } catch (err) {
       next(err)
     }
   });
