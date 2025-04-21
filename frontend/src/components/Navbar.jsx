@@ -58,13 +58,6 @@ export default function Navbar({token, loggedIn, children}) {
     handleClick={() => {navigate('/')}}
   />
 
-  let navStyle = 
-  <>
-  
-  
-  </>
-
-
   if (loggedIn) { 
     toolbarComponent = 
     <Box sx={{display: 'flex'}}>
@@ -76,14 +69,19 @@ export default function Navbar({token, loggedIn, children}) {
         sx={{ mr: 2, p: 0, ml: 0.1}}
         onClick={toggleMenu(true)}
       >
-        <MenuIcon fontSize='large'/>
+        <MenuIcon fontSize='large' sx={{ color: '#60a5fa' }} />
       </IconButton>
       <Drawer 
         open={openMenu} 
         onClose={toggleMenu(false)}
-        slotProps = {{
+        slotProps={{
           paper: {
             sx: {
+              bgcolor: '#e0f2ff', 
+              color: '#003b70',
+              borderTopRightRadius: '10px',
+              borderBottomRightRadius: '10px',
+              boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
             }
           }
         }}
@@ -101,8 +99,9 @@ export default function Navbar({token, loggedIn, children}) {
           disableGutters
           variant ='dense' 
           sx={{
-            bgcolor: '#27548A',
-            justifyContent: 'space-between', 
+            bgcolor: 'white',
+            backgroundImage: 'linear-gradient(to right, #ffffff, #f9fbff)',
+            justifyContent: 'space-between',
             alignItems: 'center',
             pl: 1.3, 
             pr: 1.3,

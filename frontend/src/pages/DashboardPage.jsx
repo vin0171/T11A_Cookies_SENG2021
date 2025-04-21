@@ -31,17 +31,19 @@ export default function DashboardPage({token}) {
         gap: '10%',
       }}>
       <Box>
-        <Typography 
-          variant='h5' 
-          sx={{
-            color: '#41444d', 
-            textAlign: 'center',
-            '@media (max-width: 437px)': {
-              fontSize: '1.25em',
-            },
-          }}>
-          Create an Invoice
-        </Typography>
+      <Typography 
+        variant='h5' 
+        sx={{
+          fontFamily: `'Plus Jakarta Sans', 'Segoe UI', sans-serif'`,
+          fontWeight: 700,
+          color: '#1e293b', 
+          textAlign: 'center',
+          '@media (max-width: 437px)': {
+            fontSize: '1.25em',
+          },
+        }}>
+        Create an Invoice
+      </Typography>
         <Button 
           variant='contained' 
           onClick={() => navigate(`/${company.name}/invoices/create`)}
@@ -96,6 +98,7 @@ export default function DashboardPage({token}) {
         gap: '10%',
       }}>
       <Typography 
+        
         variant='h5' 
         sx={{
           color: '#41444d', 
