@@ -1,4 +1,12 @@
-import { Box, Typography, Card, CardContent, Divider, Chip } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Divider,
+  Chip,
+  useTheme,
+} from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 
@@ -41,6 +49,8 @@ const tiers = [
 ];
 
 export default function HomePagePricing() {
+  const theme = useTheme();
+
   return (
     <Box
       sx={{
@@ -50,14 +60,14 @@ export default function HomePagePricing() {
         flexDirection: 'column',
         alignItems: 'center',
         gap: 6,
-        bgcolor: 'aliceblue'
+        bgcolor: 'aliceblue',
       }}
     >
       <Box sx={{ width: '60%', textAlign: 'center' }}>
-        <Typography sx={{ fontWeight: 'bold', fontSize: '3em' }}>Pricing</Typography>
-        <Typography sx={{ fontSize: '1.5em' }}>
-          Check out our plans
+        <Typography variant="h3" fontWeight="bold">
+          Pricing
         </Typography>
+        <Typography variant="h6">Check out our plans</Typography>
       </Box>
 
       <Box
@@ -66,113 +76,114 @@ export default function HomePagePricing() {
           gridTemplateColumns: {
             xs: '1fr',
             sm: '1fr 1fr',
-            md: '1fr 1fr 1fr'
+            md: 'repeat(3, 1fr)',
           },
           gap: 6,
           width: '90%',
-          justifyContent: 'center'
+          margin: '0auto'
         }}
       >
-        {tiers.map((tier) => (
-          <Box sx={{ width: '100%', maxWidth: 350 }} key={tier.title}>
-            <Card
+        {tiers.map((tier) => {
+          const isHighlighted = tier.title === 'Professional';
+          return (
+            <Box
+              key={tier.title}
               sx={{
-                p: 2,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                gap: 4,
-                bgcolor: tier.title === 'Professional'
-                  ? '#60a5fa'
-                  : '#e8f1fc',
-                boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
-                borderRadius: '12px',
-                minHeight: 580,
-                color: tier.title === 'Professional' ? 'white' : 'black',
+                width: '100%',
+                maxWidth: 440,
+                transform: isHighlighted ? 'scale(1.05)' : 'none',
+                transition: 'transform 0.3s',
               }}
+              
             >
-
-              <CardContent>
-                <Box
-                  sx={{
-                    mb: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: 1,
-                    ...(tier.title === 'Professional'
-                      ? { color: 'white' }
-                      : { color: 'black' }
-                    )
-                  }}
-                >
-                  <Typography sx={{ fontSize: '2em', fontWeight: 700 }}>
-                    {tier.title}
-                  </Typography>
-                  {tier.title === 'Professional' && (
-                    <Chip
-                      sx={{
-                        color: 'white',
-                        '& .MuiChip-icon': {
-                          color: 'white'
-                        }
-                      }}
-                      icon={<AutoAwesomeIcon />}
-                      label={tier.subheader}
-                    />
-                  )}
-                </Box>
-
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'baseline',
-                    ...(tier.title === 'Professional' && { color: 'e8f1fc' })
-                  }}
-                >
-                  <Typography sx={{ fontSize: '3em', fontWeight: 600 }}>
-                    ${tier.price}
-                  </Typography>
-                  <Typography>
-                    &nbsp; per month
-                  </Typography>
-                </Box>
-
-                <Divider sx={{ my: 2, opacity: 0.8, borderColor: 'black' }} />
-
-                {tier.description.map((line) => (
+              <Card
+                sx={{
+                  p: 3,
+                  minHeight: 580,
+                  bgcolor: isHighlighted ? theme.palette.primary.main : '#f5faff',
+                  color: isHighlighted ? 'white' : 'black',
+                  borderRadius: '16px',
+                  boxShadow: isHighlighted
+                    ? '0 12px 24px rgba(0,0,0,0.2)'
+                    : '0 8px 16px rgba(0,0,0,0.05)',
+                }}
+              >
+                <CardContent>
                   <Box
-                    key={line}
                     sx={{
-                      py: 1,
+                      mb: 2,
                       display: 'flex',
-                      gap: 1.5,
-                      alignItems: 'center',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: 1,
                     }}
                   >
-                    <CheckCircleRoundedIcon
+                    <Typography variant="h5" fontWeight="bold">
+                      {tier.title}
+                    </Typography>
+
+                    {tier.subheader && (
+                      <Chip
+                        icon={<AutoAwesomeIcon />}
+                        label={tier.subheader}
+                        sx={{
+                          color: isHighlighted ? 'white' : theme.palette.primary.main,
+                          backgroundColor: isHighlighted
+                            ? 'rgba(255,255,255,0.2)'
+                            : 'rgba(96,165,250,0.15)',
+                          '& .MuiChip-icon': {
+                            color: isHighlighted ? 'white' : theme.palette.primary.main,
+                          },
+                        }}
+                      />
+                    )}
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'baseline',
+                      mb: 2,
+                    }}
+                  >
+                    <Typography variant="h3" fontWeight="bold">
+                      ${tier.price}
+                    </Typography>
+                    <Typography variant="body1">&nbsp;per month</Typography>
+                  </Box>
+
+                  <Divider
+                    sx={{
+                      my: 2,
+                      borderColor: isHighlighted ? 'white' : '#ccc',
+                      opacity: 0.8,
+                    }}
+                  />
+
+                  {tier.description.map((line) => (
+                    <Box
+                      key={line}
                       sx={{
-                        width: 20,
-                        ...(tier.title === 'Professional'
-                          ? { color: 'white' }
-                          : { color: 'black' })
-                      }}
-                    />
-                    <Typography
-                      sx={{
-                        ...(tier.title === 'Professional'
-                          ? { color: 'white' }
-                          : { color: 'black' })
+                        py: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
                       }}
                     >
-                      {line}
-                    </Typography>
-                  </Box>
-                ))}
-              </CardContent>
-            </Card>
-          </Box>
-        ))}
+                      <CheckCircleRoundedIcon
+                        sx={{
+                          fontSize: 20,
+                          color: isHighlighted ? 'white' : theme.palette.primary.main,
+                        }}
+                      />
+                      <Typography>{line}</Typography>
+                    </Box>
+                  ))}
+                </CardContent>
+              </Card>
+            </Box>
+          );
+        })}
       </Box>
     </Box>
   );
