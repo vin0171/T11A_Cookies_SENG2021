@@ -31,35 +31,6 @@ export default function DashboardPage({token}) {
         gap: '10%',
       }}>
       <Box>
-      <Typography 
-        variant='h5' 
-        sx={{
-          fontFamily: `'Plus Jakarta Sans', 'Segoe UI', sans-serif'`,
-          fontWeight: 700,
-          color: '#1e293b', 
-          textAlign: 'center',
-          '@media (max-width: 437px)': {
-            fontSize: '1.25em',
-          },
-        }}>
-        Create an Invoice
-      </Typography>
-        <Button 
-          variant='contained' 
-          onClick={() => navigate(`/${company.name}/invoices/create`)}
-          sx={{
-            bgcolor: '#9ccde1', 
-            height: 50,
-            width: 200,
-            textTransform: 'none',
-            fontWeight: 'bold',
-            fontSize: '1.5em',
-          }}
-        >
-          Create
-        </Button>
-      </Box>
-      <Box>
         <Typography 
           variant='h5' 
           sx={{
@@ -97,15 +68,20 @@ export default function DashboardPage({token}) {
         height: '100%',
         gap: '10%',
       }}>
-      <Typography 
-        
-        variant='h5' 
-        sx={{
-          color: '#41444d', 
-          '@media (max-width: 437px)': {
-            fontSize: '1.25em',
-          },
-        }}>
+      <Typography
+          variant='h5'
+          sx={{
+            fontFamily: `'Plus Jakarta Sans', 'Segoe UI', sans-serif'`,
+            fontWeight: 600,
+            fontSize: '1.75rem',
+            color: '#1e293b',
+            textAlign: 'center',
+            letterSpacing: '0.5px',
+            '@media (max-width: 437px)': {
+              fontSize: '1.25em',
+            },
+          }}
+        >
         Register a Company
       </Typography>
       <RegisterCompanyDialog token={token} setCompanyCreated={setCompanyDialog}/>
@@ -151,7 +127,7 @@ export default function DashboardPage({token}) {
         <Box 
           component='section' 
           sx={{
-            bgcolor: '#27548A',
+            bgcolor: '#e3f2fd',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -164,8 +140,21 @@ export default function DashboardPage({token}) {
               borderRadius: '5px',
             },
           }}>
-          <Box sx={{height: '100%', width: '80%', color: 'white'}}>
-            <Typography variant= 'h5' sx={{m: '35px 0'}}>Recent Invoices</Typography>
+          <Box sx={{height: '100%', width: '80%', color: 'black'}}>
+          <Typography
+            variant='h5'
+            sx={{
+              m: '35px 0',
+              fontWeight: 600,
+              fontFamily: `'Plus Jakarta Sans', 'Segoe UI', sans-serif'`,
+              fontSize: '1.75rem',
+              color: '#1e293b',
+              textAlign: 'center',
+              letterSpacing: '0.5px',
+            }}
+          >
+            Recent Invoices
+          </Typography>
             {loading ? (<LoadingBox progressStyles={{color: 'white'}}/>) : (
               <Box 
                 sx={{ 
