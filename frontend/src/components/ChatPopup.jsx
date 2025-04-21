@@ -11,23 +11,38 @@ export default function ChatPopup() {
   const [input, setInput] = useState("");
   const chatRef = useRef(null);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!input.trim()) return;
-
+  
     const userMessage = { sender: "user", text: input };
-    const aiMessage = {
-      sender: "ai",
-      text: "Thanks! (This is a sample reply.)",
-    };
-
     setMessages((prev) => [...prev, userMessage]);
-
-    setTimeout(() => {
-      setMessages((prev) => [...prev, aiMessage]);
-    }, 500);
-
     setInput("");
+  
+    try {
+      // 🌐 Call your real API here
+      const res = await fetch("/api/ai/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: input }),
+      });
+  
+      const data = await res.json();
+  
+      const aiMessage = {
+        sender: "ai",
+        text: data.reply || "No response received.",
+      };
+  
+      setMessages((prev) => [...prev, aiMessage]);
+    } catch (err) {
+      console.error("AI fetch failed", err);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "ai", text: "⚠️ Sorry, something went wrong." },
+      ]);
+    }
   };
+  
 
   useEffect(() => {
     if (chatRef.current) {
@@ -50,7 +65,7 @@ export default function ChatPopup() {
           <IconButton
             onClick={() => setOpen(true)}
             sx={{
-              backgroundColor: "blue",
+              backgroundColor: "#3a3f4a",
               color: "white",
               "&:hover": { backgroundColor: "#c2185b" },
             }}
@@ -67,7 +82,7 @@ export default function ChatPopup() {
             position: "fixed",
             bottom: 24,
             right: 24,
-            width: 340,
+            width: 380,
             height: 500,
             display: "flex",
             flexDirection: "column",
@@ -89,7 +104,7 @@ export default function ChatPopup() {
             }}
           >
             <Box display="flex" alignItems="center" gap={1}>
-              <Avatar sx={{ width: 24, height: 24, bgcolor: "#e91e63" }}>
+              <Avatar sx={{ width: 24, height: 24, bgcolor: "#3a3f4a" }}>
                 V
               </Avatar>
               <Typography fontWeight="bold">Virtual Assistant</Typography>
@@ -120,7 +135,7 @@ export default function ChatPopup() {
                   maxWidth: "85%",
                   alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
                   backgroundColor:
-                    msg.sender === "user" ? "#e91e63" : "white",
+                    msg.sender === "user" ? "#3a3f4a" : "white",
                   color: msg.sender === "user" ? "white" : "#333",
                   borderRadius: 2,
                   whiteSpace: "pre-line",
@@ -148,7 +163,7 @@ export default function ChatPopup() {
                     }}
                     sx={{
                       alignSelf: "flex-start",
-                      backgroundColor: "#e91e63",
+                      backgroundColor: "#3a3f4a",
                       color: "white",
                       textTransform: "none",
                       borderRadius: 999,
@@ -193,7 +208,7 @@ export default function ChatPopup() {
               variant="contained"
               onClick={handleSubmit}
               sx={{
-                backgroundColor: "#e91e63",
+                backgroundColor: "#3a3f4a",
                 "&:hover": { backgroundColor: "#c2185b" },
               }}
             >
