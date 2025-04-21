@@ -28,7 +28,7 @@ const handleSubmit = (event) => {
     country: formData.get('country'),
   };
 
-  axios.post(`${API_URL}/v1/company/register`, postParams, {headers: {Authorization: `Bearer ${token}`}})
+  axios.post(`${API_URL}/v3/company/register`, postParams, {headers: {Authorization: `Bearer ${token}`}})
   .then(() => {
     setCompanyCreated(true);
     handleClose();
@@ -60,7 +60,6 @@ return (
       sx={{
         '& .MuiDialog-container': {
           '& .MuiPaper-root': {
-            bgcolor:'#e2dacd',
             width: 550,
             height: 335,
           },

@@ -18,6 +18,8 @@ export default function NavbarBtnTemplate({onClick, title, styles}) {
           fontWeight: 'bold',
           textTransform: 'none',
           fontSize: '1.05em',
+          borderRadius: '15px',
+          
           ...styles
         }}>
         {title}
