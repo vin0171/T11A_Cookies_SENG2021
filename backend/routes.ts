@@ -440,6 +440,28 @@ function routes(app: Express) {
     }
   });
 
+  app.post('/v3/chat', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {message} = req.body.message?.toLowerCase() || '';
+      const userMessage = message.trim();
+      let botReply = "Sorry, I didn't understand that. Can you rephrase?";
+    
+      if (userMessage.includes('create') && userMessage.includes('invoice')) {
+        botReply = "To create an invoice, go to the 'Invoices' tab and click 'New Invoice'.";
+      } else if (userMessage.includes('cancel') && userMessage.includes('invoice')) {
+        botReply = "To cancel an invoice, open the invoice and click 'Cancel Invoice' in the options.";
+      } else if (userMessage.includes('view') || userMessage.includes('see')) {
+        botReply = "You can view your invoices from the 'Invoices' dashboard in your account.";
+      } else if (userMessage.includes('help')) {
+        botReply = "I'm here to help! Ask me things like 'How do I create an invoice?'";
+      }
+    
+      res.status(200).json({ reply: botReply });
+    } catch (err) {
+      next(err)
+    }
+  });
+
   // We indirectly use next but not directly which causes linting errors
   // eslint-disable-next-line 
   app.use((err: HTTPError.HttpError, req: Request, res: Response, next: NextFunction) => {

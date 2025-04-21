@@ -20,7 +20,7 @@ export default function ChatPopup() {
   
     try {
       // 🌐 Call your real API here
-      const res = await fetch("/api/ai/reply", {
+      const res = await fetch("/v3/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: input }),
