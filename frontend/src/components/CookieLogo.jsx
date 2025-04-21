@@ -14,15 +14,17 @@ export default function CookieLogo({styles = {}, handleClick={}}) {
         noWrap
         component='h3'
         onClick={handleClick}
-        sx={{	
+        sx={{
           fontWeight: 'bold',
           letterSpacing: 1,
+          color: 'black',
           '&:hover': {
-            cursor: 'default'
+            cursor: 'pointer'
           },
           ...styles
-        }}>
-      Cookie	
+        }}
+      >
+        Cookie
       </Typography>
     </Box>
   )

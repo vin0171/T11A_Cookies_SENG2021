@@ -2,14 +2,18 @@ import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper,
-  Select, MenuItem
+  Select, MenuItem, Button
 } from '@mui/material';
 import axios from 'axios';
 import { API_URL } from '../App';
+import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function InvoicesPage() {
   const [sort, setSort] = useState('');
   const [invoices, setInvoices] = useState([]);
+  const [companyId, setCompanyId] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -21,13 +25,13 @@ export default function InvoicesPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const companyId = userDetailsRes.data.companyId;
+        const id = userDetailsRes.data.companyId;
+        setCompanyId(id);
 
         // Fetch invoices using companyId
-        const response = await axios.get(`${API_URL}/v3/company/${companyId}/invoices`, {
+        const response = await axios.get(`${API_URL}/v3/company/${id}/invoices`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(response.data)
 
         setInvoices(response.data);
       } catch (err) {
@@ -44,13 +48,30 @@ export default function InvoicesPage() {
     return 0;
   });
 
+  const handleCreateInvoice = () => {
+    const newId = uuidv4();
+    navigate(`/${companyId}/invoices/${newId}/create`);
+  };
+
   return (
     <Box sx={{ mt: '75px', px: 4 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           Invoices
         </Typography>
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="contained"
+            onClick={handleCreateInvoice}
+            sx={{
+              bgcolor: '#60a5fa',
+              fontWeight: 'bold',
+              textTransform: 'none',
+              '&:hover': { bgcolor: '#4b9efc' }
+            }}
+          >
+            Create Invoice
+          </Button>
           <Select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
@@ -69,7 +90,7 @@ export default function InvoicesPage() {
           </Select>
         </Box>
       </Box>
-            
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -84,7 +105,7 @@ export default function InvoicesPage() {
             {sortedInvoices.map((inv, i) => (
               <TableRow key={i}>
                 <TableCell>{inv.details.invoiceNumber}</TableCell>
-                <TableCell>{inv.details.receiver.name || '—'}</TableCell>
+                <TableCell>{inv.details.receiver?.name || '—'}</TableCell>
                 <TableCell>{inv.details.total ?? '-'}</TableCell>
                 <TableCell>{new Date(inv.details?.issueDate).toLocaleDateString()}</TableCell>
               </TableRow>
