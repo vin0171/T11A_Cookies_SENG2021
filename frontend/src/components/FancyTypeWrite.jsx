@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Highlight, themes} from 'prism-react-renderer';
-
+import { Highlight, themes } from 'prism-react-renderer';
 
 export const HighlightedTypewriter = ({ code, language, speed = 20 }) => {
   const [visibleChars, setVisibleChars] = useState(0);
@@ -19,9 +18,10 @@ export const HighlightedTypewriter = ({ code, language, speed = 20 }) => {
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre className={className} style={{ ...style, whiteSpace: 'pre-wrap', fontSize: '1.1rem', borderRadius: '12px', padding: '1.5rem', backgroundColor: '#f4f4f4' }}>
           {tokens.map((line, i) => (
-            <div key={i} {...getLineProps({ line, key: i })}>
-              {line.map((token, key) => (
-                <span key={key} {...getTokenProps({ token, key })} />
+            <div key={i} {...getLineProps({ line })}>
+              <span>{i + 1} |</span>
+              {line.map((token, tokenIndex) => (
+                <span key={tokenIndex} {...getTokenProps({ token })} />
               ))}
             </div>
           ))}

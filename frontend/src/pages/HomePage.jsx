@@ -147,7 +147,7 @@ export default function HomePage() {
           >
             <HighlightedTypewriter
               code={ublSample}
-              language="xml"
+              language="jsx"
               speed={10}
             />
           </Box>
