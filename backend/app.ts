@@ -9,7 +9,7 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { checkTablesSetup } from './dataStore';
+import serverless from 'serverless-http';
 
 // Set up web app
 const app = createServer()
@@ -22,10 +22,9 @@ const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || 'localhost';
 
 // Set the server to listen on a port
-app.listen(PORT, HOST, async () => {
-    await checkTablesSetup();
-    console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
-    const url = `http://localhost:${PORT}/docs`;
-    console.log(`Example app listening at ${url}`);
-    console.log('Control+C to quit the app')
-});
+const serverHandlers = serverless(app);
+const handler = async (event: any, context: any) => {
+    const result = await serverHandlers(event, context);
+    return result;
+};
+exports.handler = handler;

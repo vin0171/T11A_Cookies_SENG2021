@@ -3,13 +3,9 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 
 // TODO: Leave this as a reminder such that when we deploy the details change
 const client: DynamoDBClient = new DynamoDBClient({
-  region: 'localhost',
-  endpoint: 'http://0.0.0.0:8000',
-  credentials: {
-    accessKeyId: 'FakeAccessKeyId',
-    secretAccessKey: 'FakeSecretAccessKey'
-  },
+  region: "us-east-1",
 })
+
 
 const data: DynamoDBDocument = DynamoDBDocument.from(client);
 
