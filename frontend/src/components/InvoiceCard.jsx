@@ -32,12 +32,6 @@ export default function InvoiceCard({company, title, invoiceId, thumbnail}) {
         <Typography component='h5' sx={{fontSize: '1.25em'}}>
           {title}
         </Typography>
-        {/* <Typography component='h6'>
-          {slides.length <= 1 ? '1 Slide' : `${slides.length} Slides`}
-        </Typography>
-        <Typography variant='body2' sx={{ color: 'text.secondary'}}>
-          {description}
-        </Typography> */}
       </CardContent>
     </Card>  
   )

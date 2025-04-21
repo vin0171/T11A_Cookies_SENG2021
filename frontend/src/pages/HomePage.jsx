@@ -1,100 +1,146 @@
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Divider, SvgIcon, Typography } from '@mui/material';
 import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
+import HomePageFeatures from '../components/HomePageFeatures';
+import HomePagePricing from '../components/HomePagePricing';
+import HomePageFooter from '../components/HomePageFooter';
+import dashboard from '../assets/dashboard.jpg';
 
-/**
- * This page sets up the home page.
- */
-export default function HomePage ({token}) {
+export default function HomePage() {
   const navigate = useNavigate();
-  const commonBtnStyles = {
-    textTransform: 'none', 
-    fontWeight: 'bold',
-    height: 55,
-    fontSize: '1.2em',
-    borderRadius: 3.8,
-  }
 
   return (
     <Fragment>
-      <Box component='section' sx={{ height: '100%', display: 'grid', gridTemplateRows: '6fr 4fr'}}>
-        <Box
-          component='section' 
-          sx={{ 
-            bgcolor: '#9ccde1',
+      <Box
+        sx={{
+          bgcolor: 'white',
+          width: '100%',
+          backgroundRepeat: 'no-repeat',
+          fontFamily: `'Plus Jakarta Sans', 'Segoe UI', sans-serif`,
+        }}
+      >
+        <Box 
+          sx={{
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', color: '3a3c43', alignItems: 'center', textAlign: 'center'}}>
-            <Typography 
-              variant='h3' 
+            pt: 20,
+            pb: 8,
+          }}
+        >
+          {/* Headline */}
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            <Typography
+              variant="h3"
               sx={{
-                fontWeight: 'bold',  
-                '@media (min-width: 569px) and (max-width: 695px)': {
-                  width: '80%'
-                },
-              }}>
-              Streamline your invoicing process
+                fontWeight: 700,
+                color: '#111827',
+                mb: 1,
+              }}
+            >
+              Streamline Invoices
             </Typography>
-            <br/>
-            <Typography 
-              variant='h5' 
+            <Typography
+              variant="h3"
               sx={{
-                '@media (max-width: 675px)' : {
-                  width: 400
-                }
-              }}>
-              Start generating, validating, and managing invoices with just a few clicks.
+                fontWeight: 700,
+                color: '#60a5fa',
+                letterSpacing: '0.5px',
+                WebkitTextStrokeWidth: '0.3px',
+              }}
+            >
+              Effortlessly
             </Typography>
-            {token && 
-            <Button
-              onClick={() => navigate('/dashboard')}
-              variant='contained'
-              sx={{ 
-                ...commonBtnStyles,
-                width: 250,
-                color: '#41444d',
-                bgcolor: '#e2dacd',
-                mt: 6.25
-              }}>
-                Head to Dashboard
-            </Button>
-            }
           </Box>
-        </Box>
-        <Box
-          component='section' 
-          sx={{ 
-            flex: 1,
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            bgcolor: '#e2dacd'
-          }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4}}>
-            <Typography 
-              variant='h5' 
-              sx={{ 
-                fontSize: '2em', 
-                fontWeight: 'bold',
-                color: '#3a3c43',
-              }}>
-              Not Registered with Us?
-            </Typography>
-            <Button
-              onClick={() => navigate('user/register')}
-              variant='contained'
-              sx={{ 
-                ...commonBtnStyles,
-                width: 200,
-                bgcolor: '#9ccde1'
-              }}>
-              Register Now
-            </Button>
-          </Box>
+
+          {/* CTA Button */}
+          <Button 
+            onClick={() => navigate('/user/register')}
+            sx={{
+              width: '300px',
+              textTransform: 'none',
+              background: '#60a5fa',
+              color: 'white',
+              padding: '0.35em 3.3em 0.35em 1.2em',
+              fontSize: '1.5em',
+              fontWeight: 500,
+              borderRadius: '0.9em',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              boxShadow: 'inset 0 0 1.6em -0.6em #4f46e5',
+              position: 'relative',
+              height: '2.8em',
+              letterSpacing: '0.03em',
+              cursor: 'pointer',
+              '&:hover .icon': { width: 'calc(100% - 0.6em)' },
+              '&:hover .icon svg': { transform: 'translateX(0.1em)' },
+              '&:active .icon': { transform: 'scale(0.95)' },
+            }}
+          >
+            Get Started
+            <Box
+              className='icon'
+              sx={{
+                background: 'white',
+                marginLeft: '1em',
+                position: 'absolute',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '2.2em',
+                width: '2.2em',
+                borderRadius: '0.7em',
+                right: '0.3em',
+                transition: 'all 0.3s',
+              }}              
+            >
+              <SvgIcon
+                sx={{
+                  width: '1.1em',
+                  transition: 'transform 0.3s',
+                  color: '#60a5fa',
+                }}
+              >
+                <svg
+                  height='24'
+                  width='24'
+                  viewBox='0 0 24 24'
+                  xmlns='http://www.w3.org/2000/svg'
+                >
+                  <path d='M0 0h24v24H0z' fill='none'></path>
+                  <path
+                    d='M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z'
+                    fill='currentColor'
+                  ></path>
+                </svg>
+              </SvgIcon>
+            </Box>
+          </Button>
+
+          {/* Dashboard Preview */}
+          <Box
+            sx={{
+              mt: 8,
+              alignSelf: 'center',
+              width: '60%',
+              height: 680,
+              outline: '6px solid',
+              outlineColor: 'hsla(220, 25%, 80%, 0.2)',
+              border: '1px solid',
+              boxShadow: '0 0 12px 8px hsla(220, 25%, 80%, 0.2)',
+              backgroundImage: `url(${dashboard})`,
+              backgroundSize: 'contain',
+            }}
+          />
         </Box>
       </Box>
+
+      {/* Other Sections */}
+      <HomePageFeatures />
+      <Divider sx={{ pt: 5, borderColor: 'grey', background: 'aliceblue' }} />
+      <HomePagePricing />
+      <HomePageFooter />
     </Fragment>
-  )
+  );
 }

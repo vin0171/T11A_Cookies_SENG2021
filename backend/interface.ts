@@ -21,7 +21,9 @@ export enum Gender {
   OTHER = 'OTHER',
 }
 
-export interface Participant {
+// TODO: DOUBLE CHECK IMPLEMENTATIONS
+// ! DEPRECATED
+export interface OldParticipant {
   companyName: string,
   address: string,
   country: string,
@@ -37,6 +39,7 @@ export interface Participant {
   notes?: string
 }
 
+// ! DEPRECATED
 export interface InvoiceItem {
   itemSku: string,
   itemName: string,
@@ -49,21 +52,27 @@ export interface InvoiceItem {
   totalAmount: number
 }
 
-export interface InvoiceItemV2 {
+// TODO: NEW DONE
+export interface Item {
   id: number,
-  isNew: boolean,
   itemSku: string,
   itemName: string,
   description: string,
-  quantity: number,
   unitPrice: number,
+}
+
+// TODO: UPDATED
+export interface InvoiceItemV2 {
+  itemDetails: Item,
+  quantity: number,
   discountAmount: number,
   totalAmount: number
 }
 
+// TODO: OLD
 export interface InvoiceDetails {
-  sender: Participant,
-  receiver: Participant,
+  sender: OldParticipant,
+  receiver: OldParticipant,
   issueDate: number,
   dueDate: number,
   invoiceNumber: number,
@@ -77,6 +86,7 @@ export interface InvoiceDetails {
   terms: string,
 }
 
+// TODO: IS FINE
 export interface Invoice {
   invoiceId: string,
   userId: string,
@@ -84,6 +94,7 @@ export interface Invoice {
   details: InvoiceDetails
 }
 
+// TODO: NOT SURE
 export interface Address {
   addressLine1: string,
   addressLine2: string,
@@ -93,13 +104,15 @@ export interface Address {
   country: string
 }
 
+// TODO: IS THIS BEING USED?
 export interface ParticipantV2 {
-  companyName: string,
-  billingAddress: Address,
-  shippingAddress: Address,
+  customerId: string,
+  name: string,
+  billingAddress: Address | null,
+  shippingAddress: Address | null,
   email: string,
-  bankName: string,
-  bankAccount: string,
+  bankName: string | null,
+  bankAccount: string | null,
 }
 
 // these should be parsed as a float/ int when used
@@ -115,6 +128,11 @@ export interface Tax {
   taxAmount?: string
 }
 
+export interface Discount {
+  discountType: string,
+  discountAmount: string
+}
+// TODO: Should be fine
 export interface InvoiceDetailsV2 {
   receiver: ParticipantV2,
   issueDate: Dayjs,
@@ -124,7 +142,7 @@ export interface InvoiceDetailsV2 {
   shippingChecked: boolean,
   state: InvoiceState,
   items: InvoiceItemV2[],
-  wideDiscount: number,
+  wideDiscount: Discount,
   tax: Tax,
   shippingCostDetails: ShippingCostDetails,
   format: string,
@@ -134,13 +152,19 @@ export interface InvoiceDetailsV2 {
   notes: string,
 }
 
+
+// TODO: Should be fine
 export interface InvoiceV2 {
   invoiceId: string,
+  //remove?
   userId: string,
   companyId: string,
   details: InvoiceDetailsV2
+  isDraft: boolean,
 }
 
+
+// TODO: UPDATED
 export interface User {
   userId: string,
   companyId: string,
@@ -148,13 +172,24 @@ export interface User {
   password: string,
   nameFirst: string,
   nameLast: string,
+  timeCreated: string,
+}
+
+//! DEPRECATED
+export interface OldUser {
+  userId: string,
+  companyId: string,
+  email: string,
+  password: string,
+  nameFirst: string,
+  nameLast: string,
+  timeCreated: string,
   numSuccessfulLogins: number,
   numFailedPasswordsSinceLastLogin: number,
   age: number,
-  gender: Gender,
-  timeCreated: string,
+  gender: string,
   previousPasswords: string[],
-  invoices: number[]
+  invoices: string[]
 }
 
 export interface Location {
@@ -175,8 +210,24 @@ export interface Company {
   owner: string,
   admins: string[],
   members: string[],
-  invoices: Invoice[]
+  invoices: string[]
+  customers: string[],
+  itemsList: string[],
 }
+
+export interface OldCompany {
+  companyId: string,
+  name: string,
+  abn: string,
+  headquarters: Location,
+  phone: string,
+  email: string,
+  owner: string,
+  admins: string[],
+  members: string[],
+  invoices: string[]
+}
+
 
 export interface companyRequestBody {
   companyName: string,
