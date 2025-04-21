@@ -364,7 +364,7 @@ export async function generateInvoicePDFV3(token: string, invoiceId: string) {
     ] : null,
     item.tax?.taxAmount ? [
       { text: `Tax (${item.tax.taxType})`, colSpan: 4, alignment: 'right' }, {}, {}, {},
-      `${item.tax.taxAmount + "%"}`
+      { text: `${item.tax.taxAmount + "%"}`, alignment: 'right'}
     ] : null,
     item.shippingCostDetails?.shippingCost ? [
       { text: 'Shipping', colSpan: 4, alignment: 'right' }, {}, {}, {},
