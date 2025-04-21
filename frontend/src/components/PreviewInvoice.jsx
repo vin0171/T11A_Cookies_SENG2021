@@ -163,7 +163,7 @@ export default function PreviewInvoice({
   }
 
   return (
-    <Box sx={{height: '100%'}}>
+    <Box sx={{height: '100%', border: '3px solid black'}}>
       <Document 
         file={pdf} 
         onLoadSuccess={onDocumentLoadSuccess} 

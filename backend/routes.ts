@@ -230,6 +230,9 @@ function routes(app: Express) {
       const parsedInvoice = readInvoices(ublInvoice);
       res.status(200).json(parsedInvoice);
     } catch (err) {
+      next(err);
+    }
+  });
 // ========================================================================= //
 // Iteration 3
 // ========================================================================= //
