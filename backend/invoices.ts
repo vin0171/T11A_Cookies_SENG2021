@@ -304,6 +304,15 @@ export async function generateInvoicePDF(token: string, invoiceId: string) {
   return docDefinition;
 } 
 
+function twoDecimal(num: number | string) {
+  if (typeof num === 'string') {
+    num = parseFloat(num);
+  }
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(num);
+}
 
 export async function generateInvoicePDFV3(token: string, invoiceId: string) {
   const data = getData();
@@ -325,41 +334,45 @@ export async function generateInvoicePDFV3(token: string, invoiceId: string) {
   const receiverAddress = [
     receiver.billingAddress?.addressLine1, 
     receiver.billingAddress?.addressLine2, 
+  ].filter(Boolean).join(", ");
+
+  const receiverAddress2 = [
     receiver.billingAddress?.suburb,
     receiver.billingAddress?.state, 
     receiver.billingAddress?.postcode,
-    receiver.billingAddress?.country,
-  ].filter(Boolean).join(', ');
+  ].filter(Boolean).join(", ");
 
   const itemsTable = item.items
     .filter((i) => i.quantity !== 0)
     .map((i) => [
+      i.itemDetails.itemName,
       i.itemDetails.description,
       i.quantity,
-      `${item.currency} ${i.itemDetails.unitPrice.toFixed(2)}`,
-      `${item.currency} ${(i.quantity * i.itemDetails.unitPrice).toFixed(2)}`
+      `${item.currency} ${i.itemDetails.unitPrice}`,
+      `${item.currency} ${(i.quantity * i.itemDetails.unitPrice)}`
     ]);
 
   const totalsSection = [
     [
-      { text: 'Subtotal', colSpan: 3, alignment: 'right' }, {}, {},
-      `${item.currency} ${item.subtotal.toFixed(2)}`
+      { text: 'Subtotal', colSpan: 4, alignment: 'right' }, {}, {}, {},
+      `${item.currency} ${twoDecimal(item.subtotal)}`
     ],
     item.wideDiscount ? [
-      { text: 'Discount', colSpan: 3, alignment: 'right' }, {}, {},
-      `- ${item.currency} ${item.wideDiscount.toFixed(2)}`
+      { text: 'Discount', colSpan: 4, alignment: 'right' }, {}, {}, {},
+      // if item.wideDiscount.discountType === 'percentage' then show it as a percentage else show it as a dollar amount
+      { text: `${item.wideDiscount.discountType === 'Percentage' ? item.wideDiscount.discountAmount + "%" : "$" + twoDecimal(item.wideDiscount.discountAmount)}`, alignment: 'right' },
     ] : null,
     item.tax?.taxAmount ? [
-      { text: `Tax (${item.tax.taxType})`, colSpan: 3, alignment: 'right' }, {}, {},
-      `${item.currency} ${item.tax.taxAmount}`
+      { text: `Tax (${item.tax.taxType})`, colSpan: 4, alignment: 'right' }, {}, {}, {},
+      `${item.tax.taxAmount + "%"}`
     ] : null,
     item.shippingCostDetails?.shippingCost ? [
-      { text: 'Shipping', colSpan: 3, alignment: 'right' }, {}, {},
-      `${item.currency} ${item.shippingCostDetails.shippingCost}`
+      { text: 'Shipping', colSpan: 4, alignment: 'right' }, {}, {}, {},
+      `${item.currency} ${twoDecimal(item.shippingCostDetails.shippingCost)}`
     ] : null,
     [
-      { text: 'Total', colSpan: 3, alignment: 'right', bold: true }, {}, {},
-      { text: `${item.currency} ${item.total.toFixed(2)}`, bold: true }
+      { text: 'Total', colSpan: 4, alignment: 'right', bold: true }, {}, {}, {},
+      { text: `${item.currency} ${twoDecimal(item.total)}`, bold: true }
     ]
   ].filter(Boolean);
 
@@ -368,8 +381,8 @@ export async function generateInvoicePDFV3(token: string, invoiceId: string) {
       { text: 'Invoice', style: 'header' },
       {
         columns: [
-          { text: `From:\n${company.name}\n${company.headquarters.address}`, width: '50%' },
-          { text: `To:\n${receiver.name}\n${receiverAddress}`, width: '50%', alignment: 'right' },
+          { text: `From:\n${company.name}\n\n${company.headquarters.address}`, width: '50%' },
+          { text: `To:\n${receiver.name}\n\n${receiverAddress}\n${receiverAddress2}\n${receiver.billingAddress?.country}`, width: '50%', alignment: 'right' },
         ]
       },
       { text: `Invoice #: ${item.invoiceNumber || invoiceId}`, margin: [0, 10, 0, 2] },
@@ -378,17 +391,18 @@ export async function generateInvoicePDFV3(token: string, invoiceId: string) {
       {
         style: 'tableExample',
         table: {
-          widths: ['*', 'auto', 'auto', 'auto'],
+          widths: ['auto', '*', 'auto', 'auto', 'auto'],
           body: [
-            ['Description', 'Qty', 'Unit Price', 'Total'],
+            ['Name', 'Description', 'Qty', 'Unit Price', 'Total'],
             ...itemsTable,
+            [{ text: '', colSpan: 4, margin: [0, 10] }, {}, {}, {}, {}],
             ...totalsSection
           ]
         },
         layout: 'lightHorizontalLines',
         margin: [0, 20]
       },
-      { text: `Notes: ${item.notes}`, margin: [0, 10, 0, 0] },
+      { text: `Notes: ${item.notes ? item.notes : ""}`, margin: [0, 10, 0, 0] },
     ],
     styles: {
       header: { fontSize: 22, bold: true, margin: [0, 0, 0, 10] },
