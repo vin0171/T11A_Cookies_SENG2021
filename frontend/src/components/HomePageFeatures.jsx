@@ -5,31 +5,33 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { Box, ButtonBase, Typography, useTheme } from '@mui/material';
 import { useState } from 'react';
 import dummy from '../assets/dummy.jpg';
+import dashboard from '../assets/dashboard.jpg';
 
 const items = [
   {
-    icon: <DescriptionIcon fontSize="large" />,
+    icon: <DescriptionIcon sx={{fontSize: "3.5vw"}} />,
     title: 'Intuitive Invoice Creation',
     description: 'Drag and drop XML files.',
-    image: `url(${dummy})`,
+    image: `url(${dashboard})`,
   },
   {
-    icon: <AssessmentIcon fontSize="large" />,
+    icon: <AssessmentIcon sx={{fontSize: "3.5vw", color: "rgba(46, 173, 30, 0.47)"}} />,
     title: 'Accurate Statistics',
     description: 'View analytics of all your invoices.',
-    image: `url(${dummy})`,
+    image: `url(${dashboard})`,
   },
   {
-    icon: <SmartToyIcon fontSize="large" />,
+    icon: <SmartToyIcon sx={{fontSize: "3.5vw", color: "rgba(201, 175, 26, 0.81)"}} />,
     title: 'Talk with our AI Teller',
     description: 'Let AI handle your queries.',
-    image: `url(${dummy})`,
+    image: `url(${dashboard})`,
   },
   {
-    icon: <ReceiptLongIcon fontSize="large" />,
+    icon: <ReceiptLongIcon sx={{fontSize: "3.5vw", color: "rgba(184, 34, 20, 0.62)"}} /> ,
     title: 'Billing Overview',
     description: 'Manage invoices, payments, and billing history.',
-    image: `url(${dummy})`,
+    image: `url(${dashboard})`,
+
   },
 ];
 
@@ -77,7 +79,7 @@ export default function HomePageFeatures() {
 
                 }}
               >
-                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 7 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 7}}>
                   <Box sx={{ color: '#60a5fa' }}>{icon}</Box>
                   <Box>
                     <Typography sx={{ fontSize: '1.2em', fontWeight: 'bold' }}>{title}</Typography>
@@ -102,11 +104,11 @@ export default function HomePageFeatures() {
               sx={{
                 width: '100%',
                 maxWidth: 440,
-                height: 460,
+                height: '100%',
                 borderRadius: 4,
                 backgroundImage: items[selectedItemIndex].image,
                 backgroundSize: 'cover',
-                backgroundPosition: 'center',
+                backgroundPosition: `${selectedItemIndex * 25}%`,
                 boxShadow: '0 8px 20px rgba(0,0,0,0.1)',
                 transition: 'background-image 0.4s ease',
               }}

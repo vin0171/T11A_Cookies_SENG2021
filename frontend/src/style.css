@@ -24,3 +24,8 @@
         var(--c1);
     background-size: var(--s) var(--s);
 }
+
+* {
+    font-family: Arial, Helvetica, sans-serif 
+}
+  

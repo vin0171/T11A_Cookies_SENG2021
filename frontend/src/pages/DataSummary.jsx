@@ -5,6 +5,8 @@ import SessionsChart from "../components/SessionChart";
 import LineGraph from "../components/LineGraph";
 import { Typography } from "@mui/material";
 import StatCard from "../components/DataTag";
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import PendingActionsIcon from '@mui/icons-material/PendingActions';
 
 const DataGraph = () => {
   return (
@@ -65,7 +67,7 @@ const DataGraph = () => {
         />
 
         <StatCard
-          icon="⏱️"
+          icon={<PendingActionsIcon  sx = {{color: "rgba(249, 249, 249, 0.95)"}}/>}
           value={0}
           title="Invoices Pending Validation"
           subtitle="Awaiting processing"
@@ -74,12 +76,12 @@ const DataGraph = () => {
         />
 
         <StatCard
-          icon="💲"
+          icon={<AttachMoneyIcon sx = {{color: "rgba(249, 249, 249, 0.95)"}}/>}
           value={"$0.00"}
           title="Total Revenue"
           subtitle="Across all invoices"
           growth={15}
-          color="#2196f3" 
+          color="#6B24f1" 
         />
       </Box>
 

@@ -175,6 +175,9 @@ export default function RegisterPage({ setToken }) {
       });
   };
 
+
+
+
   return (
     <AuthPageTemplate
       authType={'Register'}
