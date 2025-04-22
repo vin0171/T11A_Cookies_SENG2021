@@ -1,7 +1,7 @@
 import { getData } from './dataStore';
 import { User } from './interface';
-import { createToken, createUser } from './interfaceHelpers';
-import { authenticateUser } from './validationHelpers';
+import { createToken, createUser, createUserV3 } from './interfaceHelpers';
+import { authenticateUser, authenticateUserV3 } from './validationHelpers';
 
 
 /** 
@@ -19,6 +19,7 @@ import { authenticateUser } from './validationHelpers';
  */
 
 // Change age to DOB
+// ! DEPRECATED
 export async function registerUser(email: string, password: string, nameFirst: string, nameLast: string, age: number): Promise<string> {
     const data = getData();
     const newUser: User = await createUser(email, password, nameFirst, nameLast, age);
@@ -40,6 +41,8 @@ export async function registerUser(email: string, password: string, nameFirst: s
  * @param {string} password - password the user wants to use
 
  */
+
+// ! DEPRECATED
 export async function userLogin(email: string, password: string): Promise<string> {
 	const data = getData();
 	const user = await authenticateUser(email, password);
@@ -70,3 +73,26 @@ export async function userLogin(email: string, password: string): Promise<string
 // 	user.token = null;
 // 	return {};
 // }
+
+
+
+// ========================================================================= //
+// New Stuff
+// ========================================================================= //
+
+export async function registerUserV3(email: string, password: string, nameFirst: string, nameLast: string): Promise<string> {
+    const data = getData();
+    const newUser: User = await createUserV3(email, password, nameFirst, nameLast);
+
+	await data.put({TableName: "Users", Item: newUser});
+
+	const token: string = createToken(newUser.userId);
+	return token;
+}
+
+
+export async function userLoginV3(email: string, password: string): Promise<string> {
+	const data = getData();
+	const user = await authenticateUserV3(email, password);
+	return createToken(user.userId);
+}

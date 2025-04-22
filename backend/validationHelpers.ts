@@ -4,7 +4,7 @@ import { Location } from "./interface";
 import { getData } from "./dataStore";
 import jwt, { JwtPayload } from 'jsonwebtoken'
 import HTTPError from 'http-errors';
-import { getCompany, getInvoice, getUserByEmail } from "./interfaceHelpers";
+import { getCompany, getInvoice, getUserByEmail, getUserByEmailV3 } from "./interfaceHelpers";
 
 export const validateToken = async (token: string) => {
     try {
@@ -66,6 +66,7 @@ export function isValidPass(password: string): boolean {
     return true;
 };
 
+// ! DEPRECATED
 export async function authenticateUser(email: string, password: string) {
     const data = getData();
 
@@ -85,6 +86,20 @@ export async function authenticateUser(email: string, password: string) {
             UpdateExpression: updateExpression,
             ExpressionAttributeValues: { ':fails': userFails },
         });
+        throw HTTPError(400, 'Error: Incorrect Password');
+    }
+
+    return user;
+}
+
+export async function authenticateUserV3(email: string, password: string) {
+    const user = await getUserByEmailV3(email);
+
+    if (user === undefined) {
+        throw HTTPError(400, 'Error: User with this email does not exist');
+    }
+
+    if (user.password && user.password !== helpers.getPasswordHash(password)) {
         throw HTTPError(400, 'Error: Incorrect Password');
     }
 

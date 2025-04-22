@@ -1,6 +1,10 @@
-import { Box, Typography } from '@mui/material';
-import PrestoLogo from './PrestoLogo';
-import '../assets/style.css';
+import { Box, Button, IconButton, TextField, Typography } from '@mui/material';
+import Cookie from '../assets/logonew.png'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import '../style.css';
+import { Fragment } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 
 /**
  * This component is a template for the box that appears on the login or register page
@@ -11,77 +15,121 @@ import '../assets/style.css';
 export default function AuthPageTemplate({ 
   authType, 
   styles, 
-  backgroundStyles, 
-  formBackgroundStyles,
   children, 
-  handleLogoClick = () => {}
 }) {
-  const { justifyContent, boxHeight, titleHeight, gap } = styles;
+  const { titleHeight, gap } = styles;
+  const navigate = useNavigate();
   return (
-    <Box component='section' sx={{ height: '100%', display: 'flex'}}>
+    <Fragment>
       <Box 
-        component='div' 
-        sx={{ 
-          width: '100%', 
-          background: '#9ccde1',
+        className='form-background'  
+        sx={{
           display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
-          ...backgroundStyles
-        }}>
-        <Box 
-          component='section' 
-          sx={{ 
-            flex: 1, 
-            bgcolor: '#e2dacd',
-            width: 500,
-            borderRadius: 12.5,
-            m: 5,
-            py: 5,
-            px: 2.5,
-            display: 'grid',
-            alignItems: 'center',
-            '@media (max-width: 555px)': {
-              width: '80%'
-            },
-            ...formBackgroundStyles
-          }}>
+          flexDirection: 'column', 
+          height: '100%', 
+          width: '100%', 
+          justifyContent: 'center', 
+          alignItems: 'center'
+          }}
+        >
+        <Box
+          sx={{
+            height: '100%', 
+            width: '100%', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            background: 'rgba(181, 210, 246, 0.6)', 
+            backdropFilter: 'blur(3px)'
+            }}
+          >
           <Box 
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              height: boxHeight,
-              alignItems: 'center',
-              width: '80%',
-              justifySelf: 'center',
-              justifyContent: justifyContent,
-            }}>
+            sx ={{
+              height: '80%', 
+              width: '100%', 
+              display: 'flex', 
+              justifyContent: 'center'
+              }}
+            >
             <Box 
               sx={{
-                height: titleHeight, 
-                gap: gap,
+                display: 'flex', 
+                alignItems: 'center', 
+                bgcolor: 'aliceblue', 
+                height: '100%', 
+                borderTopLeftRadius: 25,
+                borderBottomLeftRadius: 25,
+                border: '5px solid black',
+                width: '40%',
+                borderRight: '0'
+                }}
+              >
+                <Box 
+                  sx={{
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    height: '100%', 
+                    width: '100%', 
+                    alignItems: 'center', 
+                    gap: '15%'
+                    }}
+                  >
+                    <IconButton sx={{alignSelf: 'start', color: 'black'}} onClick={() => navigate('/')}>
+                      <ArrowBackIcon sx={{fontSize: '2em'}}/>
+                    </IconButton>
+                    <Box
+                      sx={{
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        height: '60%', 
+                        width: '100%', 
+                        alignItems: 'center', 
+                        gap: '10%'
+                      }}
+                    >
+                      <Box 
+                        component="img" 
+                        sx={{height: '100px', marginTop: '100px'}}
+                        src={Cookie}
+                      />
+                  </Box>
+                </Box>
+            </Box>
+            <Box 
+              sx={{
                 display: 'flex', 
                 flexDirection: 'column', 
-                justifyContent: 'space-evenly', 
+                justifyContent:'center', 
                 alignItems: 'center', 
-              }}>
-              <PrestoLogo
-                styles={{
-                  height: 85,
-                  fontSize: '3.5em',
-                  width: 250,
-                  color: 'white',
+                bgcolor: 'aliceblue', 
+                height: '100%', 
+                borderTopRightRadius: 25,
+                borderBottomRightRadius: 25,
+                border: '5px solid black',
+                width: '30%'
                 }}
-                handleClick={handleLogoClick}
-              />
-              <Typography sx={{fontWeight: 'bold', fontSize: '3em'}}>
-                {authType}
-              </Typography>
+              >
+                <Box sx={{display: 'flex', flexDirection: 'column', gap: '15px'}}>
+                  <Box 
+                    sx={{
+                      height: titleHeight, 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      justifyContent: 'space-evenly', 
+                      alignItems: 'center', 
+                    }}
+                    >
+                    <Typography sx={{fontWeight: 'bold', fontSize: '3em'}}>
+                      {authType}
+                    </Typography>
+                  </Box>
+                  {children}
+                </Box>
             </Box>
-            {children}
           </Box>
         </Box>
       </Box>
-    </Box>
+    </Fragment>
+    
   )
 }
