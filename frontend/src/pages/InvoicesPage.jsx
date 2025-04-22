@@ -106,7 +106,9 @@ export default function InvoicesPage() {
               <TableRow key={i}>
                 <TableCell>{inv.details.invoiceNumber}</TableCell>
                 <TableCell>{inv.details.receiver?.name || '—'}</TableCell>
-                <TableCell>{inv.details.total ?? '-'}</TableCell>
+                <TableCell>
+                  {inv.details.total !== undefined ? inv.details.total.toFixed(2) : '-'}
+                </TableCell>
                 <TableCell>{new Date(inv.details?.issueDate).toLocaleDateString()}</TableCell>
               </TableRow>
             ))}

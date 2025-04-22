@@ -1,5 +1,5 @@
 import Typography from '@mui/material/Typography';
-import Cookie from '../assets/cookie.svg'
+import Cookie from '../assets/logonew.png'
 import { Box } from '@mui/material';
 
 /**
@@ -9,7 +9,7 @@ import { Box } from '@mui/material';
 export default function CookieLogo({styles = {}, handleClick={}}) {
   return (
     <Box sx={{display: 'flex', gap: '20px', alignItems: 'center'}}>
-      <Box component='img' src={Cookie} sx={{width: '25%'}}></Box>
+      <Box component='img' src={Cookie} sx={{height:43}}></Box>
       <Typography
         noWrap
         component='h3'
@@ -24,7 +24,6 @@ export default function CookieLogo({styles = {}, handleClick={}}) {
           ...styles
         }}
       >
-        Cookie
       </Typography>
     </Box>
   )

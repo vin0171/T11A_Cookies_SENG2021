@@ -1,5 +1,5 @@
 import { Box, Button, IconButton, TextField, Typography } from '@mui/material';
-import Cookie from '../assets/cookie.svg'
+import Cookie from '../assets/logonew.png'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import '../style.css';
 import { Fragment } from 'react';
@@ -89,10 +89,9 @@ export default function AuthPageTemplate({
                     >
                       <Box 
                         component="img" 
-                        sx={{height: '400px'}}
+                        sx={{height: '100px', marginTop: '100px'}}
                         src={Cookie}
                       />
-                      <Typography sx={{fontSize: '4em', fontWeight: 'bold'}}>Time to Crunch!</Typography>
                   </Box>
                 </Box>
             </Box>
